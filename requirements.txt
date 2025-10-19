@@ -27,5 +27,8 @@ rich>=13.0.0
 # Configuration
 python-dotenv>=1.0.0
 
+# Security
+cryptography>=41.0.0
+
 # Logging
 structlog>=23.0.0
