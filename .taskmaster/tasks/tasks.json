@@ -243,7 +243,7 @@
           "2",
           "4"
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -273,7 +273,7 @@
               2
             ],
             "details": "Design an event store using SQLAlchemy to capture and persist domain events. Ensure events are linked to relevant entities and contain all necessary metadata. Implement logic to reconstruct entity state from event history.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Simulate trading operations and verify that all domain events are captured and can be replayed to reconstruct state."
           },
           {
@@ -285,7 +285,7 @@
               3
             ],
             "details": "Audit repository implementations to confirm persistence of order ID, timestamps, pair, type, quantity, price, fees, status, exchange, strategy, and reason. Add missing fields or mappings as needed. Document audit trail requirements and validate against business rules.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run end-to-end tests simulating trading flows. Query persisted data to ensure all fields are present and accurate for each operation and event."
           },
           {
@@ -296,7 +296,7 @@
               4
             ],
             "details": "Create test cases that simulate trading flows, persist entities, and log events. Verify retrieval, integrity, and completeness of persisted data. Ensure event sourcing and audit trail requirements are met.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Automate integration tests covering CRUD operations, event logging, and audit trail verification. Use test database and async sessions."
           }
         ]
@@ -667,7 +667,7 @@
       ],
       "created": "2025-10-19T13:01:09.207Z",
       "description": "Tasks for master context",
-      "updated": "2025-10-19T18:39:47.031Z"
+      "updated": "2025-10-19T18:50:15.031Z"
     }
   }
 }
