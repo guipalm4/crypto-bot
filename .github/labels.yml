@@ -1,0 +1,140 @@
+# GitHub Labels Configuration
+# Este arquivo define os labels padrão para o projeto
+
+labels:
+  # Prioridade
+  - name: "🔴 Critical"
+    color: "d73a4a"
+    description: "Issues críticas que bloqueiam o desenvolvimento"
+  
+  - name: "🟡 High Priority"
+    color: "f9d71c"
+    description: "Issues de alta prioridade"
+  
+  - name: "🟢 Medium Priority"
+    color: "28a745"
+    description: "Issues de prioridade média"
+  
+  - name: "🔵 Low Priority"
+    color: "0075ca"
+    description: "Issues de baixa prioridade"
+
+  # Tipos de Issue
+  - name: "🐛 Bug"
+    color: "d73a4a"
+    description: "Algo não está funcionando"
+  
+  - name: "✨ Enhancement"
+    color: "a2eeef"
+    description: "Nova funcionalidade ou melhoria"
+  
+  - name: "📋 Task"
+    color: "7057ff"
+    description: "Tarefa do Task Master AI"
+  
+  - name: "🔒 Security"
+    color: "ff6b6b"
+    description: "Vulnerabilidade de segurança"
+  
+  - name: "📚 Documentation"
+    color: "0075ca"
+    description: "Melhorias na documentação"
+
+  # Categorias do Projeto
+  - name: "🏗️ Foundation"
+    color: "f9d71c"
+    description: "Estrutura e configuração base"
+  
+  - name: "🗄️ Database"
+    color: "28a745"
+    description: "Banco de dados e persistência"
+  
+  - name: "⚙️ Configuration"
+    color: "0075ca"
+    description: "Sistema de configuração"
+  
+  - name: "🚀 Trading Engine"
+    color: "ff6b6b"
+    description: "Motor principal de trading"
+  
+  - name: "⚠️ Risk Management"
+    color: "ff9500"
+    description: "Gestão de risco"
+  
+  - name: "🔌 Plugin System"
+    color: "8b5cf6"
+    description: "Sistema de plugins"
+  
+  - name: "🏦 Exchange Integration"
+    color: "10b981"
+    description: "Integração com exchanges"
+  
+  - name: "📊 Technical Indicators"
+    color: "06b6d4"
+    description: "Indicadores técnicos"
+  
+  - name: "🎯 Trading Strategies"
+    color: "f59e0b"
+    description: "Estratégias de trading"
+  
+  - name: "🖥️ CLI"
+    color: "6366f1"
+    description: "Interface de linha de comando"
+  
+  - name: "🧪 Testing"
+    color: "84cc16"
+    description: "Testes e qualidade de código"
+
+  # Status
+  - name: "📋 Needs Triage"
+    color: "ff9500"
+    description: "Precisa ser analisado e categorizado"
+  
+  - name: "🔄 In Progress"
+    color: "0075ca"
+    description: "Em desenvolvimento"
+  
+  - name: "⏳ Blocked"
+    color: "d73a4a"
+    description: "Bloqueado por dependências"
+  
+  - name: "✅ Ready for Review"
+    color: "28a745"
+    description: "Pronto para revisão"
+  
+  - name: "🏷️ Sprint 1"
+    color: "f9d71c"
+    description: "Foundation & Core Infrastructure"
+  
+  - name: "🏷️ Sprint 2"
+    color: "ff6b6b"
+    description: "Core Trading Engine & Risk Management"
+  
+  - name: "🏷️ Sprint 3"
+    color: "8b5cf6"
+    description: "Exchange Integration & Plugin System"
+  
+  - name: "🏷️ Sprint 4"
+    color: "f59e0b"
+    description: "Trading Strategies & Orchestration"
+  
+  - name: "🏷️ Sprint 5"
+    color: "10b981"
+    description: "User Interface & Final Polish"
+
+  # Tamanho
+  - name: "🟢 Small"
+    color: "28a745"
+    description: "Pequena (< 1 dia)"
+  
+  - name: "🟡 Medium"
+    color: "f9d71c"
+    description: "Média (1-3 dias)"
+  
+  - name: "🟠 Large"
+    color: "ff9500"
+    description: "Grande (3-7 dias)"
+  
+  - name: "🔴 Very Large"
+    color: "d73a4a"
+    description: "Muito Grande (> 7 dias)"

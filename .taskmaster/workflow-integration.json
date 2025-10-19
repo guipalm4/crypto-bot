@@ -1,0 +1,70 @@
+{
+  "workflow_integration": {
+    "enabled": true,
+    "auto_branch_creation": true,
+    "auto_commit": true,
+    "auto_pr_creation": true,
+    "git_integration": {
+      "base_branch": "main",
+      "feature_prefix": "feature/task-",
+      "conventional_commits": true
+    },
+    "github_integration": {
+      "auto_link_issues": true,
+      "auto_close_on_merge": true,
+      "pr_template": ".github/pull_request_template.md"
+    },
+    "status_workflow": {
+      "start_development": {
+        "command": "python scripts/dev-workflow.py start {task_id}",
+        "status": "in-progress"
+      },
+      "complete_development": {
+        "command": "python scripts/dev-workflow.py commit {task_id}",
+        "status": "review"
+      },
+      "mark_done": {
+        "command": "echo 'Task {task_id} completed'",
+        "status": "done"
+      }
+    }
+  },
+  "task_templates": {
+    "development_start": {
+      "title": "🚀 Iniciando desenvolvimento da Task #{task_id}",
+      "description": "Iniciando desenvolvimento da tarefa: {task_title}",
+      "actions": [
+        "Criar branch feature/task-{task_id}-{clean_title}",
+        "Marcar status como in-progress",
+        "Configurar ambiente de desenvolvimento"
+      ]
+    },
+    "development_complete": {
+      "title": "✅ Desenvolvimento da Task #{task_id} concluído",
+      "description": "Desenvolvimento concluído: {task_title}",
+      "actions": [
+        "Fazer commit convencional",
+        "Criar Pull Request",
+        "Marcar status como review"
+      ]
+    }
+  },
+  "automation_rules": {
+    "on_task_start": [
+      "create_branch",
+      "update_status",
+      "log_activity"
+    ],
+    "on_task_complete": [
+      "commit_changes",
+      "create_pr",
+      "update_status",
+      "log_activity"
+    ],
+    "on_pr_merge": [
+      "close_issue",
+      "mark_task_done",
+      "cleanup_branch"
+    ]
+  }
+}

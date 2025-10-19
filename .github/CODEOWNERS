@@ -1,0 +1,34 @@
+# Crypto Trading Bot - Code Owners
+# Este arquivo define quem é responsável por revisar mudanças em diferentes partes do código
+
+# Global owners
+* @guipalm4
+
+# Core trading engine
+/src/domain/ @guipalm4
+/src/application/services/trading_service.py @guipalm4
+/src/application/services/risk_service.py @guipalm4
+
+# Database and persistence
+/src/infrastructure/database/ @guipalm4
+/alembic/ @guipalm4
+
+# Exchange integrations
+/src/infrastructure/exchanges/ @guipalm4
+/src/plugins/ @guipalm4
+
+# Configuration and security
+/src/config/ @guipalm4
+/.env* @guipalm4
+/docker-compose.yml @guipalm4
+
+# Tests
+/tests/ @guipalm4
+
+# Documentation
+/docs/ @guipalm4
+README.md @guipalm4
+REQUISITOS.md @guipalm4
+
+# CI/CD
+/.github/ @guipalm4

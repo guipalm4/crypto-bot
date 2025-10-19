@@ -1,0 +1,129 @@
+# =============================================================================
+# CRYPTO TRADING BOT - .gitattributes
+# =============================================================================
+
+# =============================================================================
+# Python
+# =============================================================================
+*.py text eol=lf
+*.pyx text eol=lf
+*.pyi text eol=lf
+*.pyw text eol=lf
+
+# =============================================================================
+# Configuration Files
+# =============================================================================
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+*.conf text eol=lf
+
+# =============================================================================
+# Documentation
+# =============================================================================
+*.md text eol=lf
+*.rst text eol=lf
+*.txt text eol=lf
+
+# =============================================================================
+# Shell Scripts
+# =============================================================================
+*.sh text eol=lf
+*.bash text eol=lf
+*.zsh text eol=lf
+
+# =============================================================================
+# Docker
+# =============================================================================
+Dockerfile text eol=lf
+docker-compose*.yml text eol=lf
+*.dockerfile text eol=lf
+
+# =============================================================================
+# Git
+# =============================================================================
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# =============================================================================
+# Binary Files
+# =============================================================================
+# Database files
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text eol=lf
+
+# Archives
+*.zip binary
+*.tar binary
+*.gz binary
+*.bz2 binary
+*.7z binary
+*.rar binary
+
+# =============================================================================
+# Language Detection
+# =============================================================================
+# Force Python files to be detected as Python
+*.py linguist-language=Python
+*.pyx linguist-language=Python
+*.pyi linguist-language=Python
+
+# Force configuration files to be detected as YAML/JSON
+*.yml linguist-language=YAML
+*.yaml linguist-language=YAML
+*.json linguist-language=JSON
+
+# Force documentation files to be detected as Markdown
+*.md linguist-language=Markdown
+
+# =============================================================================
+# Diff Settings
+# =============================================================================
+# Don't show diffs for binary files
+*.db -diff
+*.sqlite -diff
+*.sqlite3 -diff
+*.png -diff
+*.jpg -diff
+*.jpeg -diff
+*.gif -diff
+*.ico -diff
+*.zip -diff
+*.tar -diff
+*.gz -diff
+
+# =============================================================================
+# Merge Settings
+# =============================================================================
+# Use union merge for configuration files
+*.json merge=union
+*.yml merge=union
+*.yaml merge=union
+*.toml merge=union
+
+# =============================================================================
+# Line Ending Normalization
+# =============================================================================
+# Ensure all text files use LF line endings
+* text=auto eol=lf
+
+# =============================================================================
+# Export Ignore
+# =============================================================================
+# Files to ignore when creating archives
+.gitattributes export-ignore
+.gitignore export-ignore
+README.md export-ignore
+LICENSE export-ignore

@@ -1,0 +1,53 @@
+{
+  "workflow": {
+    "name": "Crypto Trading Bot Development Workflow",
+    "version": "1.0.0",
+    "description": "Fluxo de trabalho automatizado para desenvolvimento com Task Master AI"
+  },
+  "git": {
+    "base_branch": "main",
+    "feature_branch_prefix": "feature/task-",
+    "conventional_commits": true,
+    "auto_push": true
+  },
+  "github": {
+    "owner": "guipalm4",
+    "repo": "crypto-bot",
+    "auto_create_pr": true,
+    "pr_template": ".github/pull_request_template.md",
+    "default_labels": ["task", "in-progress", "ready-for-review"]
+  },
+  "taskmaster": {
+    "auto_status_update": true,
+    "status_mapping": {
+      "start": "in-progress",
+      "commit": "review",
+      "complete": "done"
+    }
+  },
+  "branch_naming": {
+    "pattern": "feature/task-{id}-{title}",
+    "title_cleanup": {
+      "remove_emojis": true,
+      "lowercase": true,
+      "replace_spaces": "-",
+      "max_length": 50
+    }
+  },
+  "commit_types": {
+    "feat": "Nova funcionalidade",
+    "fix": "Correção de bug",
+    "docs": "Documentação",
+    "style": "Formatação, sem mudança de código",
+    "refactor": "Refatoração de código",
+    "test": "Adição ou correção de testes",
+    "chore": "Tarefas de manutenção",
+    "config": "Mudanças de configuração"
+  },
+  "pr_template": {
+    "include_task_reference": true,
+    "include_acceptance_criteria": true,
+    "include_testing_notes": true,
+    "auto_close_issue": true
+  }
+}
