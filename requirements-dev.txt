@@ -1,0 +1,21 @@
+# =============================================================================
+# CRYPTO TRADING BOT - Development Dependencies
+# =============================================================================
+# Development dependencies will be added as the project develops
+
+# Testing
+# pytest>=7.0.0
+# pytest-asyncio>=0.21.0
+# pytest-cov>=4.0.0
+
+# Code quality
+# black>=23.0.0
+# flake8>=6.0.0
+# mypy>=1.0.0
+# isort>=5.13.0
+# bandit>=1.7.0
+
+# Pre-commit
+# pre-commit>=3.0.0
+
+# Note: Dependencies will be uncommented and added as features are implemented
