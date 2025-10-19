@@ -1,0 +1,30 @@
+# Development environment configuration
+# Inherits from base.yaml and overrides specific values
+
+app:
+  log_level: "DEBUG"
+
+database:
+  echo: true  # Log SQL queries in development
+
+trading:
+  dry_run: true  # Always dry run in development
+  max_concurrent_trades: 2  # Limit trades in dev
+
+exchanges:
+  binance:
+    enabled: true
+    sandbox: true
+  coinbase:
+    enabled: true
+    sandbox: true
+
+api:
+  reload: true  # Auto-reload in development
+  workers: 1
+
+logging:
+  handlers:
+    - console  # Only console in development
+  format: "pretty"
+

@@ -1,0 +1,33 @@
+# Staging environment configuration
+# Inherits from base.yaml and overrides specific values
+
+app:
+  log_level: "INFO"
+
+database:
+  echo: false
+
+trading:
+  dry_run: true  # Still dry run in staging
+  max_concurrent_trades: 3
+
+exchanges:
+  binance:
+    enabled: true
+    sandbox: true
+  coinbase:
+    enabled: true
+    sandbox: true
+
+api:
+  reload: false
+  workers: 2
+  cors:
+    origins: ["https://staging.crypto-bot.com"]
+
+logging:
+  handlers:
+    - console
+    - file
+  format: "json"
+
