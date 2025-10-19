@@ -1,0 +1,219 @@
+---
+description: Enforce proper Git workflow with feature branches and pull requests - NEVER commit directly to main
+globs: **/*
+alwaysApply: true
+---
+
+# Git Workflow - MANDATORY RULES
+
+## 🚨 CRITICAL: NEVER Commit Directly to Main
+
+- **ALWAYS work in feature branches**
+- **NEVER commit directly to `main` or `master` branches**
+- **ALWAYS create a Pull Request before merging**
+
+## 📋 Correct Workflow (MANDATORY)
+
+### Starting New Work
+
+1. **Check current branch** before starting:
+   ```bash
+   git branch --show-current
+   # Must NOT be 'main' or 'master'
+   ```
+
+2. **Create feature branch** using one of these methods:
+
+   **Option A: Using workflow script (RECOMMENDED)**
+   ```bash
+   ./scripts/workflow.sh start
+   # ✅ Creates: feature/task-X-description
+   ```
+
+   **Option B: Manual branch creation**
+   ```bash
+   # From main branch:
+   git checkout main
+   git pull origin main
+   git checkout -b feature/task-X-description
+   ```
+
+### During Development
+
+- ✅ Work ONLY in feature branches
+- ✅ Commit as needed in the feature branch
+- ❌ NEVER switch to main to commit
+
+### Finishing Work
+
+1. **Push feature branch**:
+   ```bash
+   git push origin feature/task-X-description
+   ```
+
+2. **Create Pull Request** using one of these methods:
+
+   **Option A: Using workflow script**
+   ```bash
+   ./scripts/workflow.sh finish
+   ```
+
+   **Option B: Using GitHub CLI**
+   ```bash
+   gh pr create --title "[Task #X] Description" --body "Details..." --base main
+   ```
+
+3. **Merge PR** on GitHub after:
+   - ✅ CI/CD passes
+   - ✅ Code review (if required)
+   - ✅ All checks complete
+
+## 🔧 AI Agent Responsibilities
+
+### Before ANY Git Operation
+
+**ALWAYS check current branch first:**
+```bash
+git branch --show-current
+```
+
+**If on `main` or `master`:**
+1. **STOP immediately**
+2. Create feature branch FIRST
+3. Then proceed with work
+
+### Committing Changes
+
+**Before committing, verify:**
+```bash
+current_branch=$(git branch --show-current)
+if [[ "$current_branch" == "main" ]] || [[ "$current_branch" == "master" ]]; then
+    echo "🚫 ERROR: Cannot commit on main!"
+    echo "Create feature branch first"
+    exit 1
+fi
+```
+
+**✅ Correct commit flow:**
+```bash
+# 1. Ensure on feature branch
+git checkout -b feature/task-X-description  # if not created yet
+
+# 2. Stage changes
+git add .
+
+# 3. Commit
+git commit -m "feat(scope): description"
+
+# 4. Push to feature branch
+git push origin feature/task-X-description
+
+# 5. Create PR
+gh pr create --title "[Task #X] Title" --body "Description" --base main
+```
+
+### If Accidentally Committed to Main
+
+**Immediate recovery steps:**
+```bash
+# 1. Create feature branch at current commit
+git branch feature/task-X-fix
+
+# 2. Reset main to remote state
+git reset --hard origin/main
+
+# 3. Switch to feature branch
+git checkout feature/task-X-fix
+
+# 4. Push feature branch
+git push origin feature/task-X-fix
+
+# 5. Create PR
+gh pr create --base main
+```
+
+## 🎯 Branch Naming Convention
+
+**Format:** `feature/task-X-short-description`
+
+**Examples:**
+- ✅ `feature/task-2-database-schema`
+- ✅ `feature/task-15-trading-engine`
+- ✅ `feature/bugfix-order-validation`
+- ❌ `task2` (too short, no context)
+- ❌ `database-schema` (missing task reference)
+
+## 📝 Commit Message Convention
+
+**Format:** `type(scope): description`
+
+**Types:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation
+- `refactor`: Code refactoring
+- `test`: Adding tests
+- `chore`: Maintenance tasks
+
+**Examples:**
+```bash
+✅ git commit -m "feat(database): implement SQLAlchemy models"
+✅ git commit -m "fix(trading): correct order execution logic"
+✅ git commit -m "docs(readme): update installation instructions"
+✅ git commit -m "test(models): add integration tests for Order model"
+```
+
+## 🛡️ Protection Mechanisms
+
+### Local Protection (Git Hooks)
+- `.git/hooks/pre-push` prevents direct push to main
+- Installed via `./scripts/install-hooks.sh`
+
+### Remote Protection (GitHub)
+- Branch protection rules on `main` branch
+- Requires PR approval before merge
+- Enforces CI/CD checks
+
+### Workflow Scripts
+- `./scripts/workflow.sh start` - Start new task
+- `./scripts/workflow.sh finish` - Finish task with PR
+
+## 🚫 Common Mistakes to AVOID
+
+1. **❌ Committing directly to main**
+   ```bash
+   # WRONG!
+   git checkout main
+   git add .
+   git commit -m "changes"
+   ```
+
+2. **❌ Pushing to main**
+   ```bash
+   # WRONG!
+   git push origin main
+   ```
+
+3. **❌ Working without a feature branch**
+   ```bash
+   # WRONG!
+   # Making changes while on main branch
+   ```
+
+## ✅ Always Remember
+
+- **Before ANY work:** Create/switch to feature branch
+- **Before ANY commit:** Verify you're NOT on main
+- **Before ANY push:** Ensure it's a feature branch
+- **After work complete:** Create Pull Request
+- **Never force push:** Avoid `git push -f` unless absolutely necessary
+
+## 📖 Reference Documentation
+
+For detailed workflow instructions, see:
+- [WORKFLOW_QUICK_START.md](mdc:docs/WORKFLOW_QUICK_START.md)
+- [WORKFLOW_ENFORCEMENT.md](mdc:docs/WORKFLOW_ENFORCEMENT.md)
+
+---
+
+**⚠️ CRITICAL:** This workflow is MANDATORY. Any violation should be immediately corrected following the recovery steps above.
