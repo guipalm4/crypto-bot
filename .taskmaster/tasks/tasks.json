@@ -2,14 +2,14 @@
   "master": {
     "tasks": [
       {
-        "id": "1",
+        "id": 1,
         "title": "Project Structure & Environment Setup",
         "description": "Initialize the project repository, create the DDD-inspired directory structure, and configure the Python environment.",
         "details": "Use Python 3.12+. Set up the directory tree as per the PRD. Initialize a Git repository. Create a virtual environment using `venv` or `poetry`. Add `pyproject.toml` and `requirements.txt` with all required dependencies (latest versions of ccxt, sqlalchemy, alembic, pydantic, python-dotenv, pandas, numpy, pandas-ta, asyncio, aiohttp, asyncpg, pytest, pytest-asyncio, pytest-cov, faker, freezegun, black, flake8, mypy, isort, bandit, structlog, click, rich). Create `.env.example` and initial `docker-compose.yml` for PostgreSQL 16+.",
         "testStrategy": "Verify that all dependencies install without errors. Run `python --version` and `pip list` to confirm correct versions. Ensure directory structure matches PRD. Run `docker-compose up` to confirm PostgreSQL starts.",
         "priority": "high",
         "dependencies": [],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -17,7 +17,7 @@
             "description": "Set up a new Git repository for the project and configure initial version control settings.",
             "dependencies": [],
             "details": "Create the project root directory. Run `git init` to initialize the repository. Add a `.gitignore` file tailored for Python projects (ignore virtual environments, compiled files, etc.). Optionally, set up a remote repository (e.g., GitHub) and make the first commit with a README.md and LICENSE file.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify repository initialization with `git status`. Confirm `.gitignore` is effective by adding and committing files. Check remote connection if applicable.",
             "parentId": "undefined"
           },
@@ -29,7 +29,7 @@
               1
             ],
             "details": "Establish top-level folders such as `src/`, `tests/`, and any domain-specific modules as outlined in the PRD. Ensure the structure supports separation of concerns (domain, application, infrastructure, etc.). Include placeholder `__init__.py` files for Python package recognition. Add README.md and LICENSE at the root.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Compare the directory tree against the PRD requirements. Use `tree` or similar command to visualize structure. Confirm Python package importability.",
             "parentId": "undefined"
           },
@@ -41,7 +41,7 @@
               2
             ],
             "details": "Create a virtual environment using `python -m venv .venv` or `poetry init`. Generate `pyproject.toml` and `requirements.txt` files. Add all required dependencies (latest versions as specified). Ensure compatibility with Python 3.12+.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Activate the environment and run `python --version` to confirm Python version. Use `pip list` or `poetry show` to verify all dependencies are installed.",
             "parentId": "undefined"
           },
@@ -53,7 +53,7 @@
               3
             ],
             "details": "Draft a `.env.example` file listing all required environment variables (without sensitive values). Create an initial `docker-compose.yml` for PostgreSQL 16+ setup. Ensure configuration files are documented and placed at the project root.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Check that `.env.example` covers all necessary variables. Run `docker-compose up` to verify PostgreSQL container starts successfully.",
             "parentId": "undefined"
           },
@@ -65,7 +65,7 @@
               4
             ],
             "details": "Review the directory tree for compliance with PRD. Confirm all dependencies install without errors. Test Python environment activation and Docker setup. Ensure all configuration files are present and correctly formatted.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Run all verification commands: `python --version`, `pip list`, `docker-compose up`. Check for errors and confirm all components are operational.",
             "parentId": "undefined"
           }
@@ -73,7 +73,7 @@
         "updatedAt": "2025-10-18T17:25:39.504Z"
       },
       {
-        "id": "2",
+        "id": 2,
         "title": "Database Schema Design & Migration Setup",
         "description": "Design SQLAlchemy models for all entities and value objects, and configure Alembic for migrations.",
         "details": "Define models for Order, Position, Trade, Asset, Portfolio, and supporting value objects (Price, Quantity, Percentage, Timeframe) using SQLAlchemy 2.x declarative syntax with type hints. Use enums for order types and statuses. Set up Alembic for migrations. Ensure all relationships and constraints (e.g., unique constraints, foreign keys) are present. Use asyncpg for async DB access. Encrypt sensitive fields (e.g., API keys) using AES-256 (use `cryptography` library).",
@@ -147,7 +147,7 @@
         ]
       },
       {
-        "id": "3",
+        "id": 3,
         "title": "Configuration System Implementation",
         "description": "Implement centralized configuration loading and validation using YAML/JSON and Pydantic 2.x.",
         "details": "Create a config loader that reads YAML/JSON files and overlays environment variables for sensitive data. Use Pydantic models to validate all configuration sections (database, exchanges, strategies, risk, logging, etc.). Support multiple profiles (dev, staging, production). Ensure no sensitive data is hardcoded. Use `python-dotenv` for .env loading.",
@@ -160,7 +160,7 @@
         "subtasks": []
       },
       {
-        "id": "4",
+        "id": 4,
         "title": "Core Trading Engine - Order Execution Logic",
         "description": "Develop the core trading engine to execute, cancel, and query orders with configurable parameters.",
         "details": "Implement a service in `application/services/trading_service.py` that supports market/limit buy/sell, order cancellation, status queries, and balance checks. Use CCXT 4.x for exchange interaction. Support order parameters (type, quantity, price, timeout, retry policy). Use asyncio for concurrency. Ensure all actions are type hinted and documented.",
@@ -233,7 +233,7 @@
         ]
       },
       {
-        "id": "5",
+        "id": 5,
         "title": "Persistence Layer & Event Logging",
         "description": "Implement repositories for all entities and ensure all trading operations and events are persisted.",
         "details": "Create repository classes using SQLAlchemy ORM for orders, trades, price history, portfolio snapshots, and system events. Use async session management. Ensure all required fields (order ID, timestamps, pair, type, quantity, price, fees, status, exchange, strategy, reason) are persisted. Implement event sourcing for domain events.",
@@ -247,7 +247,7 @@
         "subtasks": []
       },
       {
-        "id": "6",
+        "id": 6,
         "title": "Basic Risk Management Module",
         "description": "Implement risk management logic for stop loss, take profit, exposure limits, and drawdown control.",
         "details": "Develop `risk_service.py` to enforce stop loss, take profit, per-asset/exchange exposure, trailing stops, max concurrent trades, and drawdown limits. All parameters must be configurable via the config system. Use async tasks for monitoring open positions and triggering risk actions.",
@@ -321,7 +321,7 @@
         ]
       },
       {
-        "id": "7",
+        "id": 7,
         "title": "Plugin System - Exchange Interface & Loader",
         "description": "Design and implement the abstract exchange interface and dynamic plugin loader for exchanges.",
         "details": "Define an abstract base class for exchanges in `infrastructure/exchanges/base.py` with all required methods (auth, fetch orderbook, ticker, OHLCV, execute/query/cancel orders, balance). Implement a plugin registry/loader in `plugins/registry.py` that discovers and loads exchange plugins dynamically.",
@@ -394,7 +394,7 @@
         ]
       },
       {
-        "id": "8",
+        "id": 8,
         "title": "Exchange Plugins: Binance & Coinbase",
         "description": "Implement Binance and Coinbase exchange plugins using CCXT 4.x, supporting all required features.",
         "details": "Inherit from the abstract exchange interface. Use CCXT for all API calls. Support API key auth, testnet/sandbox, rate limits, timeouts, and optional proxy. Ensure all plugin methods are async and type hinted. Store credentials encrypted in the database. Validate all config parameters.",
@@ -407,7 +407,7 @@
         "subtasks": []
       },
       {
-        "id": "9",
+        "id": 9,
         "title": "Plugin System - Technical Indicators Interface & Loader",
         "description": "Create an abstract interface and loader for technical indicator plugins.",
         "details": "Define a base class for indicators in `plugins/indicators/base.py` with methods for calculation and parameter validation. Implement a plugin loader for indicators. Use pandas-ta for calculations, fallback to custom pandas/numpy if needed. Implement a cache for computed indicators.",
@@ -421,7 +421,7 @@
         "subtasks": []
       },
       {
-        "id": "10",
+        "id": 10,
         "title": "Indicator Plugins: RSI, MACD, EMA",
         "description": "Implement RSI, MACD, and EMA indicator plugins with configurable parameters and caching.",
         "details": "Implement each indicator as a plugin using pandas-ta or custom logic. Support all configurable parameters (periods, thresholds). Integrate with the indicator cache. Ensure type hints and docstrings.",
@@ -434,7 +434,7 @@
         "subtasks": []
       },
       {
-        "id": "11",
+        "id": 11,
         "title": "Plugin System - Strategy Interface & Loader",
         "description": "Develop an abstract interface and loader for trading strategy plugins.",
         "details": "Define a base class for strategies in `plugins/strategies/base.py` with methods for signal generation, parameter validation, and state management. Implement a loader for strategy plugins. Ensure strategies can access indicators and exchange interfaces.",
@@ -449,7 +449,7 @@
         "subtasks": []
       },
       {
-        "id": "12",
+        "id": 12,
         "title": "Strategy Plugins: RSI Mean Reversion & MACD Crossover",
         "description": "Implement RSI Mean Reversion and MACD Crossover strategy plugins with all configurable parameters.",
         "details": "Implement each strategy as a plugin, using the indicator plugins for signal generation. Support all entry/exit rules and parameters. Ensure strategies are stateless or persist state as needed. Integrate with the trading engine and risk management.",
@@ -463,7 +463,7 @@
         "subtasks": []
       },
       {
-        "id": "13",
+        "id": 13,
         "title": "Strategy Orchestration & Execution Engine",
         "description": "Implement the orchestration logic to run strategies, fetch data, and execute trades.",
         "details": "Develop a service that schedules and runs active strategies on configured timeframes and pairs. Fetch OHLCV data via exchange plugins, compute indicators, and trigger trades via the trading engine. Use asyncio for concurrent execution. Support dry-run mode.",
@@ -479,7 +479,7 @@
         "subtasks": []
       },
       {
-        "id": "14",
+        "id": 14,
         "title": "Snapshot & Price History Recording",
         "description": "Implement logic to persist price history and portfolio snapshots at regular intervals.",
         "details": "Fetch OHLCV and balance data via exchange plugins. Store in the database using the persistence layer. Schedule periodic snapshots using asyncio tasks. Ensure data integrity and deduplication.",
@@ -493,7 +493,7 @@
         "subtasks": []
       },
       {
-        "id": "15",
+        "id": 15,
         "title": "Structured Logging & Monitoring",
         "description": "Implement structured logging (JSON) with log rotation, per-module logs, and configurable levels.",
         "details": "Use structlog for JSON logging. Configure logging via config file (level, output, file path, rotation). Ensure logs are separated by module and do not contain sensitive data. Integrate with system events and error handling.",
@@ -506,7 +506,7 @@
         "subtasks": []
       },
       {
-        "id": "16",
+        "id": 16,
         "title": "Basic CLI Implementation",
         "description": "Develop a CLI using Click and Rich for bot control and monitoring.",
         "details": "Implement commands to start/stop the bot, list active strategies, show open positions, check balances, force strategy execution, view logs in real time, and enable dry-run mode. Use Rich for formatted output.",
@@ -520,7 +520,7 @@
         "subtasks": []
       },
       {
-        "id": "17",
+        "id": 17,
         "title": "Security Hardening & Credential Management",
         "description": "Implement all security best practices for credential storage, input validation, and operational security.",
         "details": "Store API keys encrypted (AES-256) in the database. Use environment variables for sensitive config. Ensure input validation everywhere (Pydantic, type hints). Prevent SQL injection via ORM. Implement rate limiting for external APIs. Scan dependencies with bandit and safety. Ensure logs do not contain sensitive data. Document backup and disaster recovery procedures.",
@@ -535,7 +535,7 @@
         "subtasks": []
       },
       {
-        "id": "18",
+        "id": 18,
         "title": "Unit, Integration, and E2E Test Suite",
         "description": "Develop comprehensive test coverage for all modules using pytest, pytest-asyncio, and pytest-cov.",
         "details": "Write unit tests for all business logic, mocking external dependencies. Write integration tests for exchange plugins (testnet), database persistence, and plugin loading. Write E2E tests simulating full trading flows, error scenarios, and recovery. Use faker and freezegun for data and time mocking. Target >80% coverage.",
@@ -558,7 +558,7 @@
         "subtasks": []
       },
       {
-        "id": "19",
+        "id": 19,
         "title": "Code Quality & Compliance Automation",
         "description": "Automate code formatting, linting, type checking, and import sorting.",
         "details": "Configure black, flake8, mypy, and isort in pyproject.toml. Set up pre-commit hooks for all tools. Ensure PEP 8 compliance, type hints, and no linter warnings. Integrate bandit for security linting.",
@@ -571,7 +571,7 @@
         "subtasks": []
       },
       {
-        "id": "20",
+        "id": 20,
         "title": "Documentation & Developer Onboarding",
         "description": "Write and maintain comprehensive documentation for architecture, usage, and development.",
         "details": "Document all modules with docstrings. Create README.md with setup, usage, and contribution guides. Document configuration, plugin development, and security practices. Generate API docs if applicable. Update docs with each feature.",
@@ -609,7 +609,10 @@
       "completedCount": 0,
       "tags": [
         "master"
-      ]
+      ],
+      "created": "2025-10-19T13:01:09.207Z",
+      "description": "Tasks for master context",
+      "updated": "2025-10-19T13:07:15.765Z"
     }
   }
 }

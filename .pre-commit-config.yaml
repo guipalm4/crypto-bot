@@ -1,0 +1,36 @@
+repos:
+  - repo: local
+    hooks:
+      - id: validate-syntax
+        name: Validate Library Syntax
+        entry: python scripts/validate-syntax.py
+        language: system
+        files: \.py$
+        pass_filenames: false
+        
+      - id: black
+        name: Black formatter
+        entry: black
+        language: system
+        args: [--check, --diff]
+        files: \.py$
+        
+      - id: flake8
+        name: Flake8 linter
+        entry: flake8
+        language: system
+        files: \.py$
+        
+      - id: mypy
+        name: MyPy type checker
+        entry: mypy
+        language: system
+        files: \.py$
+        args: [--ignore-missing-imports]
+        
+      - id: isort
+        name: isort import sorter
+        entry: isort
+        language: system
+        args: [--check-only, --diff]
+        files: \.py$

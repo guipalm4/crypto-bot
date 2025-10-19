@@ -1,0 +1,67 @@
+# =============================================================================
+# CRYPTO TRADING BOT - Docker Compose Configuration
+# =============================================================================
+
+version: '3.8'
+
+services:
+  # =============================================================================
+  # PostgreSQL Database
+  # =============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: crypto-bot-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: crypto_bot
+      POSTGRES_USER: crypto_bot_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-crypto_bot_password}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    networks:
+      - crypto-bot-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crypto_bot_user -d crypto_bot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # =============================================================================
+  # Redis Cache
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: crypto-bot-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - crypto-bot-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  crypto-bot-network:
+    driver: bridge
+    name: crypto-bot-network
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  postgres_data:
+    name: crypto-bot-postgres-data
+  redis_data:
+    name: crypto-bot-redis-data

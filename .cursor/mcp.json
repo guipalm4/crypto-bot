@@ -14,6 +14,13 @@
 				"AZURE_OPENAI_API_KEY": "YOUR_AZURE_KEY_HERE",
 				"OLLAMA_API_KEY": "YOUR_OLLAMA_API_KEY_HERE"
 			}
+		},
+		"context7": {
+			"command": "npx",
+			"args": ["-y", "@context7/mcp-server"],
+			"env": {
+				"CONTEXT7_API_KEY": "YOUR_CONTEXT7_API_KEY_HERE"
+			}
 		}
 	}
 }
