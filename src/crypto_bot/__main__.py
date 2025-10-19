@@ -17,7 +17,7 @@ from crypto_bot.cli.main import main
 
 if __name__ == "__main__":
     try:
-        main()
+        cli()
     except KeyboardInterrupt:
         print("\n👋 Crypto Trading Bot stopped by user")
         sys.exit(0)
