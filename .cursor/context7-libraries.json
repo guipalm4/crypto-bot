@@ -1,0 +1,122 @@
+{
+  "priority_libraries": [
+    {
+      "name": "pydantic",
+      "version": "2.x",
+      "description": "Data validation and settings management",
+      "common_use_cases": [
+        "BaseSettings for configuration",
+        "Field definitions with validation",
+        "Model serialization/deserialization"
+      ]
+    },
+    {
+      "name": "pydantic-settings",
+      "version": "2.x", 
+      "description": "Settings management using Pydantic",
+      "common_use_cases": [
+        "Environment variable loading",
+        "SettingsConfigDict configuration",
+        "Field aliases for env vars"
+      ]
+    },
+    {
+      "name": "sqlalchemy",
+      "version": "2.x",
+      "description": "Python SQL toolkit and ORM",
+      "common_use_cases": [
+        "Database models with DeclarativeBase",
+        "AsyncSession for async operations",
+        "Relationship definitions"
+      ]
+    },
+    {
+      "name": "ccxt",
+      "version": "4.x",
+      "description": "Cryptocurrency exchange trading library",
+      "common_use_cases": [
+        "Exchange API integration",
+        "Order management",
+        "Market data fetching"
+      ]
+    },
+    {
+      "name": "asyncio",
+      "version": "3.12+",
+      "description": "Asynchronous I/O framework",
+      "common_use_cases": [
+        "Async/await patterns",
+        "Concurrent task execution",
+        "Event loop management"
+      ]
+    },
+    {
+      "name": "aiohttp",
+      "version": "3.x",
+      "description": "Async HTTP client/server",
+      "common_use_cases": [
+        "HTTP requests",
+        "WebSocket connections",
+        "Server implementation"
+      ]
+    },
+    {
+      "name": "click",
+      "version": "8.x",
+      "description": "Command line interface creation",
+      "common_use_cases": [
+        "CLI commands and options",
+        "Command groups",
+        "Help text generation"
+      ]
+    },
+    {
+      "name": "rich",
+      "version": "13.x",
+      "description": "Rich text and beautiful formatting",
+      "common_use_cases": [
+        "Console output formatting",
+        "Tables and panels",
+        "Progress bars"
+      ]
+    },
+    {
+      "name": "pytest",
+      "version": "7.x",
+      "description": "Testing framework",
+      "common_use_cases": [
+        "Unit test writing",
+        "Fixtures and parametrization",
+        "Async test support"
+      ]
+    },
+    {
+      "name": "structlog",
+      "version": "23.x",
+      "description": "Structured logging",
+      "common_use_cases": [
+        "JSON logging",
+        "Contextual logging",
+        "Performance logging"
+      ]
+    }
+  ],
+  "version_constraints": {
+    "python": ">=3.12",
+    "pydantic": "^2.5.0",
+    "sqlalchemy": "^2.0.0",
+    "ccxt": "^4.1.0"
+  },
+  "common_patterns": {
+    "pydantic_v2": {
+      "base_settings": "from pydantic_settings import BaseSettings, SettingsConfigDict",
+      "field_definition": "Field(default=value, alias='ENV_VAR')",
+      "model_config": "model_config = SettingsConfigDict(env_file='.env', case_sensitive=False)"
+    },
+    "sqlalchemy_v2": {
+      "declarative_base": "from sqlalchemy.orm import DeclarativeBase",
+      "async_session": "from sqlalchemy.ext.asyncio import AsyncSession",
+      "relationship": "relationship('ModelName', back_populates='field_name')"
+    }
+  }
+}
