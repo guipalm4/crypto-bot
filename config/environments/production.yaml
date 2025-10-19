@@ -1,0 +1,44 @@
+# Production environment configuration
+# Inherits from base.yaml and overrides specific values
+
+app:
+  log_level: "WARNING"
+
+database:
+  echo: false
+  pool_size: 10
+  max_overflow: 20
+
+redis:
+  max_connections: 100
+
+trading:
+  dry_run: false  # Real trading in production
+  max_concurrent_trades: 10
+
+exchanges:
+  binance:
+    enabled: true
+    sandbox: false  # Use real API in production
+  coinbase:
+    enabled: true
+    sandbox: false  # Use real API in production
+
+api:
+  reload: false
+  workers: 4
+  cors:
+    origins: ["https://crypto-bot.com"]
+
+logging:
+  handlers:
+    - file  # Only file logging in production
+  format: "json"
+  max_size: "50MB"
+  backup_count: 10
+
+monitoring:
+  enabled: true
+  metrics_enabled: true
+  health_check_interval: 30
+
