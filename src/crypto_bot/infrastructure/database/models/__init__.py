@@ -21,6 +21,7 @@ from crypto_bot.infrastructure.database.models.position import Position
 from crypto_bot.infrastructure.database.models.strategy import Strategy
 from crypto_bot.infrastructure.database.models.trade import Trade
 from crypto_bot.infrastructure.database.models.trading_pair import TradingPair
+from crypto_bot.infrastructure.database.models.domain_event import DomainEvent
 
 __all__ = [
     # Enums
@@ -40,5 +41,6 @@ __all__ = [
     "Trade",
     "Position",
     "Strategy",
+    "DomainEvent",
 ]
 
