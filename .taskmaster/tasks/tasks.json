@@ -157,7 +157,6 @@
           "1"
         ],
         "status": "done",
-        "status": "in-progress",
         "subtasks": []
       },
       {
@@ -172,7 +171,6 @@
           "3"
         ],
         "status": "done",
-        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
@@ -246,62 +244,6 @@
           "4"
         ],
         "status": "done",
-        "subtasks": [
-          {
-            "id": 1,
-            "title": "Design Repository Interfaces for All Entities",
-            "description": "Define clear repository interfaces for orders, trades, price history, portfolio snapshots, and system events.",
-            "dependencies": [],
-            "details": "Specify CRUD operations and query methods for each entity. Ensure interfaces support async operations and are decoupled from ORM implementation. Document required fields for each entity (order ID, timestamps, pair, type, quantity, price, fees, status, exchange, strategy, reason).",
-            "status": "done",
-            "testStrategy": "Review interface definitions for completeness and alignment with domain requirements. Write unit tests for interface contract compliance."
-          },
-          {
-            "id": 2,
-            "title": "Implement SQLAlchemy ORM Repository Classes with Async Support",
-            "description": "Create concrete repository classes using SQLAlchemy ORM for each entity, supporting async session management.",
-            "dependencies": [
-              1
-            ],
-            "details": "Implement repository classes for orders, trades, price history, portfolio snapshots, and system events. Use SQLAlchemy 2.x async ORM and session management. Ensure all required fields are persisted and mapped correctly. Handle relationships and constraints as defined in the schema.\n<info added on 2025-10-19T18:39:45.749Z>\nRepository implementation completed successfully with all required interfaces and concrete classes. Created comprehensive repository structure spanning both domain and infrastructure layers. Domain layer includes base IRepository interface and specialized repositories for orders, trades, positions, exchanges, assets, trading pairs, strategies, and events. Infrastructure layer implements these interfaces using SQLAlchemy 2.x async ORM with full CRUD operations, entity-specific queries, and proper error handling. Added domain event model with appropriate indexes for event sourcing. Implemented custom exceptions for domain and repository errors. All implementations feature async/await support, comprehensive docstrings, and follow clean architecture principles with proper separation of concerns.\n</info added on 2025-10-19T18:39:45.749Z>",
-            "status": "done",
-            "testStrategy": "Write integration tests to persist and retrieve entities using async sessions. Validate that all fields are correctly stored and retrieved."
-          },
-          {
-            "id": 3,
-            "title": "Integrate Event Sourcing for Domain Events",
-            "description": "Implement event sourcing mechanism to persist domain events related to trading operations.",
-            "dependencies": [
-              2
-            ],
-            "details": "Design an event store using SQLAlchemy to capture and persist domain events. Ensure events are linked to relevant entities and contain all necessary metadata. Implement logic to reconstruct entity state from event history.",
-            "status": "done",
-            "testStrategy": "Simulate trading operations and verify that all domain events are captured and can be replayed to reconstruct state."
-          },
-          {
-            "id": 4,
-            "title": "Ensure Complete Audit Trail and Field Coverage",
-            "description": "Verify that all trading operations and events persist every required field for audit and compliance.",
-            "dependencies": [
-              2,
-              3
-            ],
-            "details": "Audit repository implementations to confirm persistence of order ID, timestamps, pair, type, quantity, price, fees, status, exchange, strategy, and reason. Add missing fields or mappings as needed. Document audit trail requirements and validate against business rules.",
-            "status": "done",
-            "testStrategy": "Run end-to-end tests simulating trading flows. Query persisted data to ensure all fields are present and accurate for each operation and event."
-          },
-          {
-            "id": 5,
-            "title": "Write Integration Tests for Persistence and Event Logging",
-            "description": "Develop comprehensive integration tests to validate persistence and event logging across all entities.",
-            "dependencies": [
-              4
-            ],
-            "details": "Create test cases that simulate trading flows, persist entities, and log events. Verify retrieval, integrity, and completeness of persisted data. Ensure event sourcing and audit trail requirements are met.",
-            "status": "done",
-            "testStrategy": "Automate integration tests covering CRUD operations, event logging, and audit trail verification. Use test database and async sessions."
-          }
-        ],
         "subtasks": []
       },
       {
@@ -670,7 +612,7 @@
       ],
       "created": "2025-10-19T13:01:09.207Z",
       "description": "Tasks for master context",
-      "updated": "2025-10-20T00:00:16.703Z"
+      "updated": "2025-10-20T00:21:05.218Z"
     }
   }
 }
