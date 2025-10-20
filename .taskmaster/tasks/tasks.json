@@ -157,6 +157,7 @@
           "1"
         ],
         "status": "done",
+        "status": "in-progress",
         "subtasks": []
       },
       {
@@ -171,6 +172,7 @@
           "3"
         ],
         "status": "done",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
@@ -300,6 +302,7 @@
             "testStrategy": "Automate integration tests covering CRUD operations, event logging, and audit trail verification. Use test database and async sessions."
           }
         ]
+        "subtasks": []
       },
       {
         "id": 6,
@@ -668,6 +671,8 @@
       "created": "2025-10-19T13:01:09.207Z",
       "description": "Tasks for master context",
       "updated": "2025-10-19T18:50:15.031Z"
+      "updated": "2025-10-20T00:00:16.703Z"
+      "updated": "2025-10-19T18:17:11.088Z"
     }
   }
 }
