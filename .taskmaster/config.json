@@ -1,109 +1,42 @@
 {
-  "project": {
-    "name": "Crypto Trading Bot",
-    "description": "Sistema automatizado de trading de criptomoedas com arquitetura modular baseada em plugins",
-    "version": "0.1.0",
-    "author": "Guilherme Palma",
-    "email": "gomes.lmc@gmail.com"
-  },
-  "ai": {
-    "main": "claude-3-5-sonnet-20241022",
-    "research": "claude-3-5-sonnet-20241022",
-    "fallback": "gpt-4o-mini",
-    "maxTokens": 4000,
-    "temperature": 0.7
-  },
-  "workflow": {
-    "autoBranchCreation": true,
-    "autoCommit": true,
-    "autoPRCreation": true,
-    "conventionalCommits": true,
-    "gitIntegration": {
-      "baseBranch": "main",
-      "featurePrefix": "feature/task-",
-      "autoPush": true
+  "models": {
+    "main": {
+      "provider": "anthropic",
+      "modelId": "claude-sonnet-4-20250514",
+      "maxTokens": 64000,
+      "temperature": 0.2
     },
-    "githubIntegration": {
-      "owner": "guipalm4",
-      "repo": "crypto-bot",
-      "autoLinkIssues": true,
-      "autoCloseOnMerge": true,
-      "prTemplate": ".github/pull_request_template.md"
+    "research": {
+      "provider": "perplexity",
+      "modelId": "sonar",
+      "maxTokens": 8700,
+      "temperature": 0.1
+    },
+    "fallback": {
+      "provider": "anthropic",
+      "modelId": "claude-3-7-sonnet-20250219",
+      "maxTokens": 120000,
+      "temperature": 0.2
     }
   },
-  "tasks": {
-    "defaultPriority": "medium",
+  "global": {
+    "logLevel": "info",
+    "debug": false,
+    "defaultNumTasks": 10,
     "defaultSubtasks": 5,
-    "autoExpand": false,
-    "complexityThreshold": 5
+    "defaultPriority": "medium",
+    "projectName": "Task Master",
+    "ollamaBaseURL": "http://localhost:11434/api",
+    "bedrockBaseURL": "https://bedrock.us-east-1.amazonaws.com",
+    "responseLanguage": "English",
+    "enableCodebaseAnalysis": true,
+    "userId": "1234567890"
   },
-  "logging": {
-    "level": "INFO",
-    "file": ".taskmaster/logs/taskmaster.log",
-    "maxSize": "10MB",
-    "backupCount": 5
-  },
-  "tags": {
-    "default": "master",
-    "available": [
-      "master",
-      "sprint-1",
-      "sprint-2",
-      "sprint-3",
-      "sprint-4",
-      "sprint-5",
-      "feature",
-      "bugfix",
-      "hotfix"
-    ]
-  },
-  "integrations": {
-    "github": {
-      "enabled": true,
-      "autoCreateIssues": true,
-      "autoCreateMilestones": true,
-      "linkTasksToIssues": true
-    },
-    "git": {
-      "enabled": true,
-      "autoCommit": true,
-      "conventionalCommits": true,
-      "autoPush": true
-    }
-  },
-  "security": {
-    "encryptSecrets": true,
-    "excludePatterns": [
-      "*.key",
-      "*.pem",
-      "*.p12",
-      "secrets/",
-      "credentials/",
-      "api_keys/"
-    ]
-  },
-  "development": {
-    "pythonVersion": "3.12+",
-    "packageManager": "pip",
-    "virtualEnv": true,
-    "dependencies": [
-      "sqlalchemy>=2.0.0",
-      "alembic>=1.13.0",
-      "pydantic>=2.0.0",
-      "ccxt>=4.0.0",
-      "pandas>=2.0.0",
-      "numpy>=1.24.0",
-      "asyncio",
-      "aiohttp>=3.8.0",
-      "asyncpg>=0.29.0",
-      "click>=8.0.0",
-      "rich>=13.0.0",
-      "pytest>=7.0.0",
-      "pytest-asyncio>=0.21.0",
-      "black>=23.0.0",
-      "flake8>=6.0.0",
-      "mypy>=1.0.0",
-      "bandit>=1.7.0"
-    ]
+  "claudeCode": {},
+  "codexCli": {},
+  "grokCli": {
+    "timeout": 120000,
+    "workingDirectory": null,
+    "defaultModel": "grok-4-latest"
   }
 }
