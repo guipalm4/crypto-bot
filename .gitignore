@@ -332,12 +332,14 @@ $RECYCLE.BIN/
 .env.production.local
 
 # =============================================================================
-# Task Master AI
+# Task Master AI - Arquivos de controle local
 # =============================================================================
-# Task Master state files
+# Task Master state files (controle local)
+.taskmaster/tasks/tasks.json
 .taskmaster/state.json
 .taskmaster/cache/
 .taskmaster/logs/
+.taskmaster/reports/
 
 # =============================================================================
 # Git

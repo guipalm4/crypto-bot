@@ -1,0 +1,146 @@
+---
+description: Task Master is the absolute priority - all other workflows must adapt to Task Master, never the opposite
+globs: **/*
+alwaysApply: true
+---
+
+# 🎯 Task Master Priority - ABSOLUTE RULE
+
+## 🚨 CRITICAL: Task Master is PRIORITY #1
+
+- **Task Master workflow is FUNDAMENTAL** and cannot be bypassed
+- **All other workflows must adapt to Task Master**, never the opposite
+- **Task Master drives all development decisions** and progress tracking
+- **Git, Context7, and other tools are SUPPORTING** Task Master, not replacing it
+
+## 🔄 Task Master First Workflow
+
+### Before ANY Development Work
+1. **ALWAYS start with Task Master**:
+   ```bash
+   # Get current task status
+   task-master next
+   # OR use MCP tool: next_task
+   ```
+
+2. **ALWAYS understand the task**:
+   ```bash
+   # Get task details
+   task-master show <task-id>
+   # OR use MCP tool: get_task
+   ```
+
+3. **ALWAYS expand complex tasks**:
+   ```bash
+   # Break down complex tasks
+   task-master expand --id=<task-id> --research
+   # OR use MCP tool: expand_task
+   ```
+
+### During Development
+1. **ALWAYS update task progress**:
+   ```bash
+   # Log progress and findings
+   task-master update-subtask --id=<subtask-id> --prompt="Progress update"
+   # OR use MCP tool: update_subtask
+   ```
+
+2. **ALWAYS use Task Master research**:
+   ```bash
+   # Research with project context
+   task-master research "query with project context"
+   # OR use MCP tool: research
+   ```
+
+3. **ALWAYS follow Task Master patterns**:
+   - Use Task Master's iterative subtask implementation
+   - Log detailed implementation plans
+   - Document what worked and what didn't
+   - Update dependent tasks when needed
+
+### After Development
+1. **ALWAYS mark tasks as done**:
+   ```bash
+   # Mark task as completed
+   task-master set-status --id=<task-id> --status=done
+   # OR use MCP tool: set_task_status
+   ```
+
+2. **ALWAYS update dependent tasks**:
+   ```bash
+   # Update related tasks if implementation changed
+   task-master update --from=<task-id> --prompt="Implementation changes"
+   # OR use MCP tool: update
+   ```
+
+## 🚫 NEVER Override Task Master
+
+### What NOT to Do
+- **❌ Skip Task Master workflow** for any reason
+- **❌ Use Git workflow** without Task Master context
+- **❌ Implement features** without Task Master task
+- **❌ Create PRs** without Task Master task reference
+- **❌ Bypass Task Master** for "quick fixes"
+- **❌ Use other tools** without Task Master integration
+
+### What TO Do
+- **✅ Always start with Task Master**
+- **✅ Use Task Master for all task management**
+- **✅ Integrate other tools with Task Master**
+- **✅ Reference Task Master tasks in all work**
+- **✅ Update Task Master progress regularly**
+- **✅ Follow Task Master patterns and workflows**
+
+## 🔧 Tool Integration Priority
+
+### Priority Order
+1. **Task Master** (PRIORITY 1 - MANDATORY)
+2. **Context7** (Research and best practices)
+3. **Git** (Version control - if used)
+4. **GitHub Templates** (PR/Issue templates - if using Git)
+5. **Code Quality Tools** (Linting, formatting, testing)
+
+### Integration Rules
+- **All tools must support Task Master workflow**
+- **No tool can bypass Task Master**
+- **Task Master drives the development process**
+- **Other tools enhance Task Master, not replace it**
+
+## 📋 Task Master Workflow Enforcement
+
+### Mandatory Steps
+1. **Get next task** using `next_task`
+2. **Understand task** using `get_task`
+3. **Expand if needed** using `expand_task`
+4. **Research context** using `research` tool
+5. **Implement following Task Master patterns**
+6. **Update progress** using `update_subtask`
+7. **Mark complete** using `set_task_status`
+
+### Quality Gates
+- [ ] Task Master task identified and active
+- [ ] Task details understood and documented
+- [ ] Research completed with Task Master context
+- [ ] Implementation follows Task Master patterns
+- [ ] Progress logged in Task Master
+- [ ] Task marked as done in Task Master
+
+## 🎯 Success Metrics
+
+### Task Master Success
+- **100% of development work** tracked in Task Master
+- **All tasks** have proper status updates
+- **All progress** logged with timestamps
+- **All dependencies** properly managed
+- **All research** documented in tasks
+
+### Project Success
+- **Task Master drives** all development decisions
+- **No work** happens outside Task Master
+- **All tools** integrate with Task Master
+- **Project continuity** maintained through Task Master
+- **User never loses** the development thread
+
+---
+
+**⚠️ CRITICAL:** Task Master is the absolute priority. Any workflow that conflicts with Task Master must be modified to support it, never the opposite.

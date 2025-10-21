@@ -1,0 +1,208 @@
+---
+description: Mandatory usage of GitHub templates for PRs, issues, and project management
+globs: .github/**/*, **/*.md
+alwaysApply: true
+---
+
+# 📋 GitHub Templates - MANDATORY USAGE
+
+## 🎯 Purpose
+Ensure consistent and comprehensive use of GitHub templates for Pull Requests, Issues, and project management to maintain high quality and proper documentation.
+
+## 🚨 MANDATORY Template Usage
+
+### Pull Request Template (.github/pull_request_template.md)
+- **ALWAYS use** the GitHub PR template when creating pull requests (if using Git)
+- **Fill out ALL required sections** completely
+- **Use proper task references** from Task Master
+- **Complete security and performance checklists**
+- **Include screenshots/logs** when applicable
+
+### Issue Templates (.github/ISSUE_TEMPLATE/)
+- **Use appropriate template** for the type of issue:
+  - `bug_report.md` for bug reports
+  - `feature_request.md` for new features
+  - `security_vulnerability.md` for security issues
+  - `task_implementation.md` for task implementation
+
+## 📋 PR Template Usage Guidelines
+
+### Required Sections to Fill
+1. **📝 Descrição**: Clear description of changes made
+2. **🔗 Issues Relacionadas**: Link to related issues and tasks
+3. **🎯 Tipo de Mudança**: Check appropriate change type
+4. **🧪 Como Testar**: Detailed testing instructions
+5. **📋 Checklist**: Complete all relevant checkboxes
+6. **🔒 Segurança**: Complete security checklist
+7. **📊 Performance**: Complete performance checklist
+8. **📚 Documentação**: Complete documentation checklist
+
+### PR Template Checklist
+- [ ] ✅ Meu código segue as diretrizes de estilo do projeto
+- [ ] ✅ Realizei uma auto-revisão do meu código
+- [ ] ✅ Comentei partes do código difíceis de entender
+- [ ] ✅ Minhas mudanças não geram warnings
+- [ ] ✅ Adicionei testes que provam que minha correção é eficaz ou que minha feature funciona
+- [ ] ✅ Testes novos e existentes passam localmente
+- [ ] ✅ Qualquer mudança dependente foi mergeada e publicada
+
+### Security Checklist
+- [ ] ✅ Não expõe credenciais ou dados sensíveis
+- [ ] ✅ Valida todas as entradas do usuário
+- [ ] ✅ Usa práticas seguras de criptografia
+- [ ] ✅ Não introduz vulnerabilidades conhecidas
+
+### Performance Checklist
+- [ ] ✅ Não degrada performance significativamente
+- [ ] ✅ Otimizações de performance implementadas
+- [ ] ✅ Testes de performance executados
+
+## 🐛 Bug Report Template Usage
+
+### When to Use
+- **Use `bug_report.md`** for any bug reports
+- **Fill out ALL sections** completely
+- **Include reproduction steps** with clear instructions
+- **Provide environment details** and versions
+- **Include logs and error messages**
+
+### Required Information
+- **Bug description**: Clear description of the issue
+- **Steps to reproduce**: Detailed reproduction steps
+- **Expected behavior**: What should happen
+- **Actual behavior**: What actually happens
+- **Environment**: OS, Python version, dependencies
+- **Logs**: Relevant log output and error messages
+
+## ✨ Feature Request Template Usage
+
+### When to Use
+- **Use `feature_request.md`** for new feature requests
+- **Fill out ALL sections** completely
+- **Provide clear use cases** and benefits
+- **Include implementation suggestions** if possible
+- **Link to related tasks** in Task Master
+
+### Required Information
+- **Feature description**: Clear description of the feature
+- **Use case**: Why this feature is needed
+- **Proposed solution**: How the feature should work
+- **Alternatives considered**: Other approaches considered
+- **Additional context**: Any other relevant information
+
+## 🔒 Security Vulnerability Template Usage
+
+### When to Use
+- **Use `security_vulnerability.md`** for security issues
+- **Fill out ALL sections** completely
+- **Provide detailed vulnerability description**
+- **Include impact assessment**
+- **Suggest remediation steps**
+
+### Required Information
+- **Vulnerability description**: Clear description of the security issue
+- **Impact**: What could be compromised
+- **Steps to reproduce**: How to reproduce the vulnerability
+- **Suggested fix**: How to address the issue
+- **Severity**: Critical, High, Medium, Low
+
+## 📋 Task Implementation Template Usage
+
+### When to Use
+- **Use `task_implementation.md`** for task implementation issues
+- **Link to Task Master tasks**
+- **Provide implementation details**
+- **Include acceptance criteria**
+
+### Required Information
+- **Task reference**: Link to Task Master task
+- **Implementation approach**: How the task will be implemented
+- **Acceptance criteria**: What constitutes completion
+- **Dependencies**: What other tasks/issues are needed
+- **Testing strategy**: How the implementation will be tested
+
+## 🏷️ Labels and Milestones
+
+### Label Usage
+- **Use appropriate labels** from `.github/labels.yml`
+- **Apply labels consistently** across issues and PRs
+- **Use priority labels** (P0, P1, P2, P3)
+- **Use type labels** (bug, feature, enhancement, etc.)
+- **Use status labels** (in-progress, review, done, etc.)
+
+### Milestone Usage
+- **Link issues to milestones** when appropriate
+- **Use milestone tracking** for project phases
+- **Update milestone progress** regularly
+
+## 📊 Template Quality Gates
+
+### Before Creating PR
+- [ ] PR template filled out completely
+- [ ] All required sections completed
+- [ ] Security checklist completed
+- [ ] Performance checklist completed
+- [ ] Documentation checklist completed
+- [ ] Testing instructions provided
+- [ ] Related issues linked
+
+### Before Creating Issue
+- [ ] Appropriate template selected
+- [ ] All required sections filled
+- [ ] Clear description provided
+- [ ] Reproduction steps included (for bugs)
+- [ ] Environment details provided
+- [ ] Appropriate labels applied
+
+### Before Closing Issue/PR
+- [ ] All checklist items completed
+- [ ] Testing completed successfully
+- [ ] Documentation updated
+- [ ] Security review completed
+- [ ] Performance impact assessed
+
+## 🔄 Integration with Development Workflow
+
+### Task Master Integration
+1. **Link tasks to issues** when creating issues
+2. **Reference Task Master tasks** in PR descriptions
+3. **Update task status** when PRs are merged
+4. **Use task numbers** in PR titles and descriptions
+
+### Git Workflow Integration
+1. **Use PR template** when creating pull requests
+2. **Reference feature branch** in PR description
+3. **Link to related issues** in PR description
+4. **Complete all checklists** before requesting review
+
+### Code Review Integration
+1. **Reviewers check** template completion
+2. **Verify checklist items** are completed
+3. **Ensure security** considerations are addressed
+4. **Confirm testing** instructions are clear
+
+## 📚 Template Reference
+
+### Available Templates
+- [PR Template](mdc:.github/pull_request_template.md)
+- [Bug Report Template](mdc:.github/ISSUE_TEMPLATE/bug_report.md)
+- [Feature Request Template](mdc:.github/ISSUE_TEMPLATE/feature_request.md)
+- [Security Vulnerability Template](mdc:.github/ISSUE_TEMPLATE/security_vulnerability.md)
+- [Task Implementation Template](mdc:.github/ISSUE_TEMPLATE/task_implementation.md)
+- [Labels Configuration](mdc:.github/labels.yml)
+
+### Template Usage Examples
+```bash
+# Creating a PR with template
+gh pr create --title "[Task #7] Plugin System Implementation" --body-file .github/pull_request_template.md
+
+# Creating an issue with template
+gh issue create --title "Bug: Plugin loading fails" --body-file .github/ISSUE_TEMPLATE/bug_report.md
+
+# Creating a feature request
+gh issue create --title "Feature: Add new exchange support" --body-file .github/ISSUE_TEMPLATE/feature_request.md
+```
+
+---
+
+**⚠️ CRITICAL:** GitHub templates are MANDATORY for all PRs and issues. Incomplete template usage will result in PR rejection.
