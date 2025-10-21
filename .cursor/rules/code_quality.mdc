@@ -1,0 +1,371 @@
+---
+description: Mandatory code quality enforcement including linting, formatting, and testing standards
+globs: **/*.py, **/*.ts, **/*.js, **/*.md
+alwaysApply: true
+---
+
+# 🧹 Code Quality - MANDATORY ENFORCEMENT
+
+## 🎯 Purpose
+Ensure consistent, high-quality code through mandatory linting, formatting, testing, and documentation standards.
+
+## 🚨 MANDATORY Quality Gates
+
+### Before ANY Commit
+- **ALWAYS run linting** and fix all errors
+- **ALWAYS format code** with Black
+- **ALWAYS check type hints** with MyPy
+- **ALWAYS run tests** and ensure they pass
+- **ALWAYS verify** no warnings are generated
+
+### Before ANY Pull Request
+- **ALWAYS pass all quality checks**
+- **ALWAYS have 100% test coverage** for new code
+- **ALWAYS follow** project coding standards
+- **ALWAYS include** proper documentation
+
+## 🔧 Linting and Formatting Tools
+
+### Black (Code Formatting)
+```bash
+# Format all Python files
+black .
+
+# Check formatting without changing files
+black --check .
+
+# Format specific file
+black src/crypto_bot/plugins/registry.py
+```
+
+### Flake8 (Linting)
+```bash
+# Lint all Python files
+flake8 .
+
+# Lint specific directory
+flake8 src/crypto_bot/
+
+# Lint with specific configuration
+flake8 --config pyproject.toml .
+```
+
+### MyPy (Type Checking)
+```bash
+# Type check all files
+mypy .
+
+# Type check specific module
+mypy src/crypto_bot/plugins/
+
+# Type check with strict mode
+mypy --strict .
+```
+
+### Pytest (Testing)
+```bash
+# Run all tests
+pytest
+
+# Run tests with coverage
+pytest --cov=src/crypto_bot
+
+# Run specific test file
+pytest tests/unit/plugins/test_plugin_registry.py
+
+# Run tests with verbose output
+pytest -v
+```
+
+## 📋 Code Quality Standards
+
+### Python Code Standards
+- **Follow PEP 8** for all Python code
+- **Use type hints** for all functions and methods
+- **Write docstrings** for all public APIs
+- **Use meaningful variable names**
+- **Keep functions small and focused**
+- **Use async/await** for I/O operations
+- **Implement proper error handling**
+
+### Type Hints Requirements
+```python
+# ✅ DO: Use proper type hints
+def create_order(self, request: CreateOrderRequest) -> OrderDTO:
+    """Create a new order."""
+    pass
+
+# ❌ DON'T: Skip type hints
+def create_order(self, request):
+    pass
+
+# ✅ DO: Use Union for multiple types
+from typing import Union, Optional
+
+def process_data(self, data: Union[str, dict]) -> Optional[ProcessedData]:
+    pass
+
+# ✅ DO: Use generic types
+from typing import List, Dict, Any
+
+def get_orders(self, filters: Dict[str, Any]) -> List[OrderDTO]:
+    pass
+```
+
+### Docstring Standards
+```python
+# ✅ DO: Write comprehensive docstrings
+def fetch_balance(self, currency: Optional[str] = None) -> Dict[str, BalanceDTO]:
+    """
+    Fetch account balance for specified currency or all currencies.
+    
+    Args:
+        currency: Optional currency code (e.g., 'BTC', 'ETH'). 
+                 If None, returns all currencies.
+    
+    Returns:
+        Dictionary mapping currency codes to BalanceDTO objects.
+        
+    Raises:
+        ExchangeError: If the exchange API request fails.
+        NetworkError: If there's a network connectivity issue.
+        
+    Example:
+        >>> balance = await exchange.fetch_balance('BTC')
+        >>> print(balance['BTC'].free)
+        0.5
+    """
+    pass
+
+# ❌ DON'T: Write minimal docstrings
+def fetch_balance(self, currency=None):
+    """Fetch balance."""
+    pass
+```
+
+### Error Handling Standards
+```python
+# ✅ DO: Use specific exceptions
+from crypto_bot.application.exceptions import ExchangeError, NetworkError
+
+async def fetch_ticker(self, symbol: str) -> Dict[str, Any]:
+    try:
+        response = await self._make_request(f"/ticker/{symbol}")
+        return response
+    except aiohttp.ClientError as e:
+        raise NetworkError(f"Network error fetching ticker for {symbol}: {e}") from e
+    except Exception as e:
+        raise ExchangeError(f"Exchange error fetching ticker for {symbol}: {e}") from e
+
+# ❌ DON'T: Use generic exceptions
+async def fetch_ticker(self, symbol: str) -> Dict[str, Any]:
+    try:
+        response = await self._make_request(f"/ticker/{symbol}")
+        return response
+    except Exception as e:
+        raise Exception(f"Error: {e}")
+```
+
+## 🧪 Testing Standards
+
+### Test Coverage Requirements
+- **100% coverage** for new code
+- **Minimum 90% coverage** for existing code
+- **Test all public methods** and functions
+- **Test error conditions** and edge cases
+- **Test async functions** properly
+
+### Test Structure
+```python
+# ✅ DO: Use descriptive test names
+def test_create_order_with_valid_request_returns_order_dto():
+    """Test that create_order returns OrderDTO for valid request."""
+    pass
+
+def test_create_order_with_invalid_symbol_raises_exchange_error():
+    """Test that create_order raises ExchangeError for invalid symbol."""
+    pass
+
+# ❌ DON'T: Use generic test names
+def test_create_order():
+    pass
+
+def test_error():
+    pass
+```
+
+### Async Testing
+```python
+# ✅ DO: Use pytest-asyncio for async tests
+import pytest
+
+@pytest.mark.asyncio
+async def test_fetch_balance_returns_correct_data():
+    """Test that fetch_balance returns correct balance data."""
+    exchange = MockExchange()
+    balance = await exchange.fetch_balance('BTC')
+    assert balance['BTC'].free == 0.5
+
+# ❌ DON'T: Skip async testing
+def test_fetch_balance():
+    exchange = MockExchange()
+    balance = exchange.fetch_balance('BTC')  # This won't work for async
+```
+
+### Mock Usage
+```python
+# ✅ DO: Use proper mocking
+from unittest.mock import AsyncMock, patch
+
+@pytest.mark.asyncio
+async def test_fetch_ticker_with_mock():
+    """Test fetch_ticker with mocked API response."""
+    with patch('aiohttp.ClientSession.get') as mock_get:
+        mock_response = AsyncMock()
+        mock_response.json.return_value = {'symbol': 'BTC/USDT', 'price': 50000}
+        mock_get.return_value.__aenter__.return_value = mock_response
+        
+        exchange = BinanceExchange()
+        result = await exchange.fetch_ticker('BTC/USDT')
+        
+        assert result['symbol'] == 'BTC/USDT'
+        assert result['price'] == 50000
+```
+
+## 📚 Documentation Standards
+
+### Code Documentation
+- **Document all public APIs** with comprehensive docstrings
+- **Include parameter descriptions** and return types
+- **Document exceptions** that can be raised
+- **Provide usage examples** in docstrings
+- **Keep documentation up to date** with code changes
+
+### README Updates
+- **Update README** when adding new features
+- **Include installation instructions** for new dependencies
+- **Document configuration changes**
+- **Provide usage examples** for new functionality
+
+### API Documentation
+- **Document all endpoints** and their parameters
+- **Include request/response examples**
+- **Document error codes** and their meanings
+- **Provide authentication requirements**
+
+## 🔄 Pre-commit Hooks
+
+### Required Hooks
+```bash
+# Install pre-commit hooks
+pre-commit install
+
+# Run all hooks
+pre-commit run --all-files
+
+# Run specific hook
+pre-commit run black
+pre-commit run flake8
+pre-commit run mypy
+pre-commit run pytest
+```
+
+### Hook Configuration
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/psf/black
+    rev: 23.0.0
+    hooks:
+      - id: black
+        language_version: python3.12
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.5.1
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-all]
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: pytest
+        language: system
+        pass_filenames: false
+        always_run: true
+```
+
+## 📊 Quality Metrics
+
+### Required Metrics
+- **Code coverage**: Minimum 90% overall, 100% for new code
+- **Linting errors**: Zero errors allowed
+- **Type checking**: Zero MyPy errors allowed
+- **Test failures**: Zero test failures allowed
+- **Documentation coverage**: 100% for public APIs
+
+### Quality Gates
+```bash
+# Quality check script
+#!/bin/bash
+echo "🔍 Running quality checks..."
+
+echo "📝 Formatting with Black..."
+black --check . || exit 1
+
+echo "🧹 Linting with Flake8..."
+flake8 . || exit 1
+
+echo "🔍 Type checking with MyPy..."
+mypy . || exit 1
+
+echo "🧪 Running tests..."
+pytest --cov=src/crypto_bot --cov-report=term-missing || exit 1
+
+echo "✅ All quality checks passed!"
+```
+
+## 🚨 Quality Enforcement
+
+### Before Committing
+1. **Run Black** to format code
+2. **Run Flake8** to check linting
+3. **Run MyPy** to check types
+4. **Run Pytest** to run tests
+5. **Fix all issues** before committing
+
+### Before Creating PR
+1. **All quality checks pass**
+2. **Test coverage meets requirements**
+3. **Documentation is complete**
+4. **No warnings or errors**
+5. **Code follows project standards**
+
+### Continuous Integration
+- **CI/CD pipeline** runs all quality checks
+- **PRs are blocked** if quality checks fail
+- **Quality metrics** are tracked and reported
+- **Quality trends** are monitored over time
+
+## 📚 Reference Documentation
+
+### Configuration Files
+- [pyproject.toml](mdc:pyproject.toml) - Project configuration
+- [.pre-commit-config.yaml](mdc:.pre-commit-config.yaml) - Pre-commit hooks
+- [pytest.ini](mdc:pytest.ini) - Pytest configuration
+
+### Quality Tools
+- [Black Documentation](https://black.readthedocs.io/)
+- [Flake8 Documentation](https://flake8.pycqa.org/)
+- [MyPy Documentation](https://mypy.readthedocs.io/)
+- [Pytest Documentation](https://docs.pytest.org/)
+
+---
+
+**⚠️ CRITICAL:** Code quality standards are MANDATORY. Code that doesn't meet these standards will be rejected.

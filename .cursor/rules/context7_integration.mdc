@@ -1,0 +1,220 @@
+---
+description: Mandatory Context7 integration for code quality, best practices, and avoiding deprecated patterns
+globs: **/*.py, **/*.ts, **/*.js, **/*.md
+alwaysApply: true
+---
+
+# 🔍 Context7 Integration - MANDATORY
+
+## 🎯 Purpose
+Context7 is CRITICAL for ensuring code quality, using current syntax, and avoiding deprecated patterns. It must be used before implementing any new code or making significant changes.
+
+## 🚨 MANDATORY Usage Scenarios
+
+### Before Implementing New Features
+- **ALWAYS research** the latest best practices for the technology
+- **ALWAYS check** for deprecated patterns to avoid
+- **ALWAYS verify** current syntax and recommended approaches
+- **ALWAYS research** security considerations
+- **ALWAYS check** performance implications
+- **ALWAYS use Task Master research tool** for project-specific context
+
+### Before Using New Libraries or APIs
+- **ALWAYS verify** current version compatibility
+- **ALWAYS check** for breaking changes in recent versions
+- **ALWAYS research** migration guides if upgrading
+- **ALWAYS verify** security best practices
+
+### Before Refactoring Existing Code
+- **ALWAYS research** current patterns for the refactored code
+- **ALWAYS check** if the refactoring follows current best practices
+- **ALWAYS verify** that the refactoring doesn't introduce deprecated patterns
+
+## 🔍 Context7 Query Patterns
+
+### Python Development
+```bash
+# Before implementing async code:
+"What are the latest best practices for Python async/await in 2024? Any deprecated patterns to avoid?"
+
+# Before using SQLAlchemy:
+"What are the current best practices for SQLAlchemy 2.0+? Any deprecated patterns I should avoid?"
+
+# Before implementing API clients:
+"What are the current best practices for building HTTP API clients in Python? Security considerations?"
+
+# Before using Pydantic:
+"What are the latest Pydantic 2.0+ patterns? Any deprecated validation approaches?"
+```
+
+### Database and ORM
+```bash
+# Before database operations:
+"What are the current best practices for SQLAlchemy 2.0+ with async? Performance considerations?"
+
+# Before migration work:
+"What are the current Alembic best practices? Any deprecated migration patterns?"
+```
+
+### API and Web Development
+```bash
+# Before implementing REST APIs:
+"What are the current best practices for building REST APIs in Python? Security patterns?"
+
+# Before handling authentication:
+"What are the current best practices for API authentication in Python? JWT vs other methods?"
+```
+
+### Testing
+```bash
+# Before writing tests:
+"What are the current pytest best practices for async testing? Any deprecated fixtures?"
+
+# Before integration tests:
+"What are the current best practices for testing database operations? Mock strategies?"
+```
+
+## 📋 Context7 Workflow Integration
+
+### Step 1: Research Phase (MANDATORY)
+```bash
+# Before starting any new task:
+1. Use Context7 to research the technology/pattern
+2. Identify current best practices
+3. Identify deprecated patterns to avoid
+4. Note security considerations
+5. Note performance implications
+```
+
+### Step 2: Implementation Phase
+```bash
+# During implementation:
+1. Follow the researched best practices
+2. Avoid any identified deprecated patterns
+3. Implement security considerations
+4. Apply performance optimizations
+```
+
+### Step 3: Validation Phase
+```bash
+# After implementation:
+1. Use Context7 to verify the implementation follows current patterns
+2. Check if any improvements can be made
+3. Verify no deprecated patterns were used
+```
+
+## 🎯 Context7 Query Examples for This Project
+
+### Crypto Trading Bot Specific
+```bash
+# Before implementing exchange integrations:
+"What are the current best practices for cryptocurrency exchange API integration in Python? CCXT 4.x patterns?"
+
+# Before implementing trading logic:
+"What are the current best practices for implementing trading algorithms in Python? Risk management patterns?"
+
+# Before implementing data processing:
+"What are the current best practices for processing financial data with pandas? Performance considerations?"
+
+# Before implementing async operations:
+"What are the current best practices for async programming in Python financial applications? Error handling?"
+```
+
+### Architecture and Design
+```bash
+# Before implementing new services:
+"What are the current best practices for microservices architecture in Python? Domain-driven design patterns?"
+
+# Before implementing plugins:
+"What are the current best practices for plugin systems in Python? Dynamic loading patterns?"
+
+# Before implementing configuration:
+"What are the current best practices for configuration management in Python applications? Environment handling?"
+```
+
+## 🚨 Critical Context7 Rules
+
+### NEVER Skip Context7 Research
+- **❌ Don't implement** without researching current patterns
+- **❌ Don't assume** old patterns are still valid
+- **❌ Don't ignore** security considerations
+- **❌ Don't skip** performance implications
+
+### ALWAYS Use Context7
+- **✅ Research** before implementing new features
+- **✅ Verify** current best practices
+- **✅ Check** for deprecated patterns
+- **✅ Consider** security implications
+- **✅ Optimize** for performance
+
+## 📊 Context7 Quality Gates
+
+### Before Implementation
+- [ ] Context7 research completed
+- [ ] Current best practices identified
+- [ ] Deprecated patterns noted and avoided
+- [ ] Security considerations researched
+- [ ] Performance implications understood
+
+### During Implementation
+- [ ] Following researched best practices
+- [ ] Avoiding deprecated patterns
+- [ ] Implementing security measures
+- [ ] Applying performance optimizations
+
+### After Implementation
+- [ ] Context7 verification completed
+- [ ] Code follows current patterns
+- [ ] No deprecated patterns used
+- [ ] Security measures implemented
+- [ ] Performance optimized
+
+## 🔄 Integration with Development Workflow
+
+### Task Master Integration
+1. **Before starting any task**: Use Context7 + Task Master research tool
+2. **During task execution**: Follow researched best practices
+3. **After task completion**: Use Context7 to verify implementation
+4. **Log research findings**: Use `update_subtask` to document research results
+
+### Git Workflow Integration
+1. **Before committing**: Ensure Context7 research was completed
+2. **In commit messages**: Reference Context7 research if significant
+3. **In PR descriptions**: Mention Context7 research and findings
+
+### Code Review Integration
+1. **Reviewers should verify**: Context7 research was completed
+2. **Code should follow**: Researched best practices
+3. **No deprecated patterns**: Should be present in the code
+
+## 📚 Context7 Research Logging
+
+### Document Research Findings
+```markdown
+## Context7 Research Log
+
+### Technology: [Technology Name]
+### Date: [Date]
+### Query: [Context7 Query Used]
+
+#### Key Findings:
+- [Finding 1]
+- [Finding 2]
+- [Finding 3]
+
+#### Deprecated Patterns to Avoid:
+- [Pattern 1]
+- [Pattern 2]
+
+#### Security Considerations:
+- [Consideration 1]
+- [Consideration 2]
+
+#### Performance Implications:
+- [Implication 1]
+- [Implication 2]
+```
+
+---
+
+**⚠️ CRITICAL:** Context7 research is MANDATORY for all new code implementation. Skipping this step compromises code quality and project success.

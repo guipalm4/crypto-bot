@@ -1,0 +1,230 @@
+---
+description: Comprehensive development workflow enforcement including Git, Context7, linting, and GitHub templates
+globs: **/*
+alwaysApply: true
+---
+
+# 🚀 Development Workflow - MANDATORY ENFORCEMENT
+
+## 🎯 PRIORITY 1: Task Master Integration
+- **ALWAYS use Task Master for task management** - This is FUNDAMENTAL for project continuity
+- **NEVER bypass Task Master workflow** - All development must be tracked through tasks
+- **ALWAYS check current task status** before starting any work
+- **ALWAYS update task progress** as work progresses
+- **ALWAYS mark tasks as done** when completed
+
+## 🔄 Git Workflow - MANDATORY (from git_workflow.mdc)
+
+### Before ANY Development Work
+1. **Use Task Master to get next task**:
+   ```bash
+   # Use Task Master MCP tools or CLI
+   task-master next
+   # OR use MCP tool: next_task
+   ```
+
+2. **Check current branch** (only if Git is being used):
+   ```bash
+   git branch --show-current
+   # Must NOT be 'main' or 'master' if using Git
+   ```
+
+3. **If on main/master, STOP and create feature branch**:
+   ```bash
+   git checkout -b feature/task-X-description
+   ```
+
+### Development Process
+1. **Follow Task Master workflow** for all development
+2. **Use Task Master tools** for task management (MCP preferred)
+3. **Update task progress** regularly with `update_subtask`
+4. **Work in feature branches** (if using Git)
+5. **Commit frequently** with descriptive messages
+6. **Use conventional commit format**: `type(scope): description`
+7. **Push feature branch regularly** (if using Git)
+8. **Create Pull Request when work is complete** (if using Git)
+
+### Commit Message Format
+```bash
+# Examples:
+feat(plugins): implement exchange plugin system
+fix(database): correct connection timeout issue
+test(api): add integration tests for trading endpoints
+docs(readme): update installation instructions
+refactor(services): optimize order processing logic
+```
+
+## 🔍 Context7 Integration - MANDATORY
+
+### Before Implementing Any New Code
+1. **ALWAYS use Context7 to verify current syntax and best practices**
+2. **Check for deprecated patterns** before implementing
+3. **Verify library versions and compatibility**
+4. **Research latest patterns** for the technology being used
+5. **Use Task Master research tool** when available for project-specific context
+
+### Context7 Usage Pattern
+```bash
+# Before implementing new features, research:
+- Latest syntax for the technology
+- Deprecated patterns to avoid
+- Best practices for the specific use case
+- Security considerations
+- Performance optimizations
+- Project-specific context using Task Master research tool
+```
+
+### Task Master Research Integration
+```bash
+# Use Task Master research tool for project context
+# MCP Tool: research
+# CLI: task-master research
+# Include project files and task context for better results
+```
+
+### Example Context7 Queries
+- "What are the latest best practices for Python async/await in 2024?"
+- "Are there any deprecated patterns in SQLAlchemy 2.0+ that I should avoid?"
+- "What's the current recommended way to handle API rate limiting in Python?"
+- "What are the security best practices for handling API keys in Python applications?"
+
+## 🧹 Code Quality Enforcement
+
+### Linting and Formatting
+- **ALWAYS run linting** before committing
+- **ALWAYS format code** with Black
+- **ALWAYS check type hints** with MyPy
+- **ALWAYS fix all linting errors** before proceeding
+
+### Pre-commit Checks
+```bash
+# Run before every commit:
+black --check .
+flake8 .
+mypy .
+pytest
+```
+
+### Code Standards
+- **Follow PEP 8** for Python code
+- **Use type hints** for all functions and methods
+- **Write comprehensive docstrings** for all public APIs
+- **Follow project naming conventions**
+- **Use async/await** for I/O operations
+- **Implement proper error handling**
+
+## 📋 GitHub Templates - MANDATORY
+
+### Pull Request Template
+- **ALWAYS use the GitHub PR template** (.github/pull_request_template.md)
+- **Fill out ALL required sections**
+- **Include proper task references**
+- **Add screenshots/logs when applicable**
+- **Complete the security checklist**
+
+### Issue Templates
+- **Use appropriate issue template** for bug reports, features, etc.
+- **Include all required information**
+- **Link to related tasks in Task Master**
+
+## 🔧 Development Tools Integration
+
+### Required Tools Usage
+1. **Task Master**: Task management and progress tracking (PRIORITY 1)
+2. **Context7**: Research and best practices verification
+3. **GitHub CLI**: PR creation and management (if using Git)
+4. **Pre-commit hooks**: Code quality enforcement
+5. **Pytest**: Testing framework
+6. **Black**: Code formatting
+7. **Flake8**: Linting
+8. **MyPy**: Type checking
+
+### Task Master Tools (MCP Preferred)
+- **`get_tasks`**: List current tasks
+- **`next_task`**: Get next task to work on
+- **`get_task`**: Get specific task details
+- **`expand_task`**: Break down complex tasks
+- **`update_subtask`**: Log progress and findings
+- **`set_task_status`**: Mark tasks as done
+- **`research`**: Project-specific research with context
+
+## 🚨 Critical Enforcement Points
+
+### NEVER Do These Things
+1. **❌ Bypass Task Master workflow** (PRIORITY 1)
+2. **❌ Skip Task Master task management**
+3. **❌ Skip Context7 research for new code**
+4. **❌ Skip linting/formatting checks**
+5. **❌ Skip using GitHub templates** (if using Git)
+6. **❌ Skip testing new code**
+7. **❌ Skip updating task progress in Task Master**
+8. **❌ Commit directly to main/master** (if using Git)
+
+### ALWAYS Do These Things
+1. **✅ Use Task Master for all task management** (PRIORITY 1)
+2. **✅ Check current task status before starting**
+3. **✅ Research with Context7 before implementing**
+4. **✅ Use Task Master research tool for project context**
+5. **✅ Run all quality checks before committing**
+6. **✅ Update task progress with update_subtask**
+7. **✅ Mark tasks as done when completed**
+8. **✅ Use GitHub templates for PRs and issues** (if using Git)
+9. **✅ Write tests for new functionality**
+
+## 📊 Quality Gates
+
+### Before Creating PR (if using Git)
+- [ ] Task Master task updated with progress
+- [ ] All linting errors fixed
+- [ ] All tests passing
+- [ ] Code formatted with Black
+- [ ] Type hints added and MyPy clean
+- [ ] Context7 research completed
+- [ ] GitHub PR template filled out
+- [ ] Security checklist completed
+
+### Before Marking Task as Done
+- [ ] Task Master task updated with final progress
+- [ ] All implementation completed
+- [ ] All tests passing
+- [ ] Code quality checks passed
+- [ ] Documentation updated if needed
+- [ ] Task marked as done in Task Master
+
+## 🔄 Recovery Procedures
+
+### If Committed to Main by Mistake
+```bash
+# 1. Create feature branch at current commit
+git branch feature/task-X-fix
+
+# 2. Reset main to remote state
+git reset --hard origin/main
+
+# 3. Switch to feature branch
+git checkout feature/task-X-fix
+
+# 4. Push feature branch
+git push origin feature/task-X-fix
+
+# 5. Create PR
+gh pr create --title "[Task #X] Description" --body "Recovery from main commit" --base main
+```
+
+### If Quality Checks Fail
+1. **Fix all linting errors**
+2. **Format code with Black**
+3. **Fix type hints issues**
+4. **Run tests and fix failures**
+5. **Re-commit with fixes**
+
+## 📚 Reference Documentation
+
+- [Git Workflow Rules](mdc:.cursor/rules/git_workflow.mdc)
+- [Task Master Workflow](mdc:.cursor/rules/taskmaster/dev_workflow.mdc)
+- [GitHub PR Template](mdc:.github/pull_request_template.md)
+- [Project Configuration](mdc:pyproject.toml)
+
+---
+
+**⚠️ CRITICAL:** This workflow is MANDATORY and must be followed for ALL development work. Any deviation should be immediately corrected.
