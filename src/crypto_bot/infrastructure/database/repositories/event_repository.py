@@ -53,14 +53,26 @@ class EventRepository(BaseRepository[DomainEvent], IEventRepository):
             metadata=cast(dict | None, model.event_metadata),
         )
 
-    async def create(self, entity: DomainEvent) -> DomainEvent:
-        """Create a new domain event and return the stored model."""
+    async def create(  # type: ignore[override]
+        self, entity: DomainEventInterface
+    ) -> DomainEventInterface:
+        """Create a new domain event from interface and return the interface."""
         try:
-            # Convert interface to model
-            self._session.add(entity)
+            # Convert domain interface to database model
+            model = DomainEvent(
+                id=entity.event_id,
+                event_type=entity.event_type,
+                aggregate_id=entity.aggregate_id,
+                aggregate_type=entity.aggregate_type,
+                occurred_at=entity.occurred_at,
+                payload=entity.payload,
+                event_metadata=entity.metadata,
+            )
+            self._session.add(model)
             await self._session.flush()
-            await self._session.refresh(entity)
-            return entity
+            await self._session.refresh(model)
+            # Convert back to interface for return
+            return self._to_interface(model)
         except SQLAlchemyError as e:
             await self._session.rollback()
             raise RepositoryError(f"Failed to create domain event: {str(e)}") from e
