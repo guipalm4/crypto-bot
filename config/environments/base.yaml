@@ -29,11 +29,53 @@ trading:
   max_concurrent_trades: 5
   default_order_type: "limit"
   risk:
-    max_position_size_pct: 10.0
-    max_portfolio_risk_pct: 30.0
-    default_stop_loss_pct: 2.0
-    default_take_profit_pct: 5.0
-    max_drawdown_pct: 15.0
+    # Stop Loss Configuration
+    stop_loss:
+      enabled: true
+      percentage: 2.0  # 2% stop loss
+      cooldown_seconds: 60
+      trailing: false
+    
+    # Take Profit Configuration
+    take_profit:
+      enabled: true
+      percentage: 5.0  # 5% take profit
+      cooldown_seconds: 60
+      partial_close: false
+      partial_close_percentage: null
+    
+    # Exposure Limits Configuration
+    exposure_limit:
+      max_per_asset: 10000.0  # Max $10k per asset
+      max_per_exchange: 30000.0  # Max $30k per exchange
+      max_total: 50000.0  # Max $50k total exposure
+      base_currency: "USDT"
+    
+    # Trailing Stop Configuration
+    trailing_stop:
+      enabled: true
+      trailing_percentage: 3.0  # Trail 3% below peak
+      activation_percentage: 5.0  # Activate after 5% profit
+      update_interval_seconds: 5
+    
+    # Max Concurrent Trades Configuration
+    max_concurrent_trades:
+      max_trades: 5  # Maximum 5 concurrent trades
+      max_per_asset: 1  # Only 1 position per asset
+      max_per_exchange: 3  # Max 3 trades per exchange
+    
+    # Drawdown Control Configuration
+    drawdown_control:
+      max_drawdown_percentage: 15.0  # Max 15% drawdown
+      enable_emergency_exit: true
+      emergency_exit_percentage: 20.0  # Emergency exit at 20%
+      pause_trading_on_breach: true
+      calculation_period_days: 30
+    
+    # Risk Check Settings
+    risk_check_interval: 1.0  # Check every second
+    emergency_only_mode: false
+  
   execution:
     order_timeout_seconds: 30
     retry_attempts: 3
