@@ -13,8 +13,8 @@ from rich.text import Text
 console = Console()
 
 
-@click.group()
-@click.version_option(version="0.1.0", prog_name="Crypto Trading Bot")
+@click.group()  # type: ignore[misc]
+@click.version_option(version="0.1.0", prog_name="Crypto Trading Bot")  # type: ignore[misc]
 def main() -> None:
     """
     🚀 Crypto Trading Bot - Sistema automatizado de trading de criptomoedas
@@ -25,7 +25,7 @@ def main() -> None:
     pass
 
 
-@main.command()
+@main.command()  # type: ignore[misc]
 def version() -> None:
     """Mostra a versão do Crypto Trading Bot."""
     console.print(
@@ -37,7 +37,7 @@ def version() -> None:
     )
 
 
-@main.command()
+@main.command()  # type: ignore[misc]
 def status() -> None:
     """Mostra o status do sistema."""
     console.print(
@@ -49,8 +49,8 @@ def status() -> None:
     )
 
 
-@main.command()
-@click.option("--config", "-c", help="Caminho para o arquivo de configuração")
+@main.command()  # type: ignore[misc]
+@click.option("--config", "-c", help="Caminho para o arquivo de configuração")  # type: ignore[misc]
 def start(config: str | None) -> None:
     """Inicia o bot de trading."""
     console.print(
@@ -68,7 +68,7 @@ def start(config: str | None) -> None:
     console.print("✅ Bot iniciado com sucesso!")
 
 
-@main.command()
+@main.command()  # type: ignore[misc]
 def stop() -> None:
     """Para o bot de trading."""
     console.print(
@@ -83,7 +83,7 @@ def stop() -> None:
     console.print("✅ Bot parado com sucesso!")
 
 
-@main.command()
+@main.command()  # type: ignore[misc]
 def restart() -> None:
     """Reinicia o bot de trading."""
     console.print(
