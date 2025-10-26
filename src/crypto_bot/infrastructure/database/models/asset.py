@@ -21,11 +21,11 @@ if TYPE_CHECKING:
 class Asset(Base):
     """
     Asset model representing cryptocurrency assets.
-    
+
     Stores information about cryptocurrencies and fiat currencies
     that can be traded.
     """
-    
+
     # Primary key
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -33,7 +33,7 @@ class Asset(Base):
         default=uuid.uuid4,
         nullable=False,
     )
-    
+
     # Asset information
     symbol: Mapped[str] = mapped_column(
         String(20),
@@ -45,28 +45,28 @@ class Asset(Base):
         String(100),
         nullable=False,
     )
-    
+
     # Status
     is_active: Mapped[bool] = mapped_column(
         Boolean,
         default=True,
         nullable=False,
     )
-    
+
     # Additional metadata (decimals, contract address, etc.)
     metadata_json: Mapped[dict] = mapped_column(
         JSONB,
         default=dict,
         nullable=False,
     )
-    
+
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=datetime.utcnow,
         nullable=False,
     )
-    
+
     # Relationships
     base_pairs: Mapped[list["TradingPair"]] = relationship(
         "TradingPair",
@@ -80,4 +80,3 @@ class Asset(Base):
         back_populates="quote_asset",
         cascade="all, delete-orphan",
     )
-

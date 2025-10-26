@@ -6,7 +6,6 @@ This module serves as the main entry point for the Crypto Trading Bot applicatio
 It can be run directly with `python -m crypto_bot` or through the CLI.
 """
 
-import asyncio
 import sys
 from pathlib import Path
 

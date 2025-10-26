@@ -29,9 +29,7 @@ class TestAppConfig:
 
     def test_custom_values(self) -> None:
         """Test custom values are accepted."""
-        config = AppConfig(
-            name="Custom Bot", version="1.0.0", log_level="DEBUG"
-        )
+        config = AppConfig(name="Custom Bot", version="1.0.0", log_level="DEBUG")
         assert config.name == "Custom Bot"
         assert config.version == "1.0.0"
         assert config.log_level == "DEBUG"
@@ -295,4 +293,3 @@ class TestConfig:
         assert config.trading.max_concurrent_trades == 10
         assert config.exchanges.binance.enabled is True
         assert config.api.port == 9000
-

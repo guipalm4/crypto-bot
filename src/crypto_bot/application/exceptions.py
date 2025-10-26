@@ -43,4 +43,3 @@ class RateLimitExceeded(TradingException):
     """Raised when exchange rate limit is exceeded."""
 
     pass
-

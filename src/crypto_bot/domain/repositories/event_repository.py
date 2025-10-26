@@ -2,7 +2,6 @@
 
 from abc import abstractmethod
 from datetime import datetime
-from typing import List, Optional
 from uuid import UUID
 
 from crypto_bot.domain.repositories.base import IRepository
@@ -24,7 +23,7 @@ class DomainEvent:
         aggregate_type: str,
         occurred_at: datetime,
         payload: dict,
-        metadata: Optional[dict] = None,
+        metadata: dict | None = None,
     ):
         """
         Initialize domain event.
@@ -53,7 +52,7 @@ class IEventRepository(IRepository[DomainEvent]):
     @abstractmethod
     async def get_by_aggregate(
         self, aggregate_id: UUID, aggregate_type: str, skip: int = 0, limit: int = 1000
-    ) -> List[DomainEvent]:
+    ) -> list[DomainEvent]:
         """
         Get all events for a specific aggregate.
 
@@ -72,11 +71,11 @@ class IEventRepository(IRepository[DomainEvent]):
     async def get_by_event_type(
         self,
         event_type: str,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
         skip: int = 0,
         limit: int = 100,
-    ) -> List[DomainEvent]:
+    ) -> list[DomainEvent]:
         """
         Get events by type within an optional date range.
 
@@ -97,10 +96,10 @@ class IEventRepository(IRepository[DomainEvent]):
         self,
         start_date: datetime,
         end_date: datetime,
-        aggregate_type: Optional[str] = None,
+        aggregate_type: str | None = None,
         skip: int = 0,
         limit: int = 100,
-    ) -> List[DomainEvent]:
+    ) -> list[DomainEvent]:
         """
         Get events within a date range.
 
@@ -118,8 +117,8 @@ class IEventRepository(IRepository[DomainEvent]):
 
     @abstractmethod
     async def get_latest_events(
-        self, limit: int = 100, aggregate_type: Optional[str] = None
-    ) -> List[DomainEvent]:
+        self, limit: int = 100, aggregate_type: str | None = None
+    ) -> list[DomainEvent]:
         """
         Get the latest events.
 
@@ -131,4 +130,3 @@ class IEventRepository(IRepository[DomainEvent]):
             List of latest events, ordered by occurrence (descending).
         """
         pass
-

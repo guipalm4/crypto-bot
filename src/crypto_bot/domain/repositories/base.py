@@ -5,7 +5,7 @@ Defines the core CRUD operations that all repositories must implement.
 """
 
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar, List, Optional
+from typing import Generic, TypeVar
 from uuid import UUID
 
 T = TypeVar("T")
@@ -31,7 +31,7 @@ class IRepository(ABC, Generic[T]):
         pass
 
     @abstractmethod
-    async def get_by_id(self, entity_id: UUID) -> Optional[T]:
+    async def get_by_id(self, entity_id: UUID) -> T | None:
         """
         Retrieve an entity by its ID.
 
@@ -47,9 +47,7 @@ class IRepository(ABC, Generic[T]):
         pass
 
     @abstractmethod
-    async def get_all(
-        self, skip: int = 0, limit: int = 100
-    ) -> List[T]:
+    async def get_all(self, skip: int = 0, limit: int = 100) -> list[T]:
         """
         Retrieve all entities with pagination.
 
@@ -112,4 +110,3 @@ class IRepository(ABC, Generic[T]):
             RepositoryError: If check fails.
         """
         pass
-

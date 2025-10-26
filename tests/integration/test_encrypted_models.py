@@ -21,17 +21,17 @@ def setup_encryption() -> None:
 async def setup_database(setup_encryption: None) -> None:
     """Set up test database schema."""
     engine = db_engine.create_engine()
-    
+
     # Create all tables
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     yield
-    
+
     # Drop all tables after tests
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-    
+
     await db_engine.close()
 
 
@@ -54,15 +54,15 @@ async def test_store_encrypted_credentials(db_session: AsyncSession) -> None:
         api_secret_encrypted="my_secret_api_secret",
         is_active=True,
     )
-    
+
     db_session.add(exchange)
     await db_session.commit()
     await db_session.refresh(exchange)
-    
+
     # In application code, credentials should be decrypted automatically
     assert exchange.api_key_encrypted == "my_secret_api_key"
     assert exchange.api_secret_encrypted == "my_secret_api_secret"
-    
+
     # But in database, they should be encrypted (different from plaintext)
     result = await db_session.execute(
         text(
@@ -72,11 +72,11 @@ async def test_store_encrypted_credentials(db_session: AsyncSession) -> None:
         {"name": "binance_test"},
     )
     row = result.fetchone()
-    
+
     # Database values should be encrypted (not equal to plaintext)
     assert row[0] != "my_secret_api_key"
     assert row[1] != "my_secret_api_secret"
-    
+
     # And should not be empty
     assert row[0] is not None
     assert row[1] is not None
@@ -92,15 +92,15 @@ async def test_retrieve_decrypted_credentials(db_session: AsyncSession) -> None:
         api_key_encrypted="test_api_key",
         api_secret_encrypted="test_api_secret",
     )
-    
+
     db_session.add(exchange)
     await db_session.commit()
-    
+
     exchange_id = exchange.id
-    
+
     # Clear session to force database read
     await db_session.close()
-    
+
     # Retrieve exchange
     session_factory = db_engine.get_session_factory()
     async with session_factory() as new_session:
@@ -108,7 +108,7 @@ async def test_retrieve_decrypted_credentials(db_session: AsyncSession) -> None:
             select(Exchange).where(Exchange.id == exchange_id)
         )
         retrieved_exchange = result.scalar_one()
-        
+
         # Credentials should be automatically decrypted
         assert retrieved_exchange.api_key_encrypted == "test_api_key"
         assert retrieved_exchange.api_secret_encrypted == "test_api_secret"
@@ -124,16 +124,16 @@ async def test_update_encrypted_credentials(db_session: AsyncSession) -> None:
         api_key_encrypted="old_key",
         api_secret_encrypted="old_secret",
     )
-    
+
     db_session.add(exchange)
     await db_session.commit()
-    
+
     # Update credentials
     exchange.api_key_encrypted = "new_key"
     exchange.api_secret_encrypted = "new_secret"
     await db_session.commit()
     await db_session.refresh(exchange)
-    
+
     # Verify updated values
     assert exchange.api_key_encrypted == "new_key"
     assert exchange.api_secret_encrypted == "new_secret"
@@ -149,12 +149,11 @@ async def test_null_encrypted_fields(db_session: AsyncSession) -> None:
         api_key_encrypted=None,
         api_secret_encrypted=None,
     )
-    
+
     db_session.add(exchange)
     await db_session.commit()
     await db_session.refresh(exchange)
-    
+
     # Null values should remain null
     assert exchange.api_key_encrypted is None
     assert exchange.api_secret_encrypted is None
-

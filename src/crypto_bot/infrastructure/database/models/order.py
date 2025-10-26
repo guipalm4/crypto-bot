@@ -30,11 +30,11 @@ if TYPE_CHECKING:
 class Order(Base):
     """
     Order model representing trading orders.
-    
+
     Stores all information about buy and sell orders including
     their execution status and associated trades.
     """
-    
+
     # Primary key
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -42,7 +42,7 @@ class Order(Base):
         default=uuid.uuid4,
         nullable=False,
     )
-    
+
     # Foreign keys
     trading_pair_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -62,14 +62,14 @@ class Order(Base):
         nullable=True,
         index=True,
     )
-    
+
     # Exchange order ID
     exchange_order_id: Mapped[str | None] = mapped_column(
         String(100),
         nullable=True,
         index=True,
     )
-    
+
     # Order details
     type: Mapped[OrderType] = mapped_column(
         Enum(OrderType, native_enum=False, length=50),
@@ -85,7 +85,7 @@ class Order(Base):
         default=OrderStatus.PENDING,
         index=True,
     )
-    
+
     # Quantities and prices
     quantity: Mapped[float] = mapped_column(
         Numeric(precision=20, scale=8),
@@ -104,7 +104,7 @@ class Order(Base):
         default=0.0,
         nullable=False,
     )
-    
+
     # Fees
     fee: Mapped[float] = mapped_column(
         Numeric(precision=20, scale=8),
@@ -115,13 +115,13 @@ class Order(Base):
         String(20),
         nullable=True,
     )
-    
+
     # Reason for the order
     reason: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
     )
-    
+
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -139,7 +139,7 @@ class Order(Base):
         DateTime(timezone=True),
         nullable=True,
     )
-    
+
     # Relationships
     trading_pair: Mapped["TradingPair"] = relationship(
         "TradingPair",
@@ -168,4 +168,3 @@ class Order(Base):
         foreign_keys="Position.exit_order_id",
         back_populates="exit_order",
     )
-

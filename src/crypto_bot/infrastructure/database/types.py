@@ -13,20 +13,22 @@ from sqlalchemy.types import TypeDecorator
 from crypto_bot.domain.value_objects import Percentage, Price, Quantity, Timeframe
 
 
-class PriceType(TypeDecorator[Price]):
+class PriceType(TypeDecorator):
     """SQLAlchemy type for Price value object."""
-    
+
     impl = Numeric(precision=20, scale=8)
     cache_ok = True
-    
-    def process_bind_param(self, value: Price | None, dialect: Any) -> Decimal | None:
+
+    def process_bind_param(
+        self, value: Price | Decimal | str | None, dialect: Any
+    ) -> Decimal | None:
         """Convert Price to Decimal for database storage."""
         if value is None:
             return None
         if isinstance(value, Price):
             return value.value
         return Decimal(str(value))
-    
+
     def process_result_value(self, value: Decimal | None, dialect: Any) -> Price | None:
         """Convert Decimal from database to Price."""
         if value is None:
@@ -34,14 +36,14 @@ class PriceType(TypeDecorator[Price]):
         return Price(value)
 
 
-class QuantityType(TypeDecorator[Quantity]):
+class QuantityType(TypeDecorator):
     """SQLAlchemy type for Quantity value object."""
-    
+
     impl = Numeric(precision=20, scale=8)
     cache_ok = True
-    
+
     def process_bind_param(
-        self, value: Quantity | None, dialect: Any
+        self, value: Quantity | Decimal | str | None, dialect: Any
     ) -> Decimal | None:
         """Convert Quantity to Decimal for database storage."""
         if value is None:
@@ -49,7 +51,7 @@ class QuantityType(TypeDecorator[Quantity]):
         if isinstance(value, Quantity):
             return value.value
         return Decimal(str(value))
-    
+
     def process_result_value(
         self, value: Decimal | None, dialect: Any
     ) -> Quantity | None:
@@ -59,14 +61,14 @@ class QuantityType(TypeDecorator[Quantity]):
         return Quantity(value)
 
 
-class PercentageType(TypeDecorator[Percentage]):
+class PercentageType(TypeDecorator):
     """SQLAlchemy type for Percentage value object."""
-    
+
     impl = Numeric(precision=10, scale=4)
     cache_ok = True
-    
+
     def process_bind_param(
-        self, value: Percentage | None, dialect: Any
+        self, value: Percentage | Decimal | str | None, dialect: Any
     ) -> Decimal | None:
         """Convert Percentage to Decimal for database storage."""
         if value is None:
@@ -74,7 +76,7 @@ class PercentageType(TypeDecorator[Percentage]):
         if isinstance(value, Percentage):
             return value.value
         return Decimal(str(value))
-    
+
     def process_result_value(
         self, value: Decimal | None, dialect: Any
     ) -> Percentage | None:
@@ -84,25 +86,24 @@ class PercentageType(TypeDecorator[Percentage]):
         return Percentage(value)
 
 
-class TimeframeType(TypeDecorator[Timeframe]):
+class TimeframeType(TypeDecorator):
     """SQLAlchemy type for Timeframe value object."""
-    
+
     impl = String(10)
     cache_ok = True
-    
-    def process_bind_param(self, value: Timeframe | None, dialect: Any) -> str | None:
+
+    def process_bind_param(
+        self, value: Timeframe | str | None, dialect: Any
+    ) -> str | None:
         """Convert Timeframe to string for database storage."""
         if value is None:
             return None
         if isinstance(value, Timeframe):
             return value.value
         return str(value)
-    
-    def process_result_value(
-        self, value: str | None, dialect: Any
-    ) -> Timeframe | None:
+
+    def process_result_value(self, value: str | None, dialect: Any) -> Timeframe | None:
         """Convert string from database to Timeframe."""
         if value is None:
             return None
         return Timeframe(value)
-

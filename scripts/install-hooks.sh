@@ -39,6 +39,15 @@ for branch in "${protected_branches[@]}"; do
     fi
 done
 
+# Run quality gates before allowing push
+echo "🔍 Running quality checks (pre-push)..."
+if command -v pre-commit >/dev/null 2>&1; then
+    pre-commit run --all-files || exit 1
+else
+    echo "⚠️ pre-commit not found. Please install dev deps and run 'pre-commit install'."
+    exit 1
+fi
+
 exit 0
 EOF
 

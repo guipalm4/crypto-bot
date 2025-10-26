@@ -1,7 +1,6 @@
 """Trading pair repository interface."""
 
 from abc import abstractmethod
-from typing import List, Optional
 from uuid import UUID
 
 from crypto_bot.domain.repositories.base import IRepository
@@ -14,7 +13,7 @@ class ITradingPairRepository(IRepository[TradingPair]):
     @abstractmethod
     async def get_by_symbols(
         self, base_symbol: str, quote_symbol: str, exchange_id: UUID
-    ) -> Optional[TradingPair]:
+    ) -> TradingPair | None:
         """
         Get trading pair by base and quote symbols and exchange.
 
@@ -31,7 +30,7 @@ class ITradingPairRepository(IRepository[TradingPair]):
     @abstractmethod
     async def get_by_exchange(
         self, exchange_id: UUID, skip: int = 0, limit: int = 100
-    ) -> List[TradingPair]:
+    ) -> list[TradingPair]:
         """
         Get trading pairs by exchange.
 
@@ -48,7 +47,7 @@ class ITradingPairRepository(IRepository[TradingPair]):
     @abstractmethod
     async def get_by_base_asset(
         self, base_asset_id: UUID, skip: int = 0, limit: int = 100
-    ) -> List[TradingPair]:
+    ) -> list[TradingPair]:
         """
         Get trading pairs by base asset.
 
@@ -65,7 +64,7 @@ class ITradingPairRepository(IRepository[TradingPair]):
     @abstractmethod
     async def get_by_quote_asset(
         self, quote_asset_id: UUID, skip: int = 0, limit: int = 100
-    ) -> List[TradingPair]:
+    ) -> list[TradingPair]:
         """
         Get trading pairs by quote asset.
 
@@ -81,8 +80,8 @@ class ITradingPairRepository(IRepository[TradingPair]):
 
     @abstractmethod
     async def get_active_pairs(
-        self, exchange_id: Optional[UUID] = None, skip: int = 0, limit: int = 100
-    ) -> List[TradingPair]:
+        self, exchange_id: UUID | None = None, skip: int = 0, limit: int = 100
+    ) -> list[TradingPair]:
         """
         Get all active trading pairs.
 
@@ -95,4 +94,3 @@ class ITradingPairRepository(IRepository[TradingPair]):
             List of active trading pairs.
         """
         pass
-

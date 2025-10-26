@@ -11,7 +11,7 @@ from sqlalchemy.orm import DeclarativeBase, declared_attr
 
 class Base(DeclarativeBase):
     """Base class for all SQLAlchemy models."""
-    
+
     @declared_attr.directive
     def __tablename__(cls) -> str:
         """Generate table name from class name (snake_case)."""
@@ -20,23 +20,18 @@ class Base(DeclarativeBase):
         result = []
         for i, char in enumerate(name):
             if char.isupper() and i > 0:
-                result.append('_')
+                result.append("_")
             result.append(char.lower())
-        return ''.join(result)
-    
+        return "".join(result)
+
     def dict(self) -> dict[str, Any]:
         """Convert model instance to dictionary."""
         return {
-            column.name: getattr(self, column.name)
-            for column in self.__table__.columns
+            column.name: getattr(self, column.name) for column in self.__table__.columns
         }
-    
+
     def __repr__(self) -> str:
         """String representation of the model."""
         class_name = self.__class__.__name__
-        attrs = ', '.join(
-            f'{k}={v!r}' 
-            for k, v in self.dict().items()
-        )
-        return f'{class_name}({attrs})'
-
+        attrs = ", ".join(f"{k}={v!r}" for k, v in self.dict().items())
+        return f"{class_name}({attrs})"

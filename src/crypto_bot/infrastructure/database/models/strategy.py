@@ -22,10 +22,10 @@ if TYPE_CHECKING:
 class Strategy(Base):
     """
     Strategy model representing trading strategies.
-    
+
     Stores strategy configuration and parameters.
     """
-    
+
     # Primary key
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -33,7 +33,7 @@ class Strategy(Base):
         default=uuid.uuid4,
         nullable=False,
     )
-    
+
     # Strategy information
     name: Mapped[str] = mapped_column(
         String(100),
@@ -49,21 +49,21 @@ class Strategy(Base):
         Text,
         nullable=True,
     )
-    
+
     # Strategy parameters
     parameters_json: Mapped[dict] = mapped_column(
         JSONB,
         default=dict,
         nullable=False,
     )
-    
+
     # Status
     is_active: Mapped[bool] = mapped_column(
         Boolean,
         default=True,
         nullable=False,
     )
-    
+
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -76,7 +76,7 @@ class Strategy(Base):
         onupdate=datetime.utcnow,
         nullable=False,
     )
-    
+
     # Relationships
     orders: Mapped[list["Order"]] = relationship(
         "Order",
@@ -88,4 +88,3 @@ class Strategy(Base):
         back_populates="strategy",
         cascade="all, delete-orphan",
     )
-

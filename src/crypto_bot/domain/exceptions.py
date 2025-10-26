@@ -41,10 +41,7 @@ class DuplicateEntityError(RepositoryError):
             field: Field that caused the duplicate (e.g., 'name').
             value: Value that was duplicated.
         """
-        super().__init__(
-            f"{entity_type} with {field}='{value}' already exists"
-        )
+        super().__init__(f"{entity_type} with {field}='{value}' already exists")
         self.entity_type = entity_type
         self.field = field
         self.value = value
-

@@ -1,13 +1,11 @@
 """Exchange repository implementation."""
 
-from typing import List, Optional
-
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from crypto_bot.domain.repositories.exchange_repository import IExchangeRepository
 from crypto_bot.domain.exceptions import RepositoryError
+from crypto_bot.domain.repositories.exchange_repository import IExchangeRepository
 from crypto_bot.infrastructure.database.models import Exchange
 from crypto_bot.infrastructure.database.repositories.base_repository import (
     BaseRepository,
@@ -26,7 +24,7 @@ class ExchangeRepository(BaseRepository[Exchange], IExchangeRepository):
         """
         super().__init__(session, Exchange)
 
-    async def get_by_name(self, name: str) -> Optional[Exchange]:
+    async def get_by_name(self, name: str) -> Exchange | None:
         """Get exchange by name."""
         try:
             stmt = select(Exchange).where(Exchange.name == name)
@@ -39,7 +37,7 @@ class ExchangeRepository(BaseRepository[Exchange], IExchangeRepository):
 
     async def get_active_exchanges(
         self, skip: int = 0, limit: int = 100
-    ) -> List[Exchange]:
+    ) -> list[Exchange]:
         """Get all active exchanges."""
         try:
             stmt = (
@@ -56,7 +54,7 @@ class ExchangeRepository(BaseRepository[Exchange], IExchangeRepository):
 
     async def get_testnet_exchanges(
         self, skip: int = 0, limit: int = 100
-    ) -> List[Exchange]:
+    ) -> list[Exchange]:
         """Get all testnet exchanges."""
         try:
             stmt = (
@@ -70,4 +68,3 @@ class ExchangeRepository(BaseRepository[Exchange], IExchangeRepository):
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise RepositoryError(f"Failed to get testnet exchanges: {str(e)}") from e
-

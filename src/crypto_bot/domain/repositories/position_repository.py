@@ -1,7 +1,6 @@
 """Position repository interface."""
 
 from abc import abstractmethod
-from typing import List, Optional
 from uuid import UUID
 
 from crypto_bot.domain.repositories.base import IRepository
@@ -14,7 +13,7 @@ class IPositionRepository(IRepository[Position]):
     @abstractmethod
     async def get_by_status(
         self, status: PositionStatus, skip: int = 0, limit: int = 100
-    ) -> List[Position]:
+    ) -> list[Position]:
         """
         Get positions by status.
 
@@ -31,7 +30,7 @@ class IPositionRepository(IRepository[Position]):
     @abstractmethod
     async def get_by_trading_pair(
         self, trading_pair_id: UUID, skip: int = 0, limit: int = 100
-    ) -> List[Position]:
+    ) -> list[Position]:
         """
         Get positions by trading pair.
 
@@ -48,7 +47,7 @@ class IPositionRepository(IRepository[Position]):
     @abstractmethod
     async def get_by_strategy(
         self, strategy_id: UUID, skip: int = 0, limit: int = 100
-    ) -> List[Position]:
+    ) -> list[Position]:
         """
         Get positions by strategy.
 
@@ -65,11 +64,11 @@ class IPositionRepository(IRepository[Position]):
     @abstractmethod
     async def get_open_positions(
         self,
-        exchange_id: Optional[UUID] = None,
-        trading_pair_id: Optional[UUID] = None,
+        exchange_id: UUID | None = None,
+        trading_pair_id: UUID | None = None,
         skip: int = 0,
         limit: int = 100,
-    ) -> List[Position]:
+    ) -> list[Position]:
         """
         Get all open positions.
 
@@ -85,7 +84,7 @@ class IPositionRepository(IRepository[Position]):
         pass
 
     @abstractmethod
-    async def get_by_entry_order(self, entry_order_id: UUID) -> Optional[Position]:
+    async def get_by_entry_order(self, entry_order_id: UUID) -> Position | None:
         """
         Get position by entry order.
 
@@ -96,4 +95,3 @@ class IPositionRepository(IRepository[Position]):
             The position if found, None otherwise.
         """
         pass
-

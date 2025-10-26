@@ -4,19 +4,19 @@ Base repository implementation using SQLAlchemy ORM.
 Provides common CRUD operations for all repositories.
 """
 
-from typing import Generic, TypeVar, Type, List, Optional
+from typing import Any, Generic, TypeVar, cast
 from uuid import UUID
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from crypto_bot.domain.repositories.base import IRepository
 from crypto_bot.domain.exceptions import (
-    RepositoryError,
-    EntityNotFoundError,
     DuplicateEntityError,
+    EntityNotFoundError,
+    RepositoryError,
 )
+from crypto_bot.domain.repositories.base import IRepository
 from crypto_bot.infrastructure.database.base import Base
 
 T = TypeVar("T", bound=Base)
@@ -25,7 +25,7 @@ T = TypeVar("T", bound=Base)
 class BaseRepository(IRepository[T], Generic[T]):
     """Base repository with common CRUD operations using SQLAlchemy."""
 
-    def __init__(self, session: AsyncSession, model_class: Type[T]):
+    def __init__(self, session: AsyncSession, model_class: type[T]):
         """
         Initialize repository.
 
@@ -74,7 +74,7 @@ class BaseRepository(IRepository[T], Generic[T]):
                 f"Failed to create {self._model_class.__name__}: {str(e)}"
             ) from e
 
-    async def get_by_id(self, entity_id: UUID) -> Optional[T]:
+    async def get_by_id(self, entity_id: UUID) -> T | None:
         """
         Retrieve an entity by its ID.
 
@@ -95,7 +95,7 @@ class BaseRepository(IRepository[T], Generic[T]):
                 f"Failed to get {self._model_class.__name__} by ID {entity_id}: {str(e)}"
             ) from e
 
-    async def get_all(self, skip: int = 0, limit: int = 100) -> List[T]:
+    async def get_all(self, skip: int = 0, limit: int = 100) -> list[T]:
         """
         Retrieve all entities with pagination.
 
@@ -134,11 +134,13 @@ class BaseRepository(IRepository[T], Generic[T]):
         """
         try:
             # Check if entity exists
-            existing = await self.get_by_id(entity.id)  # type: ignore
+            # entity.id is expected on SQLAlchemy models
+            entity_id = cast(UUID, cast(Any, entity).id)
+            existing = await self.get_by_id(entity_id)
             if not existing:
                 raise EntityNotFoundError(
                     entity_type=self._model_class.__name__,
-                    entity_id=str(entity.id),  # type: ignore
+                    entity_id=str(entity_id),
                 )
 
             # Merge changes
@@ -201,4 +203,3 @@ class BaseRepository(IRepository[T], Generic[T]):
             raise RepositoryError(
                 f"Failed to check existence of {self._model_class.__name__} {entity_id}: {str(e)}"
             ) from e
-

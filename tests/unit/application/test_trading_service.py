@@ -9,9 +9,9 @@ from datetime import datetime
 from decimal import Decimal
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import ccxt.async_support as ccxt
 import pytest
 import pytest_asyncio
-import ccxt.async_support as ccxt
 
 from crypto_bot.application.dtos.order import (
     CancelOrderRequest,
@@ -220,6 +220,7 @@ class TestCreateOrder:
         self, trading_service: TradingService, mock_exchange: MagicMock
     ) -> None:
         """Test order creation timeout."""
+
         # Arrange
         async def slow_create(*args, **kwargs):
             await asyncio.sleep(5)
@@ -295,18 +296,14 @@ class TestCancelOrder:
 
         # Assert
         assert order.status == OrderStatus.CANCELED
-        mock_exchange.cancel_order.assert_called_once_with(
-            "12345", "BTC/USDT", {}
-        )
+        mock_exchange.cancel_order.assert_called_once_with("12345", "BTC/USDT", {})
 
     async def test_cancel_order_not_found(
         self, trading_service: TradingService, mock_exchange: MagicMock
     ) -> None:
         """Test canceling non-existent order."""
         # Arrange
-        mock_exchange.cancel_order.side_effect = ccxt.OrderNotFound(
-            "Order not found"
-        )
+        mock_exchange.cancel_order.side_effect = ccxt.OrderNotFound("Order not found")
 
         request = CancelOrderRequest(
             exchange="binance", order_id="99999", symbol="BTC/USDT"
@@ -352,9 +349,7 @@ class TestGetOrder:
         )
 
         # Act
-        status = await trading_service.get_order_status(
-            "binance", "12345", "BTC/USDT"
-        )
+        status = await trading_service.get_order_status("binance", "12345", "BTC/USDT")
 
         # Assert
         assert status.order_id == "12345"
@@ -469,9 +464,7 @@ class TestCancelAllOrders:
         )
 
         # Act
-        canceled = await trading_service.cancel_all_orders(
-            "binance", "BTC/USDT"
-        )
+        canceled = await trading_service.cancel_all_orders("binance", "BTC/USDT")
 
         # Assert
         assert len(canceled) == 2
@@ -509,9 +502,7 @@ class TestErrorHandling:
     ) -> None:
         """Test handling network errors."""
         # Arrange
-        mock_exchange.fetch_order.side_effect = ccxt.NetworkError(
-            "Connection failed"
-        )
+        mock_exchange.fetch_order.side_effect = ccxt.NetworkError("Connection failed")
 
         # Act & Assert
         with pytest.raises(NetworkError):
@@ -522,11 +513,8 @@ class TestErrorHandling:
     ) -> None:
         """Test handling generic exchange errors."""
         # Arrange
-        mock_exchange.fetch_balance.side_effect = ccxt.ExchangeError(
-            "Exchange error"
-        )
+        mock_exchange.fetch_balance.side_effect = ccxt.ExchangeError("Exchange error")
 
         # Act & Assert
         with pytest.raises(ExchangeError):
             await trading_service.get_balance("binance")
-

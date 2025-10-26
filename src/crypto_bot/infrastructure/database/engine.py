@@ -4,7 +4,7 @@ Database Engine Configuration
 This module provides async SQLAlchemy engine configuration using asyncpg.
 """
 
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -18,12 +18,12 @@ from crypto_bot.config.settings import settings
 
 class DatabaseEngine:
     """Async database engine manager."""
-    
+
     def __init__(self) -> None:
         """Initialize database engine."""
         self._engine: AsyncEngine | None = None
         self._session_factory: async_sessionmaker[AsyncSession] | None = None
-    
+
     def create_engine(self) -> AsyncEngine:
         """Create async database engine with asyncpg driver."""
         if self._engine is None:
@@ -33,7 +33,7 @@ class DatabaseEngine:
                 database_url = database_url.replace(
                     "postgresql://", "postgresql+asyncpg://", 1
                 )
-            
+
             self._engine = create_async_engine(
                 database_url,
                 echo=settings.debug,
@@ -43,7 +43,7 @@ class DatabaseEngine:
                 max_overflow=10,
             )
         return self._engine
-    
+
     def get_session_factory(self) -> async_sessionmaker[AsyncSession]:
         """Get async session factory."""
         if self._session_factory is None:
@@ -56,11 +56,11 @@ class DatabaseEngine:
                 autocommit=False,
             )
         return self._session_factory
-    
+
     async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
         """
         Get async database session.
-        
+
         Yields:
             AsyncSession: Database session
         """
@@ -70,7 +70,7 @@ class DatabaseEngine:
                 yield session
             finally:
                 await session.close()
-    
+
     async def close(self) -> None:
         """Close database engine and connections."""
         if self._engine is not None:
@@ -86,15 +86,14 @@ db_engine = DatabaseEngine()
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     """
     Dependency function to get database session.
-    
+
     Usage:
         async with get_db_session() as session:
             # Use session here
             ...
-    
+
     Yields:
         AsyncSession: Database session
     """
     async for session in db_engine.get_session():
         yield session
-

@@ -1,8 +1,9 @@
 """Domain Event model for event sourcing."""
 
-from datetime import datetime
-from sqlalchemy import Column, String, DateTime, Text
-from sqlalchemy.dialects.postgresql import JSON, UUID as PG_UUID
+from sqlalchemy import Column, DateTime, String
+from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+from sqlalchemy.orm import declared_attr
 from sqlalchemy.sql import func
 
 from crypto_bot.infrastructure.database.base import Base
@@ -15,7 +16,9 @@ class DomainEvent(Base):
     Stores all domain events for audit trail and event replay.
     """
 
-    __tablename__ = "domain_event"
+    @declared_attr.directive
+    def __tablename__(cls) -> str:
+        return "domain_event"
 
     id = Column(
         PG_UUID(as_uuid=True),
@@ -41,4 +44,3 @@ class DomainEvent(Base):
             f"<DomainEvent(id={self.id}, event_type={self.event_type}, "
             f"aggregate_id={self.aggregate_id}, occurred_at={self.occurred_at})>"
         )
-

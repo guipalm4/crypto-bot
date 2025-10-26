@@ -21,10 +21,10 @@ if TYPE_CHECKING:
 class Trade(Base):
     """
     Trade model representing executed trades.
-    
+
     A trade is the execution of an order or part of an order.
     """
-    
+
     # Primary key
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -32,7 +32,7 @@ class Trade(Base):
         default=uuid.uuid4,
         nullable=False,
     )
-    
+
     # Foreign keys
     order_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -40,14 +40,14 @@ class Trade(Base):
         nullable=False,
         index=True,
     )
-    
+
     # Exchange trade ID
     exchange_trade_id: Mapped[str | None] = mapped_column(
         String(100),
         nullable=True,
         index=True,
     )
-    
+
     # Trade details
     price: Mapped[float] = mapped_column(
         Numeric(precision=20, scale=8),
@@ -62,7 +62,7 @@ class Trade(Base):
         default=0.0,
         nullable=False,
     )
-    
+
     # Timestamp
     timestamp: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -70,10 +70,9 @@ class Trade(Base):
         nullable=False,
         index=True,
     )
-    
+
     # Relationships
     order: Mapped["Order"] = relationship(
         "Order",
         back_populates="trades",
     )
-

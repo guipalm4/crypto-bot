@@ -2,7 +2,6 @@
 
 from abc import abstractmethod
 from datetime import datetime
-from typing import List, Optional
 from uuid import UUID
 
 from crypto_bot.domain.repositories.base import IRepository
@@ -15,7 +14,7 @@ class ITradeRepository(IRepository[Trade]):
     @abstractmethod
     async def get_by_order(
         self, order_id: UUID, skip: int = 0, limit: int = 100
-    ) -> List[Trade]:
+    ) -> list[Trade]:
         """
         Get trades by order.
 
@@ -30,9 +29,7 @@ class ITradeRepository(IRepository[Trade]):
         pass
 
     @abstractmethod
-    async def get_by_exchange_trade_id(
-        self, exchange_trade_id: str
-    ) -> Optional[Trade]:
+    async def get_by_exchange_trade_id(self, exchange_trade_id: str) -> Trade | None:
         """
         Get trade by exchange trade ID.
 
@@ -51,7 +48,7 @@ class ITradeRepository(IRepository[Trade]):
         end_date: datetime,
         skip: int = 0,
         limit: int = 100,
-    ) -> List[Trade]:
+    ) -> list[Trade]:
         """
         Get trades within a date range.
 
@@ -65,4 +62,3 @@ class ITradeRepository(IRepository[Trade]):
             List of trades within the specified date range.
         """
         pass
-

@@ -9,39 +9,40 @@ import os
 # Set test encryption key BEFORE importing any application modules
 os.environ["ENCRYPTION_KEY"] = "test_encryption_key_32_bytes_long!!"
 
+from datetime import UTC, datetime, timezone
+from decimal import Decimal
+from uuid import uuid4
+
 import pytest
 import pytest_asyncio
-from uuid import uuid4
-from decimal import Decimal
-from datetime import datetime, timezone
 
+from crypto_bot.application.services.event_service import EventService
 from crypto_bot.infrastructure.database import Base, get_db_session
 from crypto_bot.infrastructure.database.engine import db_engine
 from crypto_bot.infrastructure.database.models import (
-    Exchange,
     Asset,
-    TradingPair,
+    Exchange,
     Order,
-    Trade,
-    Position,
-    Strategy,
-    OrderType,
     OrderSide,
     OrderStatus,
+    OrderType,
+    Position,
     PositionSide,
     PositionStatus,
+    Strategy,
+    Trade,
+    TradingPair,
 )
 from crypto_bot.infrastructure.database.repositories import (
-    ExchangeRepository,
     AssetRepository,
-    TradingPairRepository,
+    EventRepository,
+    ExchangeRepository,
     OrderRepository,
-    TradeRepository,
     PositionRepository,
     StrategyRepository,
-    EventRepository,
+    TradeRepository,
+    TradingPairRepository,
 )
-from crypto_bot.application.services.event_service import EventService
 
 
 @pytest_asyncio.fixture(scope="function")
@@ -50,14 +51,14 @@ async def setup_database():
     # Reset engine to avoid event loop issues
     await db_engine.close()
     engine = db_engine.create_engine()
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
     yield
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-    
+
     # Clean up engine
     await db_engine.close()
 
@@ -403,7 +404,7 @@ class TestFullTradingFlow:
             quantity=Decimal("1.0"),
             price=Decimal("50000.00"),
             fee=Decimal("50.00"),
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         await trade_repo.create(trade)
 
@@ -432,4 +433,3 @@ class TestFullTradingFlow:
         )
         assert state["status"] == "filled"
         assert state["events_count"] == 2
-

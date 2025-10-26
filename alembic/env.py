@@ -39,19 +39,20 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 # Override sqlalchemy.url with settings value
-config.set_main_option("sqlalchemy.url", settings.database_url.replace(
-    "postgresql://", "postgresql+asyncpg://", 1
-))
+config.set_main_option(
+    "sqlalchemy.url",
+    settings.database_url.replace("postgresql://", "postgresql+asyncpg://", 1),
+)
 
 
 def run_migrations_offline() -> None:
     """
     Run migrations in 'offline' mode.
-    
+
     This configures the context with just a URL and not an Engine,
     though an Engine is acceptable here as well. By skipping the Engine
     creation we don't even need a DBAPI to be available.
-    
+
     Calls to context.execute() here emit the given string to the script output.
     """
     url = config.get_main_option("sqlalchemy.url")
@@ -63,7 +64,7 @@ def run_migrations_offline() -> None:
         compare_type=True,
         compare_server_default=True,
     )
-    
+
     with context.begin_transaction():
         context.run_migrations()
 
@@ -76,7 +77,7 @@ def do_run_migrations(connection: Connection) -> None:
         compare_type=True,
         compare_server_default=True,
     )
-    
+
     with context.begin_transaction():
         context.run_migrations()
 
@@ -84,7 +85,7 @@ def do_run_migrations(connection: Connection) -> None:
 async def run_async_migrations() -> None:
     """
     Run migrations in async mode.
-    
+
     In this scenario we need to create an Engine and associate a connection
     with the context.
     """
@@ -93,10 +94,10 @@ async def run_async_migrations() -> None:
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
-    
+
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
-    
+
     await connectable.dispose()
 
 
