@@ -3,6 +3,7 @@ Integration tests for encrypted database fields.
 """
 
 import pytest
+import pytest_asyncio
 from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,7 +18,7 @@ def setup_encryption() -> None:
     initialize_encryption_service("test_encryption_key_12345")
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def setup_database(setup_encryption: None) -> None:
     """Set up test database schema."""
     engine = db_engine.create_engine()
@@ -35,7 +36,7 @@ async def setup_database(setup_encryption: None) -> None:
     await db_engine.close()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def db_session(setup_database: None) -> AsyncSession:
     """Get database session for tests."""
     session_factory = db_engine.get_session_factory()
