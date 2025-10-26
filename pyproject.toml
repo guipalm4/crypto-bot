@@ -115,6 +115,8 @@ known-first-party = ["crypto_bot"]
 
 
 # MyPy configuration
+# Note: SQLAlchemy 2.0+ includes built-in type stubs, no additional stubs needed
+# asyncpg and other PostgreSQL-specific libraries are handled via asyncpg's own types
 [tool.mypy]
 python_version = "3.12"
 files = ["src"]
@@ -126,23 +128,28 @@ warn_unused_configs = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
 check_untyped_defs = true
-disallow_untyped_decorators = false
+disallow_untyped_decorators = false  # TODO: Fix Click decorators (P1)
 no_implicit_optional = true
 warn_redundant_casts = true
-warn_unused_ignores = false
+warn_unused_ignores = false  # TODO: Enable after auditing type ignores (P2)
 warn_no_return = true
 warn_unreachable = true
 strict_equality = true
-ignore_missing_imports = true
+ignore_missing_imports = true  # Global ignore for missing stubs
 
 [[tool.mypy.overrides]]
+# Libraries without stubs - these are intentionally ignored
 module = [
     "ccxt.*",
     "pandas.*",
     "numpy.*",
-    "yaml",
 ]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# PyYAML - has stubs available
+module = ["yaml"]
+# No ignore_missing_imports here - uses types-PyYAML from requirements-dev.txt
 
 # Pytest configuration
 [tool.pytest.ini_options]

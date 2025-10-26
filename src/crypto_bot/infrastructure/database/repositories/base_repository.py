@@ -4,7 +4,7 @@ Base repository implementation using SQLAlchemy ORM.
 Provides common CRUD operations for all repositories.
 """
 
-from typing import Any, Generic, TypeVar, cast
+from typing import Generic, Protocol, TypeVar
 from uuid import UUID
 
 from sqlalchemy import select
@@ -19,7 +19,14 @@ from crypto_bot.domain.exceptions import (
 from crypto_bot.domain.repositories.base import IRepository
 from crypto_bot.infrastructure.database.base import Base
 
-T = TypeVar("T", bound=Base)
+
+class EntityWithId(Protocol):
+    """Protocol for entities that have an ID field."""
+
+    id: UUID
+
+
+T = TypeVar("T", bound=Base, covariant=False)
 
 
 class BaseRepository(IRepository[T], Generic[T]):
@@ -123,7 +130,7 @@ class BaseRepository(IRepository[T], Generic[T]):
         Update an existing entity.
 
         Args:
-            entity: The entity with updated fields.
+            entity: The entity with updated fields. Must have an 'id' attribute.
 
         Returns:
             The updated entity.
@@ -131,11 +138,19 @@ class BaseRepository(IRepository[T], Generic[T]):
         Raises:
             EntityNotFoundError: If entity not found.
             RepositoryError: If update fails.
+
+        Note:
+            This method expects entity to have an 'id' attribute.
+            All SQLAlchemy models inheriting from Base should have this attribute.
         """
         try:
-            # Check if entity exists
-            # entity.id is expected on SQLAlchemy models
-            entity_id = cast(UUID, cast(Any, entity).id)
+            # Type safety: Access ID directly since MyPy can't verify
+            # that all Base subclasses have 'id' attribute at compile time
+            entity_id = entity.id  # type: ignore[attr-defined]
+            if not isinstance(entity_id, UUID):
+                raise RepositoryError(
+                    f"Entity {self._model_class.__name__} must have an 'id' attribute of type UUID"
+                )
             existing = await self.get_by_id(entity_id)
             if not existing:
                 raise EntityNotFoundError(
