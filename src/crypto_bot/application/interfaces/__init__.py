@@ -1,7 +1,7 @@
 """
-Application layer interfaces.
+Application interfaces for cross-layer communication.
 """
 
-from crypto_bot.application.interfaces.trading_service import ITradingService
+from crypto_bot.application.interfaces.trading_engine import TradingEngineInterface
 
-__all__ = ["ITradingService"]
+__all__ = ["TradingEngineInterface"]
