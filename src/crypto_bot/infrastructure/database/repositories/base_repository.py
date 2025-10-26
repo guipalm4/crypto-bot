@@ -146,7 +146,7 @@ class BaseRepository(IRepository[T], Generic[T]):
         try:
             # Type safety: Access ID directly since MyPy can't verify
             # that all Base subclasses have 'id' attribute at compile time
-            entity_id = entity.id  # type: ignore[attr-defined]
+            entity_id = entity.id
             if not isinstance(entity_id, UUID):
                 raise RepositoryError(
                     f"Entity {self._model_class.__name__} must have an 'id' attribute of type UUID"
