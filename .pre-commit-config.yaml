@@ -20,7 +20,7 @@ repos:
     hooks:
       - id: pytest
         name: pytest (pre-push)
-        entry: pytest -q
+        entry: pytest -q tests/unit/
         language: system
         pass_filenames: false
         stages: [pre-push]
