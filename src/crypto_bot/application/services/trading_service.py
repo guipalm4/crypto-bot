@@ -321,7 +321,7 @@ class TradingService(ITradingService):
                     symbol=request.symbol,
                     side=request.side.value,
                     amount=float(request.quantity),
-                    price=float(request.price),  # type: ignore[arg-type]
+                    price=float(request.price) if request.price is not None else 0.0,
                     params=params,
                 )
 
