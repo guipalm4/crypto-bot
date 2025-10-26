@@ -19,3 +19,6 @@ pre-commit>=3.0.0
 # Testing utilities
 faker>=20.0.0
 freezegun>=1.2.0
+
+# Type stubs for MyPy
+types-PyYAML>=6.0.0
