@@ -130,13 +130,13 @@ class TestConfigLoader:
         """Test deep merge of nested dictionaries."""
         loader = ConfigLoader(config_dir=temp_config_dir, env="development")
 
-        base: Dict[str, Any] = {
+        base: dict[str, Any] = {
             "a": 1,
             "b": {"c": 2, "d": 3},
             "e": {"f": {"g": 4}},
         }
 
-        override: Dict[str, Any] = {
+        override: dict[str, Any] = {
             "b": {"c": 10},
             "e": {"f": {"h": 5}},
             "i": 6,
@@ -161,9 +161,7 @@ class TestConfigLoader:
         with pytest.raises(FileNotFoundError):
             loader.load()
 
-    def test_missing_environment_config(
-        self, temp_config_dir: Path
-    ) -> None:
+    def test_missing_environment_config(self, temp_config_dir: Path) -> None:
         """Test that missing environment config falls back to base."""
         # Create staging loader without staging.yaml
         loader = ConfigLoader(config_dir=temp_config_dir, env="staging")
@@ -188,7 +186,7 @@ class TestConfigLoader:
         env_dir = temp_config_dir / "environments"
         with open(env_dir / "base.yaml", "w") as f:
             yaml.dump(invalid_config, f)
-        
+
         # Remove development.yaml so it doesn't override
         dev_file = env_dir / "development.yaml"
         if dev_file.exists():
@@ -234,13 +232,13 @@ class TestEdgeCases:
         """Test handling of empty YAML file."""
         # Ensure ENCRYPTION_KEY is not set
         monkeypatch.delenv("ENCRYPTION_KEY", raising=False)
-        
+
         env_dir = temp_config_dir / "environments"
 
         # Create empty base config
         with open(env_dir / "base.yaml", "w") as f:
             f.write("")
-        
+
         # Remove development.yaml as well
         dev_file = env_dir / "development.yaml"
         if dev_file.exists():
@@ -315,4 +313,3 @@ class TestEdgeCases:
         assert config.notifications.telegram.chat_id == "telegram_chat"
         assert config.notifications.discord.webhook_url == "discord_webhook"
         assert config.notifications.email.token == "email_pass"
-

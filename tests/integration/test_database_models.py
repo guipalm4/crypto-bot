@@ -30,17 +30,17 @@ from crypto_bot.infrastructure.database.models import (
 async def setup_database() -> None:
     """Set up test database schema."""
     engine = db_engine.create_engine()
-    
+
     # Create all tables
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     yield
-    
+
     # Drop all tables after tests
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-    
+
     await db_engine.close()
 
 
@@ -57,15 +57,15 @@ async def db_session(setup_database: None) -> AsyncSession:
 async def test_create_tables(setup_database: None) -> None:
     """Test that all tables are created correctly."""
     engine = db_engine.create_engine()
-    
+
     async with engine.connect() as conn:
         # Check that tables exist
         def get_table_names(connection):  # type: ignore
             inspector = inspect(connection)
             return inspector.get_table_names()
-        
+
         tables = await conn.run_sync(get_table_names)
-        
+
         expected_tables = [
             "asset",
             "exchange",
@@ -75,7 +75,7 @@ async def test_create_tables(setup_database: None) -> None:
             "trade",
             "position",
         ]
-        
+
         for table in expected_tables:
             assert table in tables, f"Table {table} not found"
 
@@ -90,11 +90,11 @@ async def test_create_exchange(db_session: AsyncSession) -> None:
         is_testnet=False,
         config_json={"rate_limit": 1200},
     )
-    
+
     db_session.add(exchange)
     await db_session.commit()
     await db_session.refresh(exchange)
-    
+
     assert exchange.id is not None
     assert exchange.name == "binance"
     assert exchange.is_active is True
@@ -111,11 +111,11 @@ async def test_create_asset(db_session: AsyncSession) -> None:
         is_active=True,
         metadata_json={"decimals": 8},
     )
-    
+
     db_session.add(asset)
     await db_session.commit()
     await db_session.refresh(asset)
-    
+
     assert asset.id is not None
     assert asset.symbol == "BTC"
     assert asset.name == "Bitcoin"
@@ -130,17 +130,17 @@ async def test_create_trading_pair_with_relationships(
     # Create exchange
     exchange = Exchange(name="binance", is_active=True)
     db_session.add(exchange)
-    
+
     # Create assets
     btc = Asset(symbol="BTC", name="Bitcoin", is_active=True)
     usdt = Asset(symbol="USDT", name="Tether", is_active=True)
     db_session.add_all([btc, usdt])
-    
+
     await db_session.commit()
     await db_session.refresh(exchange)
     await db_session.refresh(btc)
     await db_session.refresh(usdt)
-    
+
     # Create trading pair
     trading_pair = TradingPair(
         base_asset_id=btc.id,
@@ -151,11 +151,11 @@ async def test_create_trading_pair_with_relationships(
         tick_size=0.01,
         is_active=True,
     )
-    
+
     db_session.add(trading_pair)
     await db_session.commit()
     await db_session.refresh(trading_pair)
-    
+
     assert trading_pair.id is not None
     assert trading_pair.symbol == "BTC/USDT"
     assert trading_pair.base_asset.symbol == "BTC"
@@ -173,7 +173,7 @@ async def test_create_order_with_trades(db_session: AsyncSession) -> None:
     usdt = Asset(symbol="USDT", name="Tether", is_active=True)
     db_session.add_all([exchange, btc, usdt])
     await db_session.commit()
-    
+
     trading_pair = TradingPair(
         base_asset_id=btc.id,
         quote_asset_id=usdt.id,
@@ -184,7 +184,7 @@ async def test_create_order_with_trades(db_session: AsyncSession) -> None:
     )
     db_session.add(trading_pair)
     await db_session.commit()
-    
+
     # Create order
     order = Order(
         trading_pair_id=trading_pair.id,
@@ -200,11 +200,11 @@ async def test_create_order_with_trades(db_session: AsyncSession) -> None:
         fee=5.0,
         fee_currency="USDT",
     )
-    
+
     db_session.add(order)
     await db_session.commit()
     await db_session.refresh(order)
-    
+
     # Create trade
     trade = Trade(
         order_id=order.id,
@@ -213,11 +213,11 @@ async def test_create_order_with_trades(db_session: AsyncSession) -> None:
         quantity=0.1,
         fee=5.0,
     )
-    
+
     db_session.add(trade)
     await db_session.commit()
     await db_session.refresh(order)
-    
+
     assert order.id is not None
     assert order.exchange_order_id == "EX123456"
     assert order.type == OrderType.LIMIT
@@ -237,7 +237,7 @@ async def test_create_position(db_session: AsyncSession) -> None:
     strategy = Strategy(name="RSI Strategy", plugin_name="rsi_strategy")
     db_session.add_all([exchange, btc, usdt, strategy])
     await db_session.commit()
-    
+
     trading_pair = TradingPair(
         base_asset_id=btc.id,
         quote_asset_id=usdt.id,
@@ -248,7 +248,7 @@ async def test_create_position(db_session: AsyncSession) -> None:
     )
     db_session.add(trading_pair)
     await db_session.commit()
-    
+
     # Create position
     position = Position(
         trading_pair_id=trading_pair.id,
@@ -261,11 +261,11 @@ async def test_create_position(db_session: AsyncSession) -> None:
         stop_loss=48000.0,
         take_profit=55000.0,
     )
-    
+
     db_session.add(position)
     await db_session.commit()
     await db_session.refresh(position)
-    
+
     assert position.id is not None
     assert position.side == PositionSide.LONG
     assert position.status == PositionStatus.OPEN
@@ -283,7 +283,7 @@ async def test_cascade_delete(db_session: AsyncSession) -> None:
     usdt = Asset(symbol="USDT", name="Tether", is_active=True)
     db_session.add_all([exchange, btc, usdt])
     await db_session.commit()
-    
+
     trading_pair = TradingPair(
         base_asset_id=btc.id,
         quote_asset_id=usdt.id,
@@ -294,7 +294,7 @@ async def test_cascade_delete(db_session: AsyncSession) -> None:
     )
     db_session.add(trading_pair)
     await db_session.commit()
-    
+
     order = Order(
         trading_pair_id=trading_pair.id,
         exchange_id=exchange.id,
@@ -305,17 +305,14 @@ async def test_cascade_delete(db_session: AsyncSession) -> None:
     )
     db_session.add(order)
     await db_session.commit()
-    
+
     exchange_id = exchange.id
     order_id = order.id
-    
+
     # Delete exchange (should cascade to orders)
     await db_session.delete(exchange)
     await db_session.commit()
-    
-    # Verify order was deleted
-    result = await db_session.execute(
-        select(Order).where(Order.id == order_id)
-    )
-    assert result.scalar_one_or_none() is None
 
+    # Verify order was deleted
+    result = await db_session.execute(select(Order).where(Order.id == order_id))
+    assert result.scalar_one_or_none() is None

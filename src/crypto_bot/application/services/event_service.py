@@ -4,12 +4,14 @@ Event sourcing service for domain events.
 Provides methods to create and persist domain events for all trading operations.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Any
 from uuid import UUID, uuid4
-from typing import Any, Dict, Optional
 
 from crypto_bot.domain.repositories.event_repository import (
     DomainEvent as DomainEventInterface,
+)
+from crypto_bot.domain.repositories.event_repository import (
     IEventRepository,
 )
 
@@ -34,8 +36,8 @@ class EventService:
     async def emit_order_created(
         self,
         order_id: UUID,
-        order_data: Dict[str, Any],
-        metadata: Optional[Dict[str, Any]] = None,
+        order_data: dict[str, Any],
+        metadata: dict[str, Any] | None = None,
     ) -> DomainEventInterface:
         """
         Emit OrderCreated event.
@@ -53,7 +55,7 @@ class EventService:
             event_type="OrderCreated",
             aggregate_id=order_id,
             aggregate_type="Order",
-            occurred_at=datetime.now(timezone.utc),
+            occurred_at=datetime.now(UTC),
             payload=order_data,
             metadata=metadata or {},
         )
@@ -63,7 +65,7 @@ class EventService:
         self,
         order_id: UUID,
         reason: str,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> DomainEventInterface:
         """
         Emit OrderCancelled event.
@@ -81,7 +83,7 @@ class EventService:
             event_type="OrderCancelled",
             aggregate_id=order_id,
             aggregate_type="Order",
-            occurred_at=datetime.now(timezone.utc),
+            occurred_at=datetime.now(UTC),
             payload={"reason": reason},
             metadata=metadata or {},
         )
@@ -90,8 +92,8 @@ class EventService:
     async def emit_order_filled(
         self,
         order_id: UUID,
-        fill_data: Dict[str, Any],
-        metadata: Optional[Dict[str, Any]] = None,
+        fill_data: dict[str, Any],
+        metadata: dict[str, Any] | None = None,
     ) -> DomainEventInterface:
         """
         Emit OrderFilled event.
@@ -109,7 +111,7 @@ class EventService:
             event_type="OrderFilled",
             aggregate_id=order_id,
             aggregate_type="Order",
-            occurred_at=datetime.now(timezone.utc),
+            occurred_at=datetime.now(UTC),
             payload=fill_data,
             metadata=metadata or {},
         )
@@ -118,8 +120,8 @@ class EventService:
     async def emit_order_updated(
         self,
         order_id: UUID,
-        update_data: Dict[str, Any],
-        metadata: Optional[Dict[str, Any]] = None,
+        update_data: dict[str, Any],
+        metadata: dict[str, Any] | None = None,
     ) -> DomainEventInterface:
         """
         Emit OrderUpdated event.
@@ -137,7 +139,7 @@ class EventService:
             event_type="OrderUpdated",
             aggregate_id=order_id,
             aggregate_type="Order",
-            occurred_at=datetime.now(timezone.utc),
+            occurred_at=datetime.now(UTC),
             payload=update_data,
             metadata=metadata or {},
         )
@@ -146,8 +148,8 @@ class EventService:
     async def emit_trade_executed(
         self,
         trade_id: UUID,
-        trade_data: Dict[str, Any],
-        metadata: Optional[Dict[str, Any]] = None,
+        trade_data: dict[str, Any],
+        metadata: dict[str, Any] | None = None,
     ) -> DomainEventInterface:
         """
         Emit TradeExecuted event.
@@ -165,7 +167,7 @@ class EventService:
             event_type="TradeExecuted",
             aggregate_id=trade_id,
             aggregate_type="Trade",
-            occurred_at=datetime.now(timezone.utc),
+            occurred_at=datetime.now(UTC),
             payload=trade_data,
             metadata=metadata or {},
         )
@@ -174,8 +176,8 @@ class EventService:
     async def emit_position_opened(
         self,
         position_id: UUID,
-        position_data: Dict[str, Any],
-        metadata: Optional[Dict[str, Any]] = None,
+        position_data: dict[str, Any],
+        metadata: dict[str, Any] | None = None,
     ) -> DomainEventInterface:
         """
         Emit PositionOpened event.
@@ -193,7 +195,7 @@ class EventService:
             event_type="PositionOpened",
             aggregate_id=position_id,
             aggregate_type="Position",
-            occurred_at=datetime.now(timezone.utc),
+            occurred_at=datetime.now(UTC),
             payload=position_data,
             metadata=metadata or {},
         )
@@ -202,8 +204,8 @@ class EventService:
     async def emit_position_closed(
         self,
         position_id: UUID,
-        close_data: Dict[str, Any],
-        metadata: Optional[Dict[str, Any]] = None,
+        close_data: dict[str, Any],
+        metadata: dict[str, Any] | None = None,
     ) -> DomainEventInterface:
         """
         Emit PositionClosed event.
@@ -221,7 +223,7 @@ class EventService:
             event_type="PositionClosed",
             aggregate_id=position_id,
             aggregate_type="Position",
-            occurred_at=datetime.now(timezone.utc),
+            occurred_at=datetime.now(UTC),
             payload=close_data,
             metadata=metadata or {},
         )
@@ -230,8 +232,8 @@ class EventService:
     async def emit_position_updated(
         self,
         position_id: UUID,
-        update_data: Dict[str, Any],
-        metadata: Optional[Dict[str, Any]] = None,
+        update_data: dict[str, Any],
+        metadata: dict[str, Any] | None = None,
     ) -> DomainEventInterface:
         """
         Emit PositionUpdated event.
@@ -249,7 +251,7 @@ class EventService:
             event_type="PositionUpdated",
             aggregate_id=position_id,
             aggregate_type="Position",
-            occurred_at=datetime.now(timezone.utc),
+            occurred_at=datetime.now(UTC),
             payload=update_data,
             metadata=metadata or {},
         )
@@ -260,8 +262,8 @@ class EventService:
         event_type: str,
         aggregate_id: UUID,
         aggregate_type: str,
-        payload: Dict[str, Any],
-        metadata: Optional[Dict[str, Any]] = None,
+        payload: dict[str, Any],
+        metadata: dict[str, Any] | None = None,
     ) -> DomainEventInterface:
         """
         Emit a generic domain event.
@@ -281,7 +283,7 @@ class EventService:
             event_type=event_type,
             aggregate_id=aggregate_id,
             aggregate_type=aggregate_type,
-            occurred_at=datetime.now(timezone.utc),
+            occurred_at=datetime.now(UTC),
             payload=payload,
             metadata=metadata or {},
         )
@@ -306,7 +308,7 @@ class EventService:
 
     async def replay_aggregate(
         self, aggregate_id: UUID, aggregate_type: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Replay all events for an aggregate to reconstruct its state.
 
@@ -320,7 +322,7 @@ class EventService:
         events = await self.get_aggregate_events(aggregate_id, aggregate_type)
 
         # Build state from events
-        state: Dict[str, Any] = {
+        state: dict[str, Any] = {
             "id": aggregate_id,
             "type": aggregate_type,
             "events_count": len(events),
@@ -358,4 +360,3 @@ class EventService:
                 state.update(event.payload)
 
         return state
-

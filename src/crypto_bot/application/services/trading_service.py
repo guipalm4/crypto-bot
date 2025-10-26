@@ -10,7 +10,7 @@ import asyncio
 import logging
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Dict, List
+from typing import Any
 
 import ccxt.async_support as ccxt
 
@@ -50,7 +50,7 @@ class TradingService(ITradingService):
 
     def __init__(self) -> None:
         """Initialize trading service with exchange connections."""
-        self._exchanges: Dict[str, ccxt.Exchange] = {}
+        self._exchanges: dict[str, ccxt.Exchange] = {}
         self._initialize_exchanges()
 
     def _initialize_exchanges(self) -> None:
@@ -143,7 +143,7 @@ class TradingService(ITradingService):
         Raises:
             TradingException: If all retry attempts fail
         """
-        last_exception = None
+        last_exception: TradingException | None = None
         delay = retry_policy.initial_delay
 
         for attempt in range(retry_policy.max_attempts):
@@ -175,9 +175,7 @@ class TradingService(ITradingService):
             # Don't sleep after the last attempt
             if attempt < retry_policy.max_attempts - 1:
                 sleep_time = min(delay, retry_policy.max_delay)
-                logger.debug(
-                    "Retrying %s in %.2f seconds", operation_name, sleep_time
-                )
+                logger.debug("Retrying %s in %.2f seconds", operation_name, sleep_time)
                 await asyncio.sleep(sleep_time)
                 delay *= retry_policy.exponential_base
 
@@ -186,9 +184,7 @@ class TradingService(ITradingService):
             f"{operation_name} failed after {retry_policy.max_attempts} attempts"
         )
 
-    def _handle_ccxt_exception(
-        self, e: Exception, operation: str
-    ) -> TradingException:
+    def _handle_ccxt_exception(self, e: Exception, operation: str) -> TradingException:
         """
         Convert CCXT exceptions to application exceptions.
 
@@ -202,9 +198,7 @@ class TradingService(ITradingService):
         if isinstance(e, ccxt.OrderNotFound):
             return OrderNotFound(f"{operation}: Order not found - {str(e)}")
         elif isinstance(e, ccxt.InsufficientFunds):
-            return InsufficientBalance(
-                f"{operation}: Insufficient balance - {str(e)}"
-            )
+            return InsufficientBalance(f"{operation}: Insufficient balance - {str(e)}")
         elif isinstance(e, ccxt.InvalidOrder):
             return InvalidOrder(f"{operation}: Invalid order - {str(e)}")
         elif isinstance(e, ccxt.NetworkError):
@@ -216,7 +210,7 @@ class TradingService(ITradingService):
         else:
             return TradingException(f"{operation}: Unexpected error - {str(e)}")
 
-    def _ccxt_order_to_dto(self, ccxt_order: Dict[str, Any]) -> OrderDTO:
+    def _ccxt_order_to_dto(self, ccxt_order: dict[str, Any]) -> OrderDTO:
         """
         Convert CCXT order to OrderDTO.
 
@@ -244,9 +238,7 @@ class TradingService(ITradingService):
         symbol = ccxt_order["symbol"]
         side = OrderSide.BUY if ccxt_order["side"] == "buy" else OrderSide.SELL
         order_type = (
-            OrderType.MARKET
-            if ccxt_order["type"] == "market"
-            else OrderType.LIMIT
+            OrderType.MARKET if ccxt_order["type"] == "market" else OrderType.LIMIT
         )
 
         # Get quantities
@@ -255,15 +247,9 @@ class TradingService(ITradingService):
         remaining = Decimal(str(ccxt_order.get("remaining", 0)))
 
         # Get prices
-        price = (
-            Decimal(str(ccxt_order["price"]))
-            if ccxt_order.get("price")
-            else None
-        )
+        price = Decimal(str(ccxt_order["price"])) if ccxt_order.get("price") else None
         average = (
-            Decimal(str(ccxt_order["average"]))
-            if ccxt_order.get("average")
-            else None
+            Decimal(str(ccxt_order["average"])) if ccxt_order.get("average") else None
         )
 
         # Get cost and fees
@@ -319,9 +305,9 @@ class TradingService(ITradingService):
         exchange = self._get_exchange(request.exchange)
 
         # Prepare order parameters
-        params: Dict[str, Any] = {}
+        params: dict[str, Any] = {}
 
-        async def _create() -> Dict[str, Any]:
+        async def _create() -> dict[str, Any]:
             """Inner function for retry logic."""
             if request.type == OrderType.MARKET:
                 return await exchange.create_market_order(
@@ -335,7 +321,7 @@ class TradingService(ITradingService):
                     symbol=request.symbol,
                     side=request.side.value,
                     amount=float(request.quantity),
-                    price=float(request.price),  # type: ignore
+                    price=float(request.price),  # type: ignore[arg-type]
                     params=params,
                 )
 
@@ -360,15 +346,13 @@ class TradingService(ITradingService):
             )
             return self._ccxt_order_to_dto(ccxt_order)
 
-        except asyncio.TimeoutError:
-            logger.error(
-                "Order creation timed out after %.2f seconds", request.timeout
-            )
+        except TimeoutError:
+            logger.error("Order creation timed out after %.2f seconds", request.timeout)
             raise TimeoutError(
                 f"Order creation exceeded timeout of {request.timeout} seconds"
-            )
+            ) from None
         except ccxt.BaseError as e:
-            raise self._handle_ccxt_exception(e, "Create order")
+            raise self._handle_ccxt_exception(e, "Create order") from e
 
     async def cancel_order(self, request: CancelOrderRequest) -> OrderDTO:
         """
@@ -389,9 +373,9 @@ class TradingService(ITradingService):
         """
         exchange = self._get_exchange(request.exchange)
 
-        async def _cancel() -> Dict[str, Any]:
+        async def _cancel() -> dict[str, Any]:
             """Inner function for retry logic."""
-            params = {}
+            params: dict[str, Any] = {}
             if request.symbol:
                 return await exchange.cancel_order(
                     request.order_id, request.symbol, params
@@ -401,25 +385,21 @@ class TradingService(ITradingService):
 
         try:
             ccxt_order = await asyncio.wait_for(
-                self._retry_with_backoff(
-                    _cancel, request.retry_policy, "Cancel order"
-                ),
+                self._retry_with_backoff(_cancel, request.retry_policy, "Cancel order"),
                 timeout=request.timeout,
             )
-            logger.info(
-                "Canceled order %s on %s", request.order_id, request.exchange
-            )
+            logger.info("Canceled order %s on %s", request.order_id, request.exchange)
             return self._ccxt_order_to_dto(ccxt_order)
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error(
                 "Order cancellation timed out after %.2f seconds", request.timeout
             )
             raise TimeoutError(
                 f"Order cancellation exceeded timeout of {request.timeout} seconds"
-            )
+            ) from None
         except ccxt.BaseError as e:
-            raise self._handle_ccxt_exception(e, "Cancel order")
+            raise self._handle_ccxt_exception(e, "Cancel order") from e
 
     async def get_order_status(
         self, exchange: str, order_id: str, symbol: str | None = None
@@ -488,11 +468,11 @@ class TradingService(ITradingService):
             return self._ccxt_order_to_dto(ccxt_order)
 
         except ccxt.BaseError as e:
-            raise self._handle_ccxt_exception(e, "Get order")
+            raise self._handle_ccxt_exception(e, "Get order") from e
 
     async def get_balance(
         self, exchange: str, currency: str | None = None
-    ) -> Dict[str, BalanceDTO] | BalanceDTO:
+    ) -> dict[str, BalanceDTO] | BalanceDTO:
         """
         Retrieve account balance(s).
 
@@ -547,11 +527,11 @@ class TradingService(ITradingService):
                 return balances
 
         except ccxt.BaseError as e:
-            raise self._handle_ccxt_exception(e, "Get balance")
+            raise self._handle_ccxt_exception(e, "Get balance") from e
 
     async def get_open_orders(
         self, exchange: str, symbol: str | None = None
-    ) -> List[OrderDTO]:
+    ) -> list[OrderDTO]:
         """
         Retrieve all open orders for an exchange.
 
@@ -575,17 +555,15 @@ class TradingService(ITradingService):
             else:
                 ccxt_orders = await exchange_instance.fetch_open_orders()
 
-            logger.debug(
-                "Fetched %d open orders from %s", len(ccxt_orders), exchange
-            )
+            logger.debug("Fetched %d open orders from %s", len(ccxt_orders), exchange)
             return [self._ccxt_order_to_dto(order) for order in ccxt_orders]
 
         except ccxt.BaseError as e:
-            raise self._handle_ccxt_exception(e, "Get open orders")
+            raise self._handle_ccxt_exception(e, "Get open orders") from e
 
     async def cancel_all_orders(
         self, exchange: str, symbol: str | None = None
-    ) -> List[OrderDTO]:
+    ) -> list[OrderDTO]:
         """
         Cancel all open orders for an exchange.
 
@@ -643,7 +621,11 @@ class TradingService(ITradingService):
         """Async context manager entry."""
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: Any | None,
+    ) -> None:
         """Async context manager exit."""
         await self.close()
-

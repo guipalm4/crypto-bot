@@ -6,7 +6,6 @@ cancellation, status queries, and balance checks.
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, List
 
 from crypto_bot.application.dtos.order import (
     BalanceDTO,
@@ -115,7 +114,7 @@ class ITradingService(ABC):
     @abstractmethod
     async def get_balance(
         self, exchange: str, currency: str | None = None
-    ) -> Dict[str, BalanceDTO] | BalanceDTO:
+    ) -> dict[str, BalanceDTO] | BalanceDTO:
         """
         Retrieve account balance(s).
 
@@ -137,7 +136,7 @@ class ITradingService(ABC):
     @abstractmethod
     async def get_open_orders(
         self, exchange: str, symbol: str | None = None
-    ) -> List[OrderDTO]:
+    ) -> list[OrderDTO]:
         """
         Retrieve all open orders for an exchange.
 
@@ -158,7 +157,7 @@ class ITradingService(ABC):
     @abstractmethod
     async def cancel_all_orders(
         self, exchange: str, symbol: str | None = None
-    ) -> List[OrderDTO]:
+    ) -> list[OrderDTO]:
         """
         Cancel all open orders for an exchange.
 
@@ -175,4 +174,3 @@ class ITradingService(ABC):
             NetworkError: If network communication fails
         """
         pass
-

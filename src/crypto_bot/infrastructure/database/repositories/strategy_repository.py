@@ -1,13 +1,11 @@
 """Strategy repository implementation."""
 
-from typing import List, Optional
-
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from crypto_bot.domain.repositories.strategy_repository import IStrategyRepository
 from crypto_bot.domain.exceptions import RepositoryError
+from crypto_bot.domain.repositories.strategy_repository import IStrategyRepository
 from crypto_bot.infrastructure.database.models import Strategy
 from crypto_bot.infrastructure.database.repositories.base_repository import (
     BaseRepository,
@@ -26,7 +24,7 @@ class StrategyRepository(BaseRepository[Strategy], IStrategyRepository):
         """
         super().__init__(session, Strategy)
 
-    async def get_by_name(self, name: str) -> Optional[Strategy]:
+    async def get_by_name(self, name: str) -> Strategy | None:
         """Get strategy by name."""
         try:
             stmt = select(Strategy).where(Strategy.name == name)
@@ -39,7 +37,7 @@ class StrategyRepository(BaseRepository[Strategy], IStrategyRepository):
 
     async def get_by_plugin_name(
         self, plugin_name: str, skip: int = 0, limit: int = 100
-    ) -> List[Strategy]:
+    ) -> list[Strategy]:
         """Get strategies by plugin name."""
         try:
             stmt = (
@@ -58,7 +56,7 @@ class StrategyRepository(BaseRepository[Strategy], IStrategyRepository):
 
     async def get_active_strategies(
         self, skip: int = 0, limit: int = 100
-    ) -> List[Strategy]:
+    ) -> list[Strategy]:
         """Get all active strategies."""
         try:
             stmt = (
@@ -72,4 +70,3 @@ class StrategyRepository(BaseRepository[Strategy], IStrategyRepository):
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise RepositoryError(f"Failed to get active strategies: {str(e)}") from e
-

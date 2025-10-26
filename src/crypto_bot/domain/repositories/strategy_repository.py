@@ -1,7 +1,6 @@
 """Strategy repository interface."""
 
 from abc import abstractmethod
-from typing import List, Optional
 
 from crypto_bot.domain.repositories.base import IRepository
 from crypto_bot.infrastructure.database.models import Strategy
@@ -11,7 +10,7 @@ class IStrategyRepository(IRepository[Strategy]):
     """Repository interface for Strategy entities."""
 
     @abstractmethod
-    async def get_by_name(self, name: str) -> Optional[Strategy]:
+    async def get_by_name(self, name: str) -> Strategy | None:
         """
         Get strategy by name.
 
@@ -26,7 +25,7 @@ class IStrategyRepository(IRepository[Strategy]):
     @abstractmethod
     async def get_by_plugin_name(
         self, plugin_name: str, skip: int = 0, limit: int = 100
-    ) -> List[Strategy]:
+    ) -> list[Strategy]:
         """
         Get strategies by plugin name.
 
@@ -43,7 +42,7 @@ class IStrategyRepository(IRepository[Strategy]):
     @abstractmethod
     async def get_active_strategies(
         self, skip: int = 0, limit: int = 100
-    ) -> List[Strategy]:
+    ) -> list[Strategy]:
         """
         Get all active strategies.
 
@@ -55,4 +54,3 @@ class IStrategyRepository(IRepository[Strategy]):
             List of active strategies.
         """
         pass
-

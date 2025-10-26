@@ -25,10 +25,10 @@ if TYPE_CHECKING:
 class Position(Base):
     """
     Position model representing trading positions.
-    
+
     A position tracks entry and exit of a trade, including P&L calculation.
     """
-    
+
     # Primary key
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -36,7 +36,7 @@ class Position(Base):
         default=uuid.uuid4,
         nullable=False,
     )
-    
+
     # Foreign keys
     trading_pair_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -66,7 +66,7 @@ class Position(Base):
         ForeignKey("order.id", ondelete="SET NULL"),
         nullable=True,
     )
-    
+
     # Position details
     side: Mapped[PositionSide] = mapped_column(
         Enum(PositionSide, native_enum=False, length=20),
@@ -78,7 +78,7 @@ class Position(Base):
         default=PositionStatus.OPEN,
         index=True,
     )
-    
+
     # Quantities and prices
     quantity: Mapped[float] = mapped_column(
         Numeric(precision=20, scale=8),
@@ -92,7 +92,7 @@ class Position(Base):
         Numeric(precision=20, scale=8),
         nullable=True,
     )
-    
+
     # Risk management
     stop_loss: Mapped[float | None] = mapped_column(
         Numeric(precision=20, scale=8),
@@ -102,7 +102,7 @@ class Position(Base):
         Numeric(precision=20, scale=8),
         nullable=True,
     )
-    
+
     # P&L
     pnl: Mapped[float | None] = mapped_column(
         Numeric(precision=20, scale=8),
@@ -112,7 +112,7 @@ class Position(Base):
         Numeric(precision=10, scale=4),
         nullable=True,
     )
-    
+
     # Timestamps
     opened_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -124,7 +124,7 @@ class Position(Base):
         DateTime(timezone=True),
         nullable=True,
     )
-    
+
     # Relationships
     trading_pair: Mapped["TradingPair"] = relationship(
         "TradingPair",
@@ -148,4 +148,3 @@ class Position(Base):
         foreign_keys=[exit_order_id],
         back_populates="exit_positions",
     )
-

@@ -1,7 +1,6 @@
 """Exchange repository interface."""
 
 from abc import abstractmethod
-from typing import List, Optional
 
 from crypto_bot.domain.repositories.base import IRepository
 from crypto_bot.infrastructure.database.models import Exchange
@@ -11,7 +10,7 @@ class IExchangeRepository(IRepository[Exchange]):
     """Repository interface for Exchange entities."""
 
     @abstractmethod
-    async def get_by_name(self, name: str) -> Optional[Exchange]:
+    async def get_by_name(self, name: str) -> Exchange | None:
         """
         Get exchange by name.
 
@@ -26,7 +25,7 @@ class IExchangeRepository(IRepository[Exchange]):
     @abstractmethod
     async def get_active_exchanges(
         self, skip: int = 0, limit: int = 100
-    ) -> List[Exchange]:
+    ) -> list[Exchange]:
         """
         Get all active exchanges.
 
@@ -42,7 +41,7 @@ class IExchangeRepository(IRepository[Exchange]):
     @abstractmethod
     async def get_testnet_exchanges(
         self, skip: int = 0, limit: int = 100
-    ) -> List[Exchange]:
+    ) -> list[Exchange]:
         """
         Get all testnet exchanges.
 
@@ -54,4 +53,3 @@ class IExchangeRepository(IRepository[Exchange]):
             List of testnet exchanges.
         """
         pass
-

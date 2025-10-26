@@ -1,14 +1,13 @@
 """Position repository implementation."""
 
-from typing import List, Optional
 from uuid import UUID
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from crypto_bot.domain.repositories.position_repository import IPositionRepository
 from crypto_bot.domain.exceptions import RepositoryError
+from crypto_bot.domain.repositories.position_repository import IPositionRepository
 from crypto_bot.infrastructure.database.models import Position, PositionStatus
 from crypto_bot.infrastructure.database.repositories.base_repository import (
     BaseRepository,
@@ -29,7 +28,7 @@ class PositionRepository(BaseRepository[Position], IPositionRepository):
 
     async def get_by_status(
         self, status: PositionStatus, skip: int = 0, limit: int = 100
-    ) -> List[Position]:
+    ) -> list[Position]:
         """Get positions by status."""
         try:
             stmt = (
@@ -48,7 +47,7 @@ class PositionRepository(BaseRepository[Position], IPositionRepository):
 
     async def get_by_trading_pair(
         self, trading_pair_id: UUID, skip: int = 0, limit: int = 100
-    ) -> List[Position]:
+    ) -> list[Position]:
         """Get positions by trading pair."""
         try:
             stmt = (
@@ -67,7 +66,7 @@ class PositionRepository(BaseRepository[Position], IPositionRepository):
 
     async def get_by_strategy(
         self, strategy_id: UUID, skip: int = 0, limit: int = 100
-    ) -> List[Position]:
+    ) -> list[Position]:
         """Get positions by strategy."""
         try:
             stmt = (
@@ -86,11 +85,11 @@ class PositionRepository(BaseRepository[Position], IPositionRepository):
 
     async def get_open_positions(
         self,
-        exchange_id: Optional[UUID] = None,
-        trading_pair_id: Optional[UUID] = None,
+        exchange_id: UUID | None = None,
+        trading_pair_id: UUID | None = None,
         skip: int = 0,
         limit: int = 100,
-    ) -> List[Position]:
+    ) -> list[Position]:
         """Get all open positions."""
         try:
             stmt = select(Position).where(Position.status == PositionStatus.OPEN)
@@ -106,7 +105,7 @@ class PositionRepository(BaseRepository[Position], IPositionRepository):
         except SQLAlchemyError as e:
             raise RepositoryError(f"Failed to get open positions: {str(e)}") from e
 
-    async def get_by_entry_order(self, entry_order_id: UUID) -> Optional[Position]:
+    async def get_by_entry_order(self, entry_order_id: UUID) -> Position | None:
         """Get position by entry order."""
         try:
             stmt = select(Position).where(Position.entry_order_id == entry_order_id)
@@ -116,4 +115,3 @@ class PositionRepository(BaseRepository[Position], IPositionRepository):
             raise RepositoryError(
                 f"Failed to get position by entry_order {entry_order_id}: {str(e)}"
             ) from e
-

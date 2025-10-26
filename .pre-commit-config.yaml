@@ -1,36 +1,26 @@
 repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.8
+    hooks:
+      - id: ruff
+        args: ["--fix", "--config=pyproject.toml"]
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        args: ["--line-length=88"]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.2
+    hooks:
+      - id: mypy
+        additional_dependencies: ["types-PyYAML"]
+        args: ["--config-file=pyproject.toml"]
+        files: ^src/crypto_bot/
   - repo: local
     hooks:
-      - id: validate-syntax
-        name: Validate Library Syntax
-        entry: python scripts/validate-syntax.py
+      - id: pytest
+        name: pytest (pre-push)
+        entry: pytest -q
         language: system
-        files: \.py$
         pass_filenames: false
-        
-      - id: black
-        name: Black formatter
-        entry: black
-        language: system
-        args: [--check, --diff]
-        files: \.py$
-        
-      - id: flake8
-        name: Flake8 linter
-        entry: flake8
-        language: system
-        files: \.py$
-        
-      - id: mypy
-        name: MyPy type checker
-        entry: mypy
-        language: system
-        files: \.py$
-        args: [--ignore-missing-imports]
-        
-      - id: isort
-        name: isort import sorter
-        entry: isort
-        language: system
-        args: [--check-only, --diff]
-        files: \.py$
+        stages: [pre-push]

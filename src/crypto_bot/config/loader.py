@@ -4,7 +4,7 @@ Configuration loader for YAML files with environment variable overlay.
 
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 import yaml
 from dotenv import load_dotenv
@@ -21,9 +21,7 @@ class ConfigLoader:
     finally environment variables for sensitive data.
     """
 
-    def __init__(
-        self, config_dir: Optional[Path] = None, env: Optional[str] = None
-    ) -> None:
+    def __init__(self, config_dir: Path | None = None, env: str | None = None) -> None:
         """
         Initialize the configuration loader.
 
@@ -59,17 +57,19 @@ class ConfigLoader:
                 f"Must be one of: {', '.join(valid_envs)}"
             )
 
-    def _load_yaml(self, file_path: Path) -> Dict[str, Any]:
+    def _load_yaml(self, file_path: Path) -> dict[str, Any]:
         """Load YAML file and return as dictionary."""
         if not file_path.exists():
             raise FileNotFoundError(f"Configuration file not found: {file_path}")
 
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             data = yaml.safe_load(f)
 
         return data or {}
 
-    def _deep_merge(self, base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]:
+    def _deep_merge(
+        self, base: dict[str, Any], override: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Deep merge two dictionaries.
 
@@ -90,7 +90,7 @@ class ConfigLoader:
 
         return result
 
-    def _overlay_env_vars(self, config: Dict[str, Any]) -> Dict[str, Any]:
+    def _overlay_env_vars(self, config: dict[str, Any]) -> dict[str, Any]:
         """
         Overlay environment variables onto configuration.
 
@@ -201,9 +201,7 @@ class ConfigLoader:
         return config
 
 
-def load_config(
-    config_dir: Optional[Path] = None, env: Optional[str] = None
-) -> Config:
+def load_config(config_dir: Path | None = None, env: str | None = None) -> Config:
     """
     Convenience function to load configuration.
 
@@ -216,4 +214,3 @@ def load_config(
     """
     loader = ConfigLoader(config_dir=config_dir, env=env)
     return loader.load()
-

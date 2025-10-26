@@ -23,11 +23,11 @@ if TYPE_CHECKING:
 class TradingPair(Base):
     """
     Trading Pair model representing tradable pairs on exchanges.
-    
+
     A trading pair consists of a base asset and a quote asset
     (e.g., BTC/USDT where BTC is base and USDT is quote).
     """
-    
+
     # Primary key
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -35,7 +35,7 @@ class TradingPair(Base):
         default=uuid.uuid4,
         nullable=False,
     )
-    
+
     # Foreign keys
     base_asset_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -55,14 +55,14 @@ class TradingPair(Base):
         nullable=False,
         index=True,
     )
-    
+
     # Pair information
     symbol: Mapped[str] = mapped_column(
         String(50),
         nullable=False,
         index=True,
     )
-    
+
     # Trading constraints
     min_order_size: Mapped[float] = mapped_column(
         Numeric(precision=20, scale=8),
@@ -76,14 +76,14 @@ class TradingPair(Base):
         Numeric(precision=20, scale=8),
         nullable=False,
     )
-    
+
     # Status
     is_active: Mapped[bool] = mapped_column(
         Boolean,
         default=True,
         nullable=False,
     )
-    
+
     # Relationships
     base_asset: Mapped["Asset"] = relationship(
         "Asset",
@@ -109,4 +109,3 @@ class TradingPair(Base):
         back_populates="trading_pair",
         cascade="all, delete-orphan",
     )
-

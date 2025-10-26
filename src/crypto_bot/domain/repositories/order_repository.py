@@ -1,7 +1,6 @@
 """Order repository interface."""
 
 from abc import abstractmethod
-from typing import List, Optional
 from uuid import UUID
 
 from crypto_bot.domain.repositories.base import IRepository
@@ -14,7 +13,7 @@ class IOrderRepository(IRepository[Order]):
     @abstractmethod
     async def get_by_exchange_order_id(
         self, exchange_order_id: str, exchange_id: UUID
-    ) -> Optional[Order]:
+    ) -> Order | None:
         """
         Get order by exchange order ID.
 
@@ -30,7 +29,7 @@ class IOrderRepository(IRepository[Order]):
     @abstractmethod
     async def get_by_status(
         self, status: OrderStatus, skip: int = 0, limit: int = 100
-    ) -> List[Order]:
+    ) -> list[Order]:
         """
         Get orders by status.
 
@@ -47,7 +46,7 @@ class IOrderRepository(IRepository[Order]):
     @abstractmethod
     async def get_by_trading_pair(
         self, trading_pair_id: UUID, skip: int = 0, limit: int = 100
-    ) -> List[Order]:
+    ) -> list[Order]:
         """
         Get orders by trading pair.
 
@@ -64,7 +63,7 @@ class IOrderRepository(IRepository[Order]):
     @abstractmethod
     async def get_by_strategy(
         self, strategy_id: UUID, skip: int = 0, limit: int = 100
-    ) -> List[Order]:
+    ) -> list[Order]:
         """
         Get orders by strategy.
 
@@ -80,8 +79,8 @@ class IOrderRepository(IRepository[Order]):
 
     @abstractmethod
     async def get_open_orders(
-        self, exchange_id: Optional[UUID] = None, skip: int = 0, limit: int = 100
-    ) -> List[Order]:
+        self, exchange_id: UUID | None = None, skip: int = 0, limit: int = 100
+    ) -> list[Order]:
         """
         Get all open orders (pending, partially filled).
 
@@ -94,4 +93,3 @@ class IOrderRepository(IRepository[Order]):
             List of open orders.
         """
         pass
-

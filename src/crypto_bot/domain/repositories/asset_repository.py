@@ -1,7 +1,6 @@
 """Asset repository interface."""
 
 from abc import abstractmethod
-from typing import List, Optional
 
 from crypto_bot.domain.repositories.base import IRepository
 from crypto_bot.infrastructure.database.models import Asset
@@ -11,7 +10,7 @@ class IAssetRepository(IRepository[Asset]):
     """Repository interface for Asset entities."""
 
     @abstractmethod
-    async def get_by_symbol(self, symbol: str) -> Optional[Asset]:
+    async def get_by_symbol(self, symbol: str) -> Asset | None:
         """
         Get asset by symbol.
 
@@ -24,9 +23,7 @@ class IAssetRepository(IRepository[Asset]):
         pass
 
     @abstractmethod
-    async def get_active_assets(
-        self, skip: int = 0, limit: int = 100
-    ) -> List[Asset]:
+    async def get_active_assets(self, skip: int = 0, limit: int = 100) -> list[Asset]:
         """
         Get all active assets.
 
@@ -42,7 +39,7 @@ class IAssetRepository(IRepository[Asset]):
     @abstractmethod
     async def search_by_name(
         self, name: str, skip: int = 0, limit: int = 100
-    ) -> List[Asset]:
+    ) -> list[Asset]:
         """
         Search assets by name (partial match).
 
@@ -55,4 +52,3 @@ class IAssetRepository(IRepository[Asset]):
             List of matching assets.
         """
         pass
-

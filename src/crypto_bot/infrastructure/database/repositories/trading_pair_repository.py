@@ -1,17 +1,16 @@
 """Trading pair repository implementation."""
 
-from typing import List, Optional
 from uuid import UUID
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
+from crypto_bot.domain.exceptions import RepositoryError
 from crypto_bot.domain.repositories.trading_pair_repository import (
     ITradingPairRepository,
 )
-from crypto_bot.domain.exceptions import RepositoryError
 from crypto_bot.infrastructure.database.models import TradingPair
 from crypto_bot.infrastructure.database.repositories.base_repository import (
     BaseRepository,
@@ -32,7 +31,7 @@ class TradingPairRepository(BaseRepository[TradingPair], ITradingPairRepository)
 
     async def get_by_symbols(
         self, base_symbol: str, quote_symbol: str, exchange_id: UUID
-    ) -> Optional[TradingPair]:
+    ) -> TradingPair | None:
         """Get trading pair by base and quote symbols and exchange."""
         try:
             stmt = (
@@ -58,7 +57,7 @@ class TradingPairRepository(BaseRepository[TradingPair], ITradingPairRepository)
 
     async def get_by_exchange(
         self, exchange_id: UUID, skip: int = 0, limit: int = 100
-    ) -> List[TradingPair]:
+    ) -> list[TradingPair]:
         """Get trading pairs by exchange."""
         try:
             stmt = (
@@ -76,7 +75,7 @@ class TradingPairRepository(BaseRepository[TradingPair], ITradingPairRepository)
 
     async def get_by_base_asset(
         self, base_asset_id: UUID, skip: int = 0, limit: int = 100
-    ) -> List[TradingPair]:
+    ) -> list[TradingPair]:
         """Get trading pairs by base asset."""
         try:
             stmt = (
@@ -94,7 +93,7 @@ class TradingPairRepository(BaseRepository[TradingPair], ITradingPairRepository)
 
     async def get_by_quote_asset(
         self, quote_asset_id: UUID, skip: int = 0, limit: int = 100
-    ) -> List[TradingPair]:
+    ) -> list[TradingPair]:
         """Get trading pairs by quote asset."""
         try:
             stmt = (
@@ -111,8 +110,8 @@ class TradingPairRepository(BaseRepository[TradingPair], ITradingPairRepository)
             ) from e
 
     async def get_active_pairs(
-        self, exchange_id: Optional[UUID] = None, skip: int = 0, limit: int = 100
-    ) -> List[TradingPair]:
+        self, exchange_id: UUID | None = None, skip: int = 0, limit: int = 100
+    ) -> list[TradingPair]:
         """Get all active trading pairs."""
         try:
             stmt = select(TradingPair).where(
@@ -126,5 +125,6 @@ class TradingPairRepository(BaseRepository[TradingPair], ITradingPairRepository)
             result = await self._session.execute(stmt)
             return list(result.scalars().all())
         except SQLAlchemyError as e:
-            raise RepositoryError(f"Failed to get active trading pairs: {str(e)}") from e
-
+            raise RepositoryError(
+                f"Failed to get active trading pairs: {str(e)}"
+            ) from e

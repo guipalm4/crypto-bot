@@ -24,11 +24,11 @@ if TYPE_CHECKING:
 class Exchange(Base):
     """
     Exchange model representing cryptocurrency exchanges.
-    
+
     Stores exchange configuration including encrypted API credentials
     and exchange-specific settings.
     """
-    
+
     # Primary key
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -36,7 +36,7 @@ class Exchange(Base):
         default=uuid.uuid4,
         nullable=False,
     )
-    
+
     # Basic information
     name: Mapped[str] = mapped_column(
         String(100),
@@ -44,7 +44,7 @@ class Exchange(Base):
         nullable=False,
         index=True,
     )
-    
+
     # API credentials (automatically encrypted)
     api_key_encrypted: Mapped[str | None] = mapped_column(
         EncryptedString,
@@ -54,7 +54,7 @@ class Exchange(Base):
         EncryptedString,
         nullable=True,
     )
-    
+
     # Status flags
     is_active: Mapped[bool] = mapped_column(
         Boolean,
@@ -66,14 +66,14 @@ class Exchange(Base):
         default=False,
         nullable=False,
     )
-    
+
     # Exchange-specific configuration (rate limits, etc.)
     config_json: Mapped[dict] = mapped_column(
         JSONB,
         default=dict,
         nullable=False,
     )
-    
+
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -86,7 +86,7 @@ class Exchange(Base):
         onupdate=datetime.utcnow,
         nullable=False,
     )
-    
+
     # Relationships
     trading_pairs: Mapped[list["TradingPair"]] = relationship(
         "TradingPair",
@@ -103,4 +103,3 @@ class Exchange(Base):
         back_populates="exchange",
         cascade="all, delete-orphan",
     )
-

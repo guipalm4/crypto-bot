@@ -6,7 +6,6 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Optional
 
 
 class OrderType(str, Enum):
@@ -85,7 +84,7 @@ class CreateOrderRequest:
     side: OrderSide
     type: OrderType
     quantity: Decimal
-    price: Optional[Decimal] = None
+    price: Decimal | None = None
     timeout: float = 30.0
     retry_policy: RetryPolicy = field(default_factory=RetryPolicy)
 
@@ -116,7 +115,7 @@ class CancelOrderRequest:
 
     exchange: str
     order_id: str
-    symbol: Optional[str] = None
+    symbol: str | None = None
     timeout: float = 30.0
     retry_policy: RetryPolicy = field(default_factory=RetryPolicy)
 
@@ -165,13 +164,13 @@ class OrderDTO:
     quantity: Decimal
     filled_quantity: Decimal
     remaining_quantity: Decimal
-    price: Optional[Decimal]
-    average_price: Optional[Decimal]
+    price: Decimal | None
+    average_price: Decimal | None
     cost: Decimal
     fee: Decimal
     fee_currency: str
     timestamp: datetime
-    last_trade_timestamp: Optional[datetime]
+    last_trade_timestamp: datetime | None
 
 
 @dataclass
@@ -194,7 +193,7 @@ class OrderStatusDTO:
     status: OrderStatus
     filled_quantity: Decimal
     remaining_quantity: Decimal
-    average_price: Optional[Decimal]
+    average_price: Decimal | None
     last_update: datetime
 
 
@@ -230,5 +229,6 @@ class BalanceDTO:
         # Allow small floating-point discrepancies
         expected_total = self.free + self.used
         if abs(self.total - expected_total) > Decimal("0.00000001"):
-            raise ValueError(f"total must equal free + used (got {self.total}, expected {expected_total})")
-
+            raise ValueError(
+                f"total must equal free + used (got {self.total}, expected {expected_total})"
+            )

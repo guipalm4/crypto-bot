@@ -1,13 +1,11 @@
 """Asset repository implementation."""
 
-from typing import List, Optional
-
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from crypto_bot.domain.repositories.asset_repository import IAssetRepository
 from crypto_bot.domain.exceptions import RepositoryError
+from crypto_bot.domain.repositories.asset_repository import IAssetRepository
 from crypto_bot.infrastructure.database.models import Asset
 from crypto_bot.infrastructure.database.repositories.base_repository import (
     BaseRepository,
@@ -26,7 +24,7 @@ class AssetRepository(BaseRepository[Asset], IAssetRepository):
         """
         super().__init__(session, Asset)
 
-    async def get_by_symbol(self, symbol: str) -> Optional[Asset]:
+    async def get_by_symbol(self, symbol: str) -> Asset | None:
         """Get asset by symbol."""
         try:
             stmt = select(Asset).where(Asset.symbol == symbol)
@@ -37,9 +35,7 @@ class AssetRepository(BaseRepository[Asset], IAssetRepository):
                 f"Failed to get asset by symbol {symbol}: {str(e)}"
             ) from e
 
-    async def get_active_assets(
-        self, skip: int = 0, limit: int = 100
-    ) -> List[Asset]:
+    async def get_active_assets(self, skip: int = 0, limit: int = 100) -> list[Asset]:
         """Get all active assets."""
         try:
             stmt = (
@@ -56,7 +52,7 @@ class AssetRepository(BaseRepository[Asset], IAssetRepository):
 
     async def search_by_name(
         self, name: str, skip: int = 0, limit: int = 100
-    ) -> List[Asset]:
+    ) -> list[Asset]:
         """Search assets by name (partial match)."""
         try:
             stmt = (
@@ -72,4 +68,3 @@ class AssetRepository(BaseRepository[Asset], IAssetRepository):
             raise RepositoryError(
                 f"Failed to search assets by name {name}: {str(e)}"
             ) from e
-
