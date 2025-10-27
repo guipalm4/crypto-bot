@@ -152,6 +152,8 @@ module = ["yaml"]
 # No ignore_missing_imports here - uses types-PyYAML from requirements-dev.txt
 
 [[tool.mypy.overrides]]
+# BaseRepository - Generic type T doesn't guarantee 'id' attribute at compile time
+# Runtime validation ensures all entities have 'id' before access
 module = ["crypto_bot.infrastructure.database.repositories.base_repository"]
 disable_error_code = ["attr-defined"]
 

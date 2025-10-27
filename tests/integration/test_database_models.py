@@ -217,7 +217,6 @@ async def test_create_order_with_trades(db_session: AsyncSession) -> None:
 
     db_session.add(trade)
     await db_session.commit()
-    await db_session.refresh(order)
 
     assert order.id is not None
     assert order.exchange_order_id == "EX123456"
