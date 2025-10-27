@@ -218,21 +218,15 @@ async def test_create_order_with_trades(db_session: AsyncSession) -> None:
     db_session.add(trade)
     await db_session.commit()
 
-    # Reload order with trades eagerly loaded
-    stmt = select(Order).where(Order.id == order.id)
-    result = await db_session.execute(stmt)
-    order_with_trades = result.scalar_one()
+    assert order.id is not None
+    assert order.exchange_order_id == "EX123456"
+    assert order.type == OrderType.LIMIT
+    assert order.side == OrderSide.BUY
 
-    assert order_with_trades.id is not None
-    assert order_with_trades.exchange_order_id == "EX123456"
-    assert order_with_trades.type == OrderType.LIMIT
-    assert order_with_trades.side == OrderSide.BUY
-
-    # Query trades separately to avoid lazy loading issues
+    # Avoid async lazy-loading: query trades explicitly
     trades_stmt = select(Trade).where(Trade.order_id == order.id)
     trades_result = await db_session.execute(trades_stmt)
     trades = trades_result.scalars().all()
-
     assert len(trades) == 1
     assert trades[0].exchange_trade_id == "TR123456"
 

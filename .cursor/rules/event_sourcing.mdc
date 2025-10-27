@@ -1,0 +1,23 @@
+---
+description: Enforce separation between domain events and ORM models; repositories must convert interface↔model
+globs: src/crypto_bot/infrastructure/database/repositories/event_repository.py, src/crypto_bot/application/services/event_service.py
+alwaysApply: true
+---
+
+- **EventRepository.create uses domain interface**
+  - Accept and return `crypto_bot.domain.repositories.event_repository.DomainEvent` (domain interface)
+  - Convert to/from `crypto_bot.infrastructure.database.models.domain_event.DomainEvent` (ORM) internally
+  - Never pass domain objects directly to SQLAlchemy sessions
+  - Keep conversion helpers `_from_interface` and `_to_interface`
+
+- **Service layer emits domain events**
+  - `EventService` constructs domain events only; repository handles persistence mapping
+
+- **PR checklist requirement**
+  - Ensure repository API signature not changed to accept ORM models
+  - Ensure no `.add()` is called with domain event class
+
+- **Testing guidance**
+  - Add/keep a unit test to fail if repository tries to `Session.add(domain_event)`
+  - Integration tests should pass emitting and replaying events without ORM coupling
+

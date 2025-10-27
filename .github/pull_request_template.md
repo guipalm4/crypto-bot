@@ -34,6 +34,11 @@ Relates to #
 - [ ] ] ✅ Testes novos e existentes passam localmente
 - [ ] ✅ Qualquer mudança dependente foi mergeada e publicada
 
+### Regras de Event Sourcing (Obrigatório se tocar em eventos/repositórios)
+- [ ] 🔒 `EventRepository` mantém separação domínio/ORM (conversão interface↔modelo)
+- [ ] 🔒 `create()` aceita/retorna `DomainEvent` (domínio); conversão para `DomainEventModel` interna
+- [ ] 🔒 Nenhum `Session.add()` recebe classe de domínio (`domain.repositories.event_repository.DomainEvent`)
+
 ## 📸 Screenshots/Logs
 <!-- Se aplicável, adicione screenshots ou logs relevantes -->
 

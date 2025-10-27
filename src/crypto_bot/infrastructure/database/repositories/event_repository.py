@@ -12,17 +12,29 @@ from crypto_bot.domain.exceptions import RepositoryError
 from crypto_bot.domain.repositories.event_repository import (
     DomainEvent as DomainEventInterface,
 )
-from crypto_bot.domain.repositories.event_repository import (
-    IEventRepository,
+from crypto_bot.domain.repositories.event_repository import IEventRepository
+from crypto_bot.infrastructure.database.models.domain_event import (
+    DomainEvent as DomainEventModel,
 )
-from crypto_bot.infrastructure.database.models.domain_event import DomainEvent
 from crypto_bot.infrastructure.database.repositories.base_repository import (
     BaseRepository,
 )
 
 
-class EventRepository(BaseRepository[DomainEvent], IEventRepository):
-    """Repository for Domain Events (event sourcing)."""
+class EventRepository(BaseRepository[DomainEventModel], IEventRepository):
+    """
+    Repository for Domain Events (event sourcing).
+
+    IMPORTANT CONTRACT:
+    - Public API works with the DOMAIN interface `DomainEventInterface` only.
+    - This repository is responsible for translating between the domain
+      interface and the ORM model `DomainEventModel`.
+    - Never pass domain objects directly to SQLAlchemy sessions.
+
+    Rationale: avoids accidental coupling of domain layer to ORM and prevents
+    regression ("UnmappedInstanceError") where domain objects are added to the
+    session. See tests in `tests/integration/test_repositories.py`.
+    """
 
     def __init__(self, session: AsyncSession):
         """
@@ -31,9 +43,9 @@ class EventRepository(BaseRepository[DomainEvent], IEventRepository):
         Args:
             session: SQLAlchemy async session.
         """
-        super().__init__(session, DomainEvent)
+        super().__init__(session, DomainEventModel)
 
-    def _to_interface(self, model: DomainEvent) -> DomainEventInterface:
+    def _to_interface(self, model: DomainEventModel) -> DomainEventInterface:
         """
         Convert DB model to domain interface.
 
@@ -53,25 +65,34 @@ class EventRepository(BaseRepository[DomainEvent], IEventRepository):
             metadata=cast(dict | None, model.event_metadata),
         )
 
+    def _from_interface(self, entity: DomainEventInterface) -> DomainEventModel:
+        """Convert domain interface to DB model."""
+        return DomainEventModel(
+            id=entity.event_id,
+            event_type=entity.event_type,
+            aggregate_id=entity.aggregate_id,
+            aggregate_type=entity.aggregate_type,
+            occurred_at=entity.occurred_at,
+            payload=entity.payload,
+            event_metadata=entity.metadata,
+        )
+
     async def create(  # type: ignore[override]
         self, entity: DomainEventInterface
     ) -> DomainEventInterface:
-        """Create a new domain event from interface and return the interface."""
+        """
+        Create a new domain event from interface and return interface.
+
+        Notes:
+            - Accepts DOMAIN interface and converts to ORM model internally.
+            - Do not change this signature to accept ORM models; this breaks
+              layering and risks mapping errors.
+        """
         try:
-            # Convert domain interface to database model
-            model = DomainEvent(
-                id=entity.event_id,
-                event_type=entity.event_type,
-                aggregate_id=entity.aggregate_id,
-                aggregate_type=entity.aggregate_type,
-                occurred_at=entity.occurred_at,
-                payload=entity.payload,
-                event_metadata=entity.metadata,
-            )
+            model = self._from_interface(entity)
             self._session.add(model)
             await self._session.flush()
             await self._session.refresh(model)
-            # Convert back to interface for return
             return self._to_interface(model)
         except SQLAlchemyError as e:
             await self._session.rollback()
@@ -83,14 +104,14 @@ class EventRepository(BaseRepository[DomainEvent], IEventRepository):
         """Get all events for a specific aggregate."""
         try:
             stmt = (
-                select(DomainEvent)
+                select(DomainEventModel)
                 .where(
-                    DomainEvent.aggregate_id == aggregate_id,
-                    DomainEvent.aggregate_type == aggregate_type,
+                    DomainEventModel.aggregate_id == aggregate_id,
+                    DomainEventModel.aggregate_type == aggregate_type,
                 )
                 .offset(skip)
                 .limit(limit)
-                .order_by(DomainEvent.occurred_at.asc())
+                .order_by(DomainEventModel.occurred_at.asc())
             )
             result = await self._session.execute(stmt)
             models = result.scalars().all()
@@ -110,15 +131,19 @@ class EventRepository(BaseRepository[DomainEvent], IEventRepository):
     ) -> list[DomainEventInterface]:
         """Get events by type within an optional date range."""
         try:
-            stmt = select(DomainEvent).where(DomainEvent.event_type == event_type)
+            stmt = select(DomainEventModel).where(
+                DomainEventModel.event_type == event_type
+            )
 
             if start_date:
-                stmt = stmt.where(DomainEvent.occurred_at >= start_date)
+                stmt = stmt.where(DomainEventModel.occurred_at >= start_date)
             if end_date:
-                stmt = stmt.where(DomainEvent.occurred_at <= end_date)
+                stmt = stmt.where(DomainEventModel.occurred_at <= end_date)
 
             stmt = (
-                stmt.offset(skip).limit(limit).order_by(DomainEvent.occurred_at.desc())
+                stmt.offset(skip)
+                .limit(limit)
+                .order_by(DomainEventModel.occurred_at.desc())
             )
             result = await self._session.execute(stmt)
             models = result.scalars().all()
@@ -138,16 +163,18 @@ class EventRepository(BaseRepository[DomainEvent], IEventRepository):
     ) -> list[DomainEventInterface]:
         """Get events within a date range."""
         try:
-            stmt = select(DomainEvent).where(
-                DomainEvent.occurred_at >= start_date,
-                DomainEvent.occurred_at <= end_date,
+            stmt = select(DomainEventModel).where(
+                DomainEventModel.occurred_at >= start_date,
+                DomainEventModel.occurred_at <= end_date,
             )
 
             if aggregate_type:
-                stmt = stmt.where(DomainEvent.aggregate_type == aggregate_type)
+                stmt = stmt.where(DomainEventModel.aggregate_type == aggregate_type)
 
             stmt = (
-                stmt.offset(skip).limit(limit).order_by(DomainEvent.occurred_at.desc())
+                stmt.offset(skip)
+                .limit(limit)
+                .order_by(DomainEventModel.occurred_at.desc())
             )
             result = await self._session.execute(stmt)
             models = result.scalars().all()
@@ -162,12 +189,12 @@ class EventRepository(BaseRepository[DomainEvent], IEventRepository):
     ) -> list[DomainEventInterface]:
         """Get the latest events."""
         try:
-            stmt = select(DomainEvent)
+            stmt = select(DomainEventModel)
 
             if aggregate_type:
-                stmt = stmt.where(DomainEvent.aggregate_type == aggregate_type)
+                stmt = stmt.where(DomainEventModel.aggregate_type == aggregate_type)
 
-            stmt = stmt.limit(limit).order_by(DomainEvent.occurred_at.desc())
+            stmt = stmt.limit(limit).order_by(DomainEventModel.occurred_at.desc())
             result = await self._session.execute(stmt)
             models = result.scalars().all()
             return [self._to_interface(model) for model in models]

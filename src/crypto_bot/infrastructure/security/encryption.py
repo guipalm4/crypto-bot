@@ -5,8 +5,10 @@ Provides AES-256 encryption/decryption for sensitive data.
 """
 
 import base64
+import os
+import warnings
 
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -33,8 +35,16 @@ class EncryptionService:
         if not encryption_key:
             raise ValueError("Encryption key must be provided")
 
-        # Derive a proper key from the provided key using PBKDF2
+        # Derive primary key
+        self._primary_kid = "v1"
         self._fernet = self._create_fernet(encryption_key)
+
+        # Optionally support previous key for smooth rotation
+        previous_key = os.getenv("ENCRYPTION_KEY_PREVIOUS", "").strip()
+        self._previous_kid = "v0" if previous_key else None
+        self._fernet_previous = (
+            self._create_fernet(previous_key) if previous_key else None
+        )
 
     def _create_fernet(self, key: str) -> Fernet:
         """
@@ -47,10 +57,17 @@ class EncryptionService:
             Fernet instance
         """
         # Use PBKDF2 to derive a proper key
+        salt = os.getenv("ENCRYPTION_SALT", "crypto_bot_salt").encode()
+        if salt == b"crypto_bot_salt":
+            warnings.warn(
+                "Using default encryption salt. Set ENCRYPTION_SALT for improved security.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=32,
-            salt=b"crypto_bot_salt",  # In production, use a random salt stored securely
+            salt=salt,
             iterations=100000,
             backend=default_backend(),
         )
@@ -72,7 +89,8 @@ class EncryptionService:
             return ""
 
         encrypted_bytes = self._fernet.encrypt(plaintext.encode())
-        return encrypted_bytes.decode()
+        # Prefix with key id to support future rotations
+        return f"{self._primary_kid}:{encrypted_bytes.decode()}"
 
     def decrypt(self, ciphertext: str) -> str:
         """
@@ -90,8 +108,28 @@ class EncryptionService:
         if not ciphertext:
             return ""
 
-        decrypted_bytes = self._fernet.decrypt(ciphertext.encode())
-        return decrypted_bytes.decode()
+        token = ciphertext
+        # Detect key id prefix
+        if ":" in ciphertext[:5]:
+            kid, token = ciphertext.split(":", 1)
+            if kid == self._primary_kid:
+                decrypted_bytes = self._fernet.decrypt(token.encode())
+                return decrypted_bytes.decode()
+            if (
+                self._previous_kid
+                and kid == self._previous_kid
+                and self._fernet_previous
+            ):
+                decrypted_bytes = self._fernet_previous.decrypt(token.encode())
+                return decrypted_bytes.decode()
+            # Unknown key id: fall through to try both
+        # Backward compatibility: try current then previous
+        try:
+            return self._fernet.decrypt(token.encode()).decode()
+        except InvalidToken:
+            if self._fernet_previous is None:
+                raise
+            return self._fernet_previous.decrypt(token.encode()).decode()
 
 
 # Global encryption service instance
