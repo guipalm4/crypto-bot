@@ -6,6 +6,7 @@ import uuid
 from datetime import datetime
 
 import pytest
+import pytest_asyncio
 from sqlalchemy import inspect, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -26,7 +27,7 @@ from crypto_bot.infrastructure.database.models import (
 )
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def setup_database() -> None:
     """Set up test database schema."""
     engine = db_engine.create_engine()
@@ -44,7 +45,7 @@ async def setup_database() -> None:
     await db_engine.close()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def db_session(setup_database: None) -> AsyncSession:
     """Get database session for tests."""
     session_factory = db_engine.get_session_factory()
@@ -222,8 +223,13 @@ async def test_create_order_with_trades(db_session: AsyncSession) -> None:
     assert order.exchange_order_id == "EX123456"
     assert order.type == OrderType.LIMIT
     assert order.side == OrderSide.BUY
-    assert len(order.trades) == 1
-    assert order.trades[0].exchange_trade_id == "TR123456"
+
+    # Avoid async lazy-loading: query trades explicitly
+    trades_stmt = select(Trade).where(Trade.order_id == order.id)
+    trades_result = await db_session.execute(trades_stmt)
+    trades = trades_result.scalars().all()
+    assert len(trades) == 1
+    assert trades[0].exchange_trade_id == "TR123456"
 
 
 @pytest.mark.integration

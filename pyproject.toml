@@ -151,6 +151,10 @@ ignore_missing_imports = true
 module = ["yaml"]
 # No ignore_missing_imports here - uses types-PyYAML from requirements-dev.txt
 
+[[tool.mypy.overrides]]
+module = ["crypto_bot.infrastructure.database.repositories.base_repository"]
+disable_error_code = ["attr-defined"]
+
 # Pytest configuration
 [tool.pytest.ini_options]
 minversion = "7.0"

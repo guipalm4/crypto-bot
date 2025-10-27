@@ -5,9 +5,25 @@ Provides a consistent logging interface across the application.
 """
 
 import logging
+import os
+import re
 import sys
 from functools import lru_cache
 from typing import Optional
+
+REDACT_PATTERNS = [
+    re.compile(r"(api[_-]?key\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
+    re.compile(r"(secret\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
+    re.compile(r"(passphrase\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
+]
+
+
+class _RedactingFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:  # noqa: D401
+        msg = super().format(record)
+        for pattern in REDACT_PATTERNS:
+            msg = pattern.sub(r"\1[REDACTED]", msg)
+        return msg
 
 
 @lru_cache(maxsize=None)
@@ -37,10 +53,17 @@ def get_logger(name: str, level: Optional[int] = None) -> logging.Logger:
         handler.setLevel(level)
 
         # Create formatter
-        formatter = logging.Formatter(
-            fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
-        )
+        formatter: logging.Formatter
+        if os.getenv("CRYPTOBOT_LOG_JSON", "false").lower() in {"1", "true", "yes"}:
+            formatter = logging.Formatter(
+                fmt='{"ts":"%(asctime)s","logger":"%(name)s","lvl":"%(levelname)s","msg":"%(message)s"}',
+                datefmt="%Y-%m-%dT%H:%M:%S%z",
+            )
+        else:
+            formatter = _RedactingFormatter(
+                fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
+            )
         handler.setFormatter(formatter)
 
         # Add handler to logger
