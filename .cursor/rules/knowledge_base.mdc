@@ -1,0 +1,34 @@
+---
+description: Enforce consult-first behavior with local KB of errors and standardized fixes
+globs: **/*
+alwaysApply: true
+---
+
+# 🧠 Local Knowledge Base - Consult First
+
+## Purpose
+Ensure agents consult the local knowledge base before proposing fixes for lint/type/test/build errors, applying standardized resolutions and improving consistency.
+
+## Behavior
+- BEFORE making fixes, search `.cursor/kb/index.json` using the current error text/logs.
+- Match by `patterns` (regex) and `tags`. If a match is found:
+  - Apply the "Standard Resolution" from the linked entry.
+  - If the resolution conflicts with project norms, ask for confirmation before proceeding.
+- AFTER applying a fix:
+  - Append validation notes and links via Taskmaster `update_subtask` where applicable.
+  - Reference the KB entry ID in commit/PR descriptions when relevant.
+- If NO match:
+  - Propose a new KB entry draft using `.cursor/templates/kb_entry.md`.
+  - Include a short Context7 research summary (if used) and link the related Taskmaster subtask.
+
+## Matching Guidance
+- Prefer strict regex for tools (Ruff/MyPy/Pytest) and fallback to generic error text.
+- Consider file paths and tool names from `appliesTo` to increase precision.
+
+## Validation
+- Run the relevant quality gates (Ruff/MyPy/Pytest) after applying the fix.
+- Ensure no new warnings are introduced.
+
+## Governance
+- Use `resolutionLevel: experimental` for new entries; promote to `approved` after 2+ verified uses.
+- Update `updatedAt` and keep links (Taskmaster IDs, PRs, commits) current.
