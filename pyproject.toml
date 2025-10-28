@@ -199,7 +199,7 @@ exclude_lines = [
 # Bandit configuration
 [tool.bandit]
 exclude_dirs = ["tests", "test_*"]
-skips = ["B101", "B601"]
+skips = ["B101", "B601", "B104"]  # B104: bind all interfaces expected for API config
 
 # Structlog configuration
 [tool.structlog]
