@@ -1,0 +1,33 @@
+[
+  {
+    "id": "ruff-f401-unused-import",
+    "title": "Ruff F401: unused import",
+    "tags": ["ruff", "lint", "imports"],
+    "status": "approved",
+    "patterns": [
+      "F401\\b.*unused import",
+      "unused import\\b"
+    ],
+    "entry": ".cursor/kb/entries/ruff-f401-unused-import.md",
+    "appliesTo": {
+      "paths": ["**/*.py"],
+      "tools": ["ruff"]
+    }
+  },
+  {
+    "id": "mypy-missing-return-annotation",
+    "title": "MyPy: Function missing return type annotation",
+    "tags": ["mypy", "types"],
+    "status": "approved",
+    "patterns": [
+      "error: Function is missing a type annotation for return value",
+      "Missing return type annotation"
+    ],
+    "entry": ".cursor/kb/entries/mypy-missing-return-annotation.md",
+    "appliesTo": {
+      "paths": ["src/**/*.py", "tests/**/*.py"],
+      "tools": ["mypy"]
+    }
+  }
+]
+
