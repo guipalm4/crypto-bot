@@ -47,6 +47,25 @@ For new projects or when users are getting started, operate within the `master` 
 
 ---
 
+### Context7 MCP Integration (Mandatory)
+
+- Always use Context7 MCP prior to implementing or expanding tasks:
+  - Research current best practices, APIs, versions, deprecations, security and performance notes
+  - Include project tree and relevant files when useful to provide context
+- Chain Context7 output into Taskmaster actions:
+  1) Persist findings in the active subtask:
+     - `task-master update-subtask --id=<subtaskId> --prompt="<Context7 research summary + key decisions>" --research`
+  2) Update the parent task with actionable decisions:
+     - `task-master update-task --id=<taskId> --append --prompt="<Applied decisions based on Context7 findings>"`
+  3) When generating/expanding tasks, include Context7 directives:
+     - `task-master expand --id=<taskId> --research --prompt="<Context7-driven directives and constraints>"`
+- Preferences:
+  - Use Context7 for library/API docs, up-to-date syntax, and deprecations
+  - Use Taskmaster `research` to bundle findings with repo context (IDs/files)
+- Configuration:
+  - Ensure Context7 API keys are set in `~/.cursor/mcp.json` env
+  - Attach relevant file paths to research calls for better contextual answers
+
 ## Leveling Up: Agent-Led Multi-Context Workflows
 
 While the basic workflow is powerful, your primary opportunity to add value is by identifying when to introduce **Tagged Task Lists**. These patterns are your tools for creating a more organized and efficient development environment for the user, especially if you detect agentic or parallel development happening across the same session.

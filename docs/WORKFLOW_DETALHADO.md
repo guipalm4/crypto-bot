@@ -101,8 +101,8 @@ task-master update-subtask --id=<subtask-id> --prompt="Progress update..."
 ```bash
 # Executar antes de cada commit
 black --check .
-flake8 .
-mypy .
+ruff check --config=pyproject.toml .
+mypy src/crypto_bot
 pytest
 ```
 
@@ -221,8 +221,8 @@ gh pr create --title "..."         # Criar Pull Request
 ```bash
 # Quality checks obrigatórios
 black --check .                    # Formatação
-flake8 .                          # Linting
-mypy .                            # Type checking
+ruff check --config=pyproject.toml .  # Linting
+mypy src/crypto_bot               # Type checking
 pytest                            # Testes
 ```
 
