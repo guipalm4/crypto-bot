@@ -12,7 +12,7 @@ Desenvolver um robô de trading automatizado em Python capaz de executar operaç
 - **Validação**: Pydantic 2.x
 - **Exchange Integration**: CCXT 4.x
 - **Testing**: pytest, pytest-asyncio
-- **Code Quality**: black, flake8, mypy, isort
+- **Code Quality**: black, ruff, mypy
 - **Architecture**: Domain-Driven Design (DDD)
 
 ### Princípios de Desenvolvimento
@@ -784,9 +784,8 @@ class StrategyPlugin(ABC):
 
 ### Code Quality
 - **black**: Code formatter
-- **flake8**: Linter
+- **ruff**: Linter (substitui Flake8/isort)
 - **mypy**: Type checker
-- **isort**: Import sorter
 - **bandit**: Security linter
 
 ### Logging & Monitoring

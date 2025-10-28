@@ -450,6 +450,26 @@ This document provides a detailed reference for interacting with Taskmaster, cov
 
 ---
 
+### Context7 MCP Integration (Recommended First)
+
+- Recommended order:
+  1) Use Context7 MCP for external research (best practices, docs, breaking changes). Include `--tree` and `--files` when useful.
+  2) Log findings back into Taskmaster for traceability:
+     - `task-master update-subtask --id=<id> --prompt="<Context7 summary + decisions>" --research`
+  3) Apply Context7 context to generation/updates:
+     - `task-master expand --id=<id> --research --prompt="<Context7-driven directives>"`
+     - `task-master update-task --id=<id> --append --prompt="<Technical decisions based on Context7>"`
+- When to use which:
+  - Context7 MCP: state-of-the-art guidance, security, performance, current APIs
+  - Taskmaster `research`: bundle findings with repository context (IDs/files) and maintain task linkage
+- Best practices:
+  - Always save research to a task/subtask for auditability
+  - Include validated library versions from Context7 in affected tasks
+  - Reference “Requirements confirmed via Context7” in PRDs and task details
+- Environment requirements:
+  - Ensure keys in `.cursor/mcp.json`
+  - Adjust AI models via `task-master models --setup` if needed
+
 ## Tag Management
 
 This new suite of commands allows you to manage different task contexts (tags).

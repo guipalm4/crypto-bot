@@ -100,8 +100,8 @@ refactor(services): optimize order processing logic
 ```bash
 # Run before every commit:
 black --check .
-flake8 .
-mypy .
+ruff check --config=pyproject.toml .
+mypy src/crypto_bot
 pytest
 ```
 
@@ -136,7 +136,7 @@ pytest
 4. **Pre-commit hooks**: Code quality enforcement
 5. **Pytest**: Testing framework
 6. **Black**: Code formatting
-7. **Flake8**: Linting
+7. **Ruff**: Linting
 8. **MyPy**: Type checking
 
 ### Task Master Tools (MCP Preferred)

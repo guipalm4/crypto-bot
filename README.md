@@ -165,7 +165,7 @@ crypto-bot/
 
 ### Code Quality
 - **black**: Formatação de código
-- **flake8**: Linter
+- **ruff**: Linter (substitui Flake8/isort)
 - **mypy**: Verificação de tipos
 - **bandit**: Linter de segurança
 
@@ -222,7 +222,7 @@ strategies:
 pytest
 
 # Executar com cobertura
-pytest --cov=src --cov-report=html
+pytest --cov=src/crypto_bot --cov-report=term-missing
 
 # Executar testes específicos
 pytest tests/unit/

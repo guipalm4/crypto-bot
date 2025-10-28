@@ -38,28 +38,28 @@ black --check .
 black src/crypto_bot/plugins/registry.py
 ```
 
-### Flake8 (Linting)
+### Ruff (Linting)
 ```bash
-# Lint all Python files
-flake8 .
+# Lint de todo o projeto
+ruff check --config=pyproject.toml .
 
-# Lint specific directory
-flake8 src/crypto_bot/
+# Corrigir automaticamente onde seguro
+ruff check --fix --config=pyproject.toml .
 
-# Lint with specific configuration
-flake8 --config pyproject.toml .
+# Lint de um diretório específico
+ruff check src/crypto_bot --config=pyproject.toml
 ```
 
 ### MyPy (Type Checking)
 ```bash
-# Type check all files
-mypy .
+# Type check core package
+mypy src/crypto_bot
 
 # Type check specific module
 mypy src/crypto_bot/plugins/
 
 # Type check with strict mode
-mypy --strict .
+mypy --strict src/crypto_bot
 ```
 
 ### Pytest (Testing)
@@ -264,8 +264,8 @@ pre-commit install
 pre-commit run --all-files
 
 # Run specific hook
+pre-commit run ruff
 pre-commit run black
-pre-commit run flake8
 pre-commit run mypy
 pre-commit run pytest
 ```
@@ -274,31 +274,34 @@ pre-commit run pytest
 ```yaml
 # .pre-commit-config.yaml
 repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.8
+    hooks:
+      - id: ruff
+        args: ["--fix", "--config=pyproject.toml"]
+
   - repo: https://github.com/psf/black
-    rev: 23.0.0
+    rev: 24.10.0
     hooks:
       - id: black
-        language_version: python3.12
-
-  - repo: https://github.com/pycqa/flake8
-    rev: 6.0.0
-    hooks:
-      - id: flake8
+        args: ["--line-length=88"]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.5.1
+    rev: v1.18.2
     hooks:
       - id: mypy
-        additional_dependencies: [types-all]
+        additional_dependencies: ["types-PyYAML"]
+        args: ["--config-file=pyproject.toml"]
+        files: ^src/crypto_bot/
 
   - repo: local
     hooks:
       - id: pytest
-        name: pytest
-        entry: pytest
+        name: pytest (pre-push)
+        entry: pytest -q tests/unit/
         language: system
         pass_filenames: false
-        always_run: true
+        stages: [pre-push]
 ```
 
 ## 📊 Quality Metrics
@@ -319,11 +322,11 @@ echo "🔍 Running quality checks..."
 echo "📝 Formatting with Black..."
 black --check . || exit 1
 
-echo "🧹 Linting with Flake8..."
-flake8 . || exit 1
+echo "🧹 Linting with Ruff..."
+ruff check --config=pyproject.toml . || exit 1
 
 echo "🔍 Type checking with MyPy..."
-mypy . || exit 1
+mypy src/crypto_bot || exit 1
 
 echo "🧪 Running tests..."
 pytest --cov=src/crypto_bot --cov-report=term-missing || exit 1
@@ -335,7 +338,7 @@ echo "✅ All quality checks passed!"
 
 ### Before Committing
 1. **Run Black** to format code
-2. **Run Flake8** to check linting
+2. **Run Ruff** to check linting
 3. **Run MyPy** to check types
 4. **Run Pytest** to run tests
 5. **Fix all issues** before committing
@@ -362,7 +365,7 @@ echo "✅ All quality checks passed!"
 
 ### Quality Tools
 - [Black Documentation](https://black.readthedocs.io/)
-- [Flake8 Documentation](https://flake8.pycqa.org/)
+- [Ruff Documentation](https://docs.astral.sh/ruff/)
 - [MyPy Documentation](https://mypy.readthedocs.io/)
 - [Pytest Documentation](https://docs.pytest.org/)
 
