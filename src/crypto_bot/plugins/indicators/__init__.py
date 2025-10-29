@@ -13,6 +13,7 @@ from crypto_bot.plugins.indicators.loader import (
 )
 from crypto_bot.plugins.indicators.pandas_ta_indicators import (
     EMAIndicator,
+    MACDIndicator,
     RSIIndicator,
     SMAIndicator,
 )
@@ -29,4 +30,5 @@ __all__ = [
     "RSIIndicator",
     "EMAIndicator",
     "SMAIndicator",
+    "MACDIndicator",
 ]
