@@ -24,3 +24,9 @@ repos:
         language: system
         pass_filenames: false
         stages: [pre-push]
+      - id: bandit
+        name: bandit (security scan)
+        entry: bash -c 'bandit -r src/crypto_bot -ll -f json -o bandit-report.json; exit 0'
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

@@ -12,9 +12,23 @@ from functools import lru_cache
 from typing import Optional
 
 REDACT_PATTERNS = [
+    # Exchange API credentials
     re.compile(r"(api[_-]?key\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
-    re.compile(r"(secret\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
+    re.compile(r"(api[_-]?secret\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
     re.compile(r"(passphrase\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
+    # Database credentials
+    re.compile(r"(password\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
+    re.compile(r"(postgres[_-]?password\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
+    # JWT and encryption
+    re.compile(r"(jwt[_-]?secret\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
+    re.compile(r"(encryption[_-]?key\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
+    # Notification tokens
+    re.compile(r"(telegram[_-]?bot[_-]?token\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
+    re.compile(r"(discord[_-]?webhook\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
+    re.compile(r"(smtp[_-]?password\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
+    # General patterns
+    re.compile(r"(token\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
+    re.compile(r"(secret\s*[=:]\s*)([^\s,;]+)", re.IGNORECASE),
 ]
 
 
