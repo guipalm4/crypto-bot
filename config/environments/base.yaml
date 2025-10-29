@@ -109,6 +109,7 @@ api:
     origins: ["http://localhost:3000"]
 
 logging:
+  level: "INFO"
   file_path: "./data/logs/crypto-bot.log"
   max_size: "10MB"
   backup_count: 5

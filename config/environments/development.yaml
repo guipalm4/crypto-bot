@@ -24,6 +24,7 @@ api:
   workers: 1
 
 logging:
+  level: "DEBUG"
   handlers:
     - console  # Only console in development
   format: "pretty"
