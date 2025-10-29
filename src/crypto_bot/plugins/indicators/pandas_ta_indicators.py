@@ -1,6 +1,6 @@
 """Technical indicators implemented using pandas-ta library.
 
-This module provides core technical indicators (RSI, EMA, SMA) using
+This module provides core technical indicators (RSI, EMA, SMA, MACD) using
 pandas-ta's DataFrame accessor (df.ta) with fallback to pandas/numpy
 when pandas-ta is unavailable.
 """
@@ -218,3 +218,112 @@ class SMAIndicator(BaseIndicator):
         sma = close.rolling(window=length).mean()
         sma.name = f"SMA_{length}"
         return sma
+
+
+class MACDIndicator(BaseIndicator):
+    """Moving Average Convergence Divergence (MACD) indicator using pandas-ta.
+
+    MACD consists of three components:
+    - MACD line: Difference between fast and slow EMAs
+    - Signal line: EMA of the MACD line
+    - Histogram: Difference between MACD and Signal lines
+    """
+
+    metadata = IndicatorMetadata(
+        name="macd",
+        version="1.0",
+        description="Moving Average Convergence Divergence - trend-following momentum indicator",
+    )
+
+    def validate_parameters(self, params: Mapping[str, Any]) -> None:
+        """Validate MACD parameters."""
+        fast = params.get("fast", 12)
+        slow = params.get("slow", 26)
+        signal = params.get("signal", 9)
+
+        if not isinstance(fast, int) or fast < 1:
+            raise InvalidIndicatorParameters(
+                f"MACD 'fast' must be a positive integer, got {fast}"
+            )
+        if not isinstance(slow, int) or slow < 1:
+            raise InvalidIndicatorParameters(
+                f"MACD 'slow' must be a positive integer, got {slow}"
+            )
+        if not isinstance(signal, int) or signal < 1:
+            raise InvalidIndicatorParameters(
+                f"MACD 'signal' must be a positive integer, got {signal}"
+            )
+        if fast >= slow:
+            raise InvalidIndicatorParameters(
+                f"MACD 'fast' ({fast}) must be less than 'slow' ({slow})"
+            )
+
+    def _calculate_impl(
+        self, data: pd.DataFrame, params: Mapping[str, Any]
+    ) -> pd.DataFrame:
+        """Calculate MACD using pandas-ta with fallback to pandas."""
+        cache = get_cache()
+
+        # Try cache first
+        cached_result = cache.get(self.metadata.name, data, params)
+        if cached_result is not None:
+            return cached_result
+
+        fast = params.get("fast", 12)
+        slow = params.get("slow", 26)
+        signal = params.get("signal", 9)
+
+        if "close" not in data.columns:
+            raise ValueError("MACD requires 'close' column in data")
+        close = data["close"]
+
+        if PANDAS_TA_AVAILABLE:
+            try:
+                # pandas-ta returns a DataFrame with MACD, signal, and histogram
+                result = ta.macd(close, fast=fast, slow=slow, signal=signal)
+                if result is None or result.empty:
+                    raise ValueError("pandas-ta MACD returned None or empty")
+
+                # Cache the result
+                cache.set(self.metadata.name, data, params, result)
+                return result
+            except Exception as e:
+                logger.warning(
+                    f"pandas-ta MACD calculation failed: {e}, using fallback"
+                )
+                # Fall through to fallback
+
+        # Fallback: manual MACD calculation with pandas
+        result = self._macd_fallback(close, fast, slow, signal)
+
+        # Cache the result
+        cache.set(self.metadata.name, data, params, result)
+        return result
+
+    def _macd_fallback(
+        self, close: pd.Series, fast: int, slow: int, signal: int
+    ) -> pd.DataFrame:
+        """Calculate MACD using pure pandas (fallback implementation)."""
+        # Calculate fast and slow EMAs
+        ema_fast = close.ewm(span=fast, adjust=False).mean()
+        ema_slow = close.ewm(span=slow, adjust=False).mean()
+
+        # MACD line is the difference
+        macd_line = ema_fast - ema_slow
+
+        # Signal line is EMA of MACD line
+        signal_line = macd_line.ewm(span=signal, adjust=False).mean()
+
+        # Histogram is the difference
+        histogram = macd_line - signal_line
+
+        # Create DataFrame with standard naming convention
+        result = pd.DataFrame(
+            {
+                f"MACD_{fast}_{slow}_{signal}": macd_line,
+                f"MACDs_{fast}_{slow}_{signal}": signal_line,
+                f"MACDh_{fast}_{slow}_{signal}": histogram,
+            }
+        )
+
+        return result
