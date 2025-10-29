@@ -122,6 +122,7 @@ class ApiConfig(BaseModel):
 class LoggingConfig(BaseModel):
     """Logging configuration."""
 
+    level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     file_path: str = "./data/logs/crypto-bot.log"
     max_size: str = "10MB"
     backup_count: int = Field(default=5, ge=0, le=100)

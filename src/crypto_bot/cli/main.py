@@ -10,7 +10,11 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 
+from crypto_bot.utils.structured_logger import get_logger
+from crypto_bot.utils.system_events import log_error, log_system_event
+
 console = Console()
+logger = get_logger(__name__)
 
 
 @click.group()
@@ -53,19 +57,29 @@ def status() -> None:
 @click.option("--config", "-c", help="Caminho para o arquivo de configuração")
 def start(config: str | None) -> None:
     """Inicia o bot de trading."""
-    console.print(
-        Panel(
-            Text("Iniciando Crypto Trading Bot...", style="bold yellow"),
-            title="Starting",
-            border_style="yellow",
+    try:
+        log_system_event(
+            "bot_start_command",
+            event_type="cli",
+            config_path=config,
         )
-    )
+        console.print(
+            Panel(
+                Text("Iniciando Crypto Trading Bot...", style="bold yellow"),
+                title="Starting",
+                border_style="yellow",
+            )
+        )
 
-    if config:
-        console.print(f"📁 Usando configuração: {config}")
+        if config:
+            console.print(f"📁 Usando configuração: {config}")
 
-    # TODO: Implementar lógica de inicialização do bot
-    console.print("✅ Bot iniciado com sucesso!")
+        # TODO: Implementar lógica de inicialização do bot
+        logger.info("bot_started_successfully", config_used=config is not None)
+        console.print("✅ Bot iniciado com sucesso!")
+    except Exception as e:
+        log_error(e, context={"command": "start", "config": config})
+        raise
 
 
 @main.command()
