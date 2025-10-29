@@ -5,6 +5,7 @@ This module contains all SQLAlchemy models for the crypto trading bot.
 """
 
 from crypto_bot.infrastructure.database.models.asset import Asset
+from crypto_bot.infrastructure.database.models.balance_snapshot import BalanceSnapshot
 from crypto_bot.infrastructure.database.models.domain_event import DomainEvent
 from crypto_bot.infrastructure.database.models.enums import (
     EventSeverity,
@@ -17,6 +18,7 @@ from crypto_bot.infrastructure.database.models.enums import (
     SignalType,
 )
 from crypto_bot.infrastructure.database.models.exchange import Exchange
+from crypto_bot.infrastructure.database.models.market_data import MarketData
 from crypto_bot.infrastructure.database.models.order import Order
 from crypto_bot.infrastructure.database.models.position import Position
 from crypto_bot.infrastructure.database.models.strategy import Strategy
@@ -42,4 +44,6 @@ __all__ = [
     "Position",
     "Strategy",
     "DomainEvent",
+    "BalanceSnapshot",
+    "MarketData",
 ]

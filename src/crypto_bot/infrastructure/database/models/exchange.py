@@ -16,6 +16,10 @@ from crypto_bot.infrastructure.database.base import Base
 from crypto_bot.infrastructure.database.encrypted_types import EncryptedString
 
 if TYPE_CHECKING:
+    from crypto_bot.infrastructure.database.models.balance_snapshot import (
+        BalanceSnapshot,
+    )
+    from crypto_bot.infrastructure.database.models.market_data import MarketData
     from crypto_bot.infrastructure.database.models.order import Order
     from crypto_bot.infrastructure.database.models.position import Position
     from crypto_bot.infrastructure.database.models.trading_pair import TradingPair
@@ -100,6 +104,16 @@ class Exchange(Base):
     )
     positions: Mapped[list["Position"]] = relationship(
         "Position",
+        back_populates="exchange",
+        cascade="all, delete-orphan",
+    )
+    balance_snapshots: Mapped[list["BalanceSnapshot"]] = relationship(
+        "BalanceSnapshot",
+        back_populates="exchange",
+        cascade="all, delete-orphan",
+    )
+    market_data: Mapped[list["MarketData"]] = relationship(
+        "MarketData",
         back_populates="exchange",
         cascade="all, delete-orphan",
     )
