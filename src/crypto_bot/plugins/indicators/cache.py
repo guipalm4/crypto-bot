@@ -219,7 +219,7 @@ def cached_indicator(
         cache = get_cache()
 
     def decorator(
-        func: Callable[..., pd.Series | pd.DataFrame]
+        func: Callable[..., pd.Series | pd.DataFrame],
     ) -> Callable[..., pd.Series | pd.DataFrame]:
         def wrapper(
             data: pd.DataFrame, params: Mapping[str, Any]
