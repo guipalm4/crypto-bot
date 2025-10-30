@@ -16,6 +16,7 @@ from crypto_bot.infrastructure.database.base import Base
 if TYPE_CHECKING:
     from crypto_bot.infrastructure.database.models.asset import Asset
     from crypto_bot.infrastructure.database.models.exchange import Exchange
+    from crypto_bot.infrastructure.database.models.market_data import MarketData
     from crypto_bot.infrastructure.database.models.order import Order
     from crypto_bot.infrastructure.database.models.position import Position
 
@@ -106,6 +107,11 @@ class TradingPair(Base):
     )
     positions: Mapped[list["Position"]] = relationship(
         "Position",
+        back_populates="trading_pair",
+        cascade="all, delete-orphan",
+    )
+    market_data: Mapped[list["MarketData"]] = relationship(
+        "MarketData",
         back_populates="trading_pair",
         cascade="all, delete-orphan",
     )

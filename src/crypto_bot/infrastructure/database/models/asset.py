@@ -15,6 +15,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from crypto_bot.infrastructure.database.base import Base
 
 if TYPE_CHECKING:
+    from crypto_bot.infrastructure.database.models.balance_snapshot import (
+        BalanceSnapshot,
+    )
     from crypto_bot.infrastructure.database.models.trading_pair import TradingPair
 
 
@@ -78,5 +81,10 @@ class Asset(Base):
         "TradingPair",
         foreign_keys="TradingPair.quote_asset_id",
         back_populates="quote_asset",
+        cascade="all, delete-orphan",
+    )
+    balance_snapshots: Mapped[list["BalanceSnapshot"]] = relationship(
+        "BalanceSnapshot",
+        back_populates="asset",
         cascade="all, delete-orphan",
     )

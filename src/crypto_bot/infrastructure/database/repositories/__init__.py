@@ -8,11 +8,17 @@ using SQLAlchemy ORM with async support.
 from crypto_bot.infrastructure.database.repositories.asset_repository import (
     AssetRepository,
 )
+from crypto_bot.infrastructure.database.repositories.balance_snapshot_repository import (
+    BalanceSnapshotRepository,
+)
 from crypto_bot.infrastructure.database.repositories.event_repository import (
     EventRepository,
 )
 from crypto_bot.infrastructure.database.repositories.exchange_repository import (
     ExchangeRepository,
+)
+from crypto_bot.infrastructure.database.repositories.market_data_repository import (
+    MarketDataRepository,
 )
 from crypto_bot.infrastructure.database.repositories.order_repository import (
     OrderRepository,
@@ -39,4 +45,6 @@ __all__ = [
     "TradingPairRepository",
     "StrategyRepository",
     "EventRepository",
+    "BalanceSnapshotRepository",
+    "MarketDataRepository",
 ]
