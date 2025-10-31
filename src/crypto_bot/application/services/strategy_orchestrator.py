@@ -7,6 +7,7 @@ executing trades via the trading engine.
 """
 
 import asyncio
+import time
 from decimal import Decimal
 from typing import Any, Dict, List, Optional, Set
 
@@ -131,6 +132,8 @@ class StrategyOrchestrator:
         self._scheduler_task: Optional[asyncio.Task] = None
         self._locks: Dict[str, asyncio.Lock] = {}
         self._semaphore = asyncio.Semaphore(max_concurrent_strategies)
+        # Track last execution time per strategy to avoid duplicate runs
+        self._last_execution: Dict[str, float] = {}
 
         # Discovered strategies
         self._strategy_classes = discover_strategies()
@@ -191,10 +194,13 @@ class StrategyOrchestrator:
         Main scheduler loop that triggers strategy executions.
 
         Runs continuously, scheduling strategy executions based on their
-        configured timeframes and pairs.
+        configured timeframes and pairs. Uses intelligent scheduling to
+        avoid redundant executions and respect timeframe boundaries.
         """
         while self._running:
             try:
+                current_time = time.time()
+
                 # Get active strategies from database
                 active_strategies = (
                     await self.strategy_repository.get_active_strategies()
@@ -210,22 +216,58 @@ class StrategyOrchestrator:
                     active_strategies
                 )
 
-                # Execute strategies concurrently (limited by semaphore)
-                tasks = [
-                    self._run_strategy_with_semaphore(ctx) for ctx in execution_contexts
-                ]
+                # Filter contexts that are ready for execution based on timeframe
+                ready_contexts = []
+                for ctx in execution_contexts:
+                    strategy_key = (
+                        f"{ctx.strategy_db_model.id}:{ctx.symbol}:{ctx.timeframe}"
+                    )
+                    timeframe_seconds = TIMEFRAME_SECONDS.get(ctx.timeframe, 60)
+                    last_exec = self._last_execution.get(strategy_key, 0)
 
-                if tasks:
+                    # Execute if enough time has passed since last execution
+                    time_since_last = current_time - last_exec
+                    if time_since_last >= timeframe_seconds:
+                        ready_contexts.append(ctx)
+                    else:
+                        logger.debug(
+                            "strategy_orchestrator:strategy_not_ready",
+                            strategy_id=str(ctx.strategy_db_model.id),
+                            timeframe=ctx.timeframe,
+                            seconds_remaining=timeframe_seconds - time_since_last,
+                        )
+
+                # Execute ready strategies concurrently (limited by semaphore)
+                if ready_contexts:
+                    tasks = [
+                        self._run_strategy_with_tracking(ctx, current_time)
+                        for ctx in ready_contexts
+                    ]
                     await asyncio.gather(*tasks, return_exceptions=True)
 
-                # Determine next execution time (shortest timeframe)
+                # Determine next execution time (shortest remaining timeframe)
                 if execution_contexts:
-                    timeframes = [ctx.timeframe for ctx in execution_contexts]
-                    min_seconds = min(
-                        TIMEFRAME_SECONDS.get(tf, 60) for tf in timeframes
+                    next_check_times = []
+                    for ctx in execution_contexts:
+                        strategy_key = (
+                            f"{ctx.strategy_db_model.id}:{ctx.symbol}:{ctx.timeframe}"
+                        )
+                        timeframe_seconds = TIMEFRAME_SECONDS.get(ctx.timeframe, 60)
+                        last_exec = self._last_execution.get(strategy_key, 0)
+                        next_exec = last_exec + timeframe_seconds
+                        time_until_next = max(0, next_exec - current_time)
+                        next_check_times.append(time_until_next)
+
+                    # Sleep until the next strategy is ready (with minimum check interval)
+                    min_wait = min(next_check_times) if next_check_times else 60
+                    sleep_time = max(
+                        1, min(min_wait, 60)
+                    )  # Check at least every minute
+                    logger.debug(
+                        "strategy_orchestrator:scheduler_sleep",
+                        sleep_seconds=sleep_time,
+                        strategies_count=len(execution_contexts),
                     )
-                    # Sleep until next cycle (use half the minimum timeframe for responsiveness)
-                    sleep_time = max(1, min_seconds // 2)
                     await asyncio.sleep(sleep_time)
                 else:
                     await asyncio.sleep(60)
@@ -333,6 +375,24 @@ class StrategyOrchestrator:
                 await task
             finally:
                 self._tasks.discard(task)
+
+    async def _run_strategy_with_tracking(
+        self, context: StrategyExecutionContext, execution_time: float
+    ) -> None:
+        """
+        Run a strategy execution and track execution time.
+
+        Args:
+            context: Strategy execution context
+            execution_time: Timestamp when execution started
+        """
+        strategy_key = (
+            f"{context.strategy_db_model.id}:{context.symbol}:{context.timeframe}"
+        )
+        await self._run_strategy_with_semaphore(context)
+        # Update last execution time after successful run
+        if context.error is None:
+            self._last_execution[strategy_key] = execution_time
 
     async def _run_strategy(self, context: StrategyExecutionContext) -> None:
         """
