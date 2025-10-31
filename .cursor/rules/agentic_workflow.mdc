@@ -1,0 +1,27 @@
+---
+description: Requirements for maintaining AGENTS.md-driven, MCP-enabled workflows across agents
+globs: **/*
+alwaysApply: true
+---
+
+- **AGENTS.md como fonte única**
+  - Sempre consultar e atualizar `AGENTS.md` (raiz e subdiretórios) quando fluxos, comandos ou políticas mudarem ([agentic_architecture_analysis.md](mdc:docs/architecture/agentic_architecture_analysis.md)).
+  - Garantir que novos MCPs/scripts helpers tenham sessão dedicada com pré-requisitos de segurança (chaves, limites de uso).
+
+- **Sequência mandatória por subtask**
+  - Executar pesquisa Context7 antes de implementar (vide [context7_integration.mdc](mdc:.cursor/rules/context7_integration.mdc)).
+  - Registrar achados no Task Master (`update-subtask`/`update-task`) e em seguida refletir ajustes em `AGENTS.md`.
+  - Trabalhar sempre em branch feature e seguir templates de PR ([git_workflow.mdc](mdc:.cursor/rules/git_workflow.mdc), [github_templates.mdc](mdc:.cursor/rules/github_templates.mdc)).
+
+- **Integração com MCPs**
+  - Priorizar MCPs aprovados em [mcp_candidate_analysis.md](mdc:docs/architecture/mcp_candidate_analysis.md); validar configuração antes de uso por agentes.
+  - Documentar endpoints/comandos adicionados no Task Master e em `AGENTS.md`.
+  - Garantir que secrets sejam carregados via ambiente seguro; nunca registrar em rules ou repositório.
+
+- **Sinergia com scripts helpers**
+  - Ao aprovar novos helpers (subtask 22.9), criar ou atualizar regra dedicada descrevendo comandos, checklists e limites.
+  - Registrar qualquer automação que modifique fluxos (ex.: geração automática de subtasks) no `knowledge_base` ([knowledge_base.mdc](mdc:.cursor/rules/knowledge_base.mdc)).
+
+- **Manutenção contínua**
+  - Revisar rules trimestralmente ou após grandes mudanças arquiteturais (ex.: novos agentes ou MCPs críticos).
+  - Quando a rule for atualizada, referenciar o commit e a tarefa correspondente no Task Master para rastreabilidade.
