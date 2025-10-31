@@ -134,6 +134,9 @@ class StrategyOrchestrator:
         self._semaphore = asyncio.Semaphore(max_concurrent_strategies)
         # Track last execution time per strategy to avoid duplicate runs
         self._last_execution: Dict[str, float] = {}
+        # Track error counts per strategy for circuit breaker pattern
+        self._error_counts: Dict[str, int] = {}
+        self._max_consecutive_errors = 5  # Circuit breaker threshold
 
         # Discovered strategies
         self._strategy_classes = discover_strategies()
@@ -390,9 +393,10 @@ class StrategyOrchestrator:
             f"{context.strategy_db_model.id}:{context.symbol}:{context.timeframe}"
         )
         await self._run_strategy_with_semaphore(context)
-        # Update last execution time after successful run
+        # Update last execution time and reset error count after successful run
         if context.error is None:
             self._last_execution[strategy_key] = execution_time
+            self._reset_error_count(strategy_key)
 
     async def _run_strategy(self, context: StrategyExecutionContext) -> None:
         """
@@ -450,33 +454,64 @@ class StrategyOrchestrator:
 
         except Exception as e:
             context.error = e
+            strategy_key = self._get_strategy_key(context)
+            error_count = self._increment_error_count(strategy_key)
+
             logger.error(
                 "strategy_orchestrator:strategy_run_error",
                 strategy_id=strategy_id,
                 strategy_name=strategy_name,
+                symbol=context.symbol,
+                timeframe=context.timeframe,
                 exc_type=type(e).__name__,
                 exc_msg=str(e),
+                consecutive_errors=error_count,
+                max_allowed=self._max_consecutive_errors,
             )
 
-    async def _fetch_market_data(self, context: StrategyExecutionContext) -> None:
+            # Circuit breaker: Skip strategy if too many consecutive errors
+            if error_count >= self._max_consecutive_errors:
+                logger.warning(
+                    "strategy_orchestrator:circuit_breaker_activated",
+                    strategy_id=strategy_id,
+                    strategy_name=strategy_name,
+                    error_count=error_count,
+                )
+
+    async def _fetch_market_data(
+        self, context: StrategyExecutionContext, max_retries: int = 3
+    ) -> None:
         """
         Fetch OHLCV market data for the strategy's symbol and timeframe.
 
+        Implements retry logic with exponential backoff for transient failures.
+
         Args:
             context: Strategy execution context
+            max_retries: Maximum number of retry attempts
+
+        Raises:
+            Exception: If all retry attempts fail
         """
-        try:
-            # Fetch OHLCV data (last 100 candles for indicator calculations)
-            ohlcv = await context.exchange_plugin.fetch_ohlcv(
-                symbol=context.symbol,
-                timeframe=context.timeframe,
-                limit=100,
-            )
+        strategy_key = self._get_strategy_key(context)
+        retry_count = 0
+        last_exception: Optional[Exception] = None
 
-            context.ohlcv_data = ohlcv
+        while retry_count <= max_retries:
+            try:
+                # Fetch OHLCV data (last 100 candles for indicator calculations)
+                ohlcv = await context.exchange_plugin.fetch_ohlcv(
+                    symbol=context.symbol,
+                    timeframe=context.timeframe,
+                    limit=100,
+                )
 
-            # Convert to DataFrame for easier manipulation
-            if ohlcv:
+                if not ohlcv:
+                    raise ValueError(f"No OHLCV data returned for {context.symbol}")
+
+                context.ohlcv_data = ohlcv
+
+                # Convert to DataFrame for easier manipulation
                 df = pd.DataFrame(
                     ohlcv,
                     columns=["timestamp", "open", "high", "low", "close", "volume"],
@@ -485,24 +520,100 @@ class StrategyOrchestrator:
                 df.set_index("timestamp", inplace=True)
                 context.market_data_df = df
 
+                # Reset error count on success
+                self._error_counts[strategy_key] = 0
+
                 logger.debug(
                     "strategy_orchestrator:data_fetched",
                     symbol=context.symbol,
                     timeframe=context.timeframe,
                     candles=len(ohlcv),
+                    retry_count=retry_count,
                 )
-            else:
-                raise ValueError(f"No OHLCV data returned for {context.symbol}")
+                return
 
-        except Exception as e:
-            logger.error(
-                "strategy_orchestrator:data_fetch_error",
-                symbol=context.symbol,
-                timeframe=context.timeframe,
-                exc_type=type(e).__name__,
-                exc_msg=str(e),
-            )
-            raise
+            except (ValueError, RuntimeError) as e:
+                # Non-retriable errors
+                last_exception = e
+                self._increment_error_count(strategy_key)
+                logger.error(
+                    "strategy_orchestrator:data_fetch_error_fatal",
+                    symbol=context.symbol,
+                    timeframe=context.timeframe,
+                    exc_type=type(e).__name__,
+                    exc_msg=str(e),
+                    retry_count=retry_count,
+                )
+                raise
+
+            except Exception as e:
+                # Retriable errors
+                last_exception = e
+                retry_count += 1
+
+                if retry_count <= max_retries:
+                    backoff_time = min(
+                        2**retry_count, 30
+                    )  # Exponential backoff, max 30s
+                    logger.warning(
+                        "strategy_orchestrator:data_fetch_error_retry",
+                        symbol=context.symbol,
+                        timeframe=context.timeframe,
+                        exc_type=type(e).__name__,
+                        exc_msg=str(e),
+                        retry_count=retry_count,
+                        max_retries=max_retries,
+                        backoff_seconds=backoff_time,
+                    )
+                    await asyncio.sleep(backoff_time)
+                else:
+                    self._increment_error_count(strategy_key)
+                    logger.error(
+                        "strategy_orchestrator:data_fetch_error_max_retries",
+                        symbol=context.symbol,
+                        timeframe=context.timeframe,
+                        exc_type=type(e).__name__,
+                        exc_msg=str(e),
+                        total_retries=retry_count,
+                    )
+
+        # All retries exhausted
+        if last_exception:
+            raise last_exception
+
+    def _get_strategy_key(self, context: StrategyExecutionContext) -> str:
+        """
+        Get unique key for strategy tracking.
+
+        Args:
+            context: Strategy execution context
+
+        Returns:
+            Unique strategy key
+        """
+        return f"{context.strategy_db_model.id}:{context.symbol}:{context.timeframe}"
+
+    def _increment_error_count(self, strategy_key: str) -> int:
+        """
+        Increment error count for a strategy (circuit breaker pattern).
+
+        Args:
+            strategy_key: Unique strategy key
+
+        Returns:
+            Current error count after increment
+        """
+        self._error_counts[strategy_key] = self._error_counts.get(strategy_key, 0) + 1
+        return self._error_counts[strategy_key]
+
+    def _reset_error_count(self, strategy_key: str) -> None:
+        """
+        Reset error count for a strategy after successful execution.
+
+        Args:
+            strategy_key: Unique strategy key
+        """
+        self._error_counts[strategy_key] = 0
 
     async def _compute_indicators(self, context: StrategyExecutionContext) -> None:
         """
@@ -580,6 +691,9 @@ class StrategyOrchestrator:
         except Exception as e:
             logger.error(
                 "strategy_orchestrator:indicator_computation_error",
+                strategy_name=context.strategy_db_model.name,
+                symbol=context.symbol,
+                indicators_count=len(context.indicators),
                 exc_type=type(e).__name__,
                 exc_msg=str(e),
             )
@@ -623,6 +737,9 @@ class StrategyOrchestrator:
         except Exception as e:
             logger.error(
                 "strategy_orchestrator:signal_generation_error",
+                strategy_name=context.strategy_db_model.name,
+                symbol=context.symbol,
+                timeframe=context.timeframe,
                 exc_type=type(e).__name__,
                 exc_msg=str(e),
             )
@@ -695,10 +812,17 @@ class StrategyOrchestrator:
             )
 
         except Exception as e:
+            strategy_key = self._get_strategy_key(context)
+            error_count = self._increment_error_count(strategy_key)
+
             logger.error(
                 "strategy_orchestrator:trade_execution_error",
                 strategy_name=context.strategy_db_model.name,
+                symbol=context.symbol,
+                signal_action=context.signal.action if context.signal else None,
                 exc_type=type(e).__name__,
                 exc_msg=str(e),
+                consecutive_errors=error_count,
             )
-            raise
+            # Don't raise - allow strategy to continue, just log the error
+            # The strategy will be marked with error in context
