@@ -236,7 +236,7 @@ Configurações para cada exchange.
 exchanges:
   binance:
     enabled: false                  # Habilitar exchange
-    sandbox: true                   # Usar testnet/sandbox
+    sandbox: false                  # IMPORTANTE: true apenas para testnet, false para produção
     api_key: null                   # API key (de env: BINANCE_API_KEY)
     api_secret: null                # API secret (de env: BINANCE_API_SECRET)
     rate_limits:
@@ -247,7 +247,8 @@ exchanges:
 **Variáveis de Ambiente:**
 - `BINANCE_API_KEY`: API key do Binance
 - `BINANCE_API_SECRET`: API secret do Binance
-- `BINANCE_SANDBOX`: Usar sandbox (true/false)
+- `BINANCE_SANDBOX`: Usar sandbox/testnet (true) ou produção (false)
+  **CRÍTICO**: Use `false` para API keys de produção, `true` apenas para testnet/testnet.binance.vision
 
 #### Coinbase Pro
 
@@ -255,7 +256,7 @@ exchanges:
 exchanges:
   coinbase:
     enabled: false                  # Habilitar exchange
-    sandbox: true                   # Usar sandbox
+    sandbox: false                  # IMPORTANTE: true apenas para testnet, false para produção
     api_key: null                   # API key (de env: COINBASE_API_KEY)
     api_secret: null                # API secret (de env: COINBASE_API_SECRET)
     passphrase: null                # Passphrase (de env: COINBASE_PASSPHRASE)
@@ -268,7 +269,8 @@ exchanges:
 - `COINBASE_API_KEY`: API key do Coinbase
 - `COINBASE_API_SECRET`: API secret do Coinbase
 - `COINBASE_PASSPHRASE`: Passphrase do Coinbase
-- `COINBASE_SANDBOX`: Usar sandbox (true/false)
+- `COINBASE_SANDBOX`: Usar sandbox/testnet (true) ou produção (false)
+  **CRÍTICO**: Use `false` para API keys de produção, `true` apenas para sandbox
 
 ### 📊 Strategies Configuration (`strategies`)
 
