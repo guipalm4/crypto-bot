@@ -348,7 +348,6 @@ class TestDatabasePersistence:
             exchange_id=test_exchange.id,
             trading_pair_id=test_trading_pair.id,
             exchange_order_id=faker.uuid4(),
-            symbol="BTC/USDT",
             side=OrderSide.BUY,
             type=OrderType.LIMIT,
             status=OrderStatus.OPEN,
@@ -369,13 +368,13 @@ class TestDatabasePersistence:
         assert updated.status == OrderStatus.PARTIALLY_FILLED
         assert updated.filled_quantity == Decimal("0.0005")
 
-        # Update status to CLOSED
-        updated.status = OrderStatus.CLOSED
+        # Update status to FILLED (database enum uses FILLED, not CLOSED)
+        updated.status = OrderStatus.FILLED
         updated.filled_quantity = Decimal("0.001")
         final = await order_repo.update(updated)
         await db_session.commit()
 
-        assert final.status == OrderStatus.CLOSED
+        assert final.status == OrderStatus.FILLED
         assert final.filled_quantity == Decimal("0.001")
 
     async def test_data_integrity_constraints(
@@ -402,13 +401,18 @@ class TestDatabasePersistence:
             parameters_json={},
             is_active=True,
         )
-        with pytest.raises(IntegrityError):  # Should raise integrity error
-            created2 = await strategy_repo.create(strategy2)
-            await db_session.commit()
+        # Should raise DuplicateEntityError (wrapped from IntegrityError)
+        # The repository's create() method already does flush() internally,
+        # so the IntegrityError will be raised during create()
+        # The repository also handles rollback internally on IntegrityError
+        from crypto_bot.domain.exceptions import DuplicateEntityError
 
-        # Cleanup
-        await strategy_repo.delete(created1.id)
-        await db_session.commit()
+        with pytest.raises(DuplicateEntityError):
+            await strategy_repo.create(strategy2)
+
+        # Note: After IntegrityError, repository does rollback internally.
+        # The session fixture will handle cleanup, so we don't need to clean up manually.
+        # The database will be reset by the setup_database fixture for the next test.
 
 
 @pytest.mark.integration
@@ -461,9 +465,10 @@ class TestPluginLoading:
     async def test_exchange_plugin_initialization(self) -> None:
         """Test that exchange plugins initialize correctly."""
         # Create a Binance plugin config (sandbox mode, no real credentials needed)
+        # Note: BinanceConfig uses 'secret', not 'api_secret'
         config = BinanceConfig(
             api_key="test_key",
-            api_secret="test_secret",
+            secret="test_secret",
             sandbox=True,
         )
 
@@ -488,9 +493,10 @@ class TestPluginLoading:
 
     async def test_plugin_response_and_capabilities(self) -> None:
         """Test that plugins respond as expected and expose correct capabilities."""
+        # Note: BinanceConfig uses 'secret', not 'api_secret'
         config = BinanceConfig(
             api_key="test_key",
-            api_secret="test_secret",
+            secret="test_secret",
             sandbox=True,
         )
 

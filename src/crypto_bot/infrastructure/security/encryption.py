@@ -59,11 +59,13 @@ class EncryptionService:
         # Use PBKDF2 to derive a proper key
         salt = os.getenv("ENCRYPTION_SALT", "crypto_bot_salt").encode()
         if salt == b"crypto_bot_salt":
-            warnings.warn(
-                "Using default encryption salt. Set ENCRYPTION_SALT for improved security.",
-                RuntimeWarning,
-                stacklevel=2,
-            )
+            # Only warn in non-test environments (tests use default salt intentionally)
+            if not os.getenv("PYTEST_CURRENT_TEST"):
+                warnings.warn(
+                    "Using default encryption salt. Set ENCRYPTION_SALT for improved security.",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=32,
