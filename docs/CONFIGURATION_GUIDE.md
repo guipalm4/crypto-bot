@@ -565,12 +565,15 @@ Todas as configurações são validadas automaticamente usando Pydantic:
 
 ```python
 from crypto_bot.config import load_config
+from pydantic import ValidationError
 
 try:
     config = load_config()
     print("✓ Configuração válida")
 except ValidationError as e:
     print(f"✗ Erro de validação: {e}")
+except ValueError as e:
+    print(f"✗ Erro de configuração: {e}")
 ```
 
 ### Erros Comuns
