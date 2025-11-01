@@ -73,11 +73,59 @@ O Crypto Trading Bot é um sistema completo de trading automatizado desenvolvido
 5. **Execute o bot**
    ```bash
    # Modo dry-run (simulação)
-   python -m src.cli start --dry-run
+   crypto-bot start --dry-run
 
    # Modo produção
-   python -m src.cli start
+   crypto-bot start
+
+   # Ver status do bot
+   crypto-bot status
+
+   # Ver todas as opções
+   crypto-bot --help
    ```
+
+## 📚 Uso da CLI
+
+O bot fornece uma interface de linha de comando completa para gerenciar e monitorar operações:
+
+```bash
+# Iniciar bot em modo simulação
+crypto-bot start --dry-run
+
+# Iniciar bot em modo produção
+crypto-bot start
+
+# Parar bot
+crypto-bot stop
+
+# Reiniciar bot
+crypto-bot restart --dry-run
+
+# Ver status do bot
+crypto-bot status
+
+# Listar estratégias configuradas
+crypto-bot strategies
+
+# Listar posições abertas
+crypto-bot positions
+
+# Ver saldos
+crypto-bot balances binance
+
+# Forçar execução de uma estratégia específica
+crypto-bot force <strategy_id>
+
+# Ver logs do bot
+crypto-bot logs --follow
+crypto-bot logs --lines 50
+
+# Versão
+crypto-bot version
+```
+
+Para mais informações sobre cada comando, use `crypto-bot <comando> --help`.
 
 ## 📁 Estrutura do Projeto
 
@@ -109,35 +157,35 @@ crypto-bot/
 
 ## 🎯 Roadmap de Desenvolvimento
 
-### 🏗️ Sprint 1: Foundation & Core Infrastructure
+### 🏗️ Sprint 1: Foundation & Core Infrastructure ✅
 - [x] Project Structure & Environment Setup
 - [x] Database Schema Design & Migration Setup
 - [x] Configuration System Implementation
 - [x] Code Quality & Compliance Automation
 
-### 🚀 Sprint 2: Core Trading Engine & Risk Management
-- [ ] Core Trading Engine - Order Execution Logic
-- [ ] Persistence Layer & Event Logging
-- [ ] Basic Risk Management Module
-- [ ] Security Hardening & Credential Management
+### 🚀 Sprint 2: Core Trading Engine & Risk Management ✅
+- [x] Core Trading Engine - Order Execution Logic
+- [x] Persistence Layer & Event Logging
+- [x] Basic Risk Management Module
+- [x] Security Hardening & Credential Management
 
-### 🔌 Sprint 3: Exchange Integration & Plugin System
-- [ ] Plugin System - Exchange Interface & Loader
-- [ ] Exchange Plugins: Binance & Coinbase
-- [ ] Plugin System - Technical Indicators Interface & Loader
-- [ ] Indicator Plugins: RSI, MACD, EMA
+### 🔌 Sprint 3: Exchange Integration & Plugin System ✅
+- [x] Plugin System - Exchange Interface & Loader
+- [x] Exchange Plugins: Binance & Coinbase
+- [x] Plugin System - Technical Indicators Interface & Loader
+- [x] Indicator Plugins: RSI, MACD, EMA
 
-### 🎯 Sprint 4: Trading Strategies & Orchestration
-- [ ] Plugin System - Strategy Interface & Loader
-- [ ] Strategy Plugins: RSI Mean Reversion & MACD Crossover
-- [ ] Strategy Orchestration & Execution Engine
-- [ ] Snapshot & Price History Recording
+### 🎯 Sprint 4: Trading Strategies & Orchestration ✅
+- [x] Plugin System - Strategy Interface & Loader
+- [x] Strategy Plugins: RSI Mean Reversion & MACD Crossover
+- [x] Strategy Orchestration & Execution Engine
+- [x] Snapshot & Price History Recording
 
-### 🎨 Sprint 5: User Interface & Final Polish
-- [ ] Structured Logging & Monitoring
-- [ ] Basic CLI Implementation
-- [ ] Unit, Integration, and E2E Test Suite
-- [ ] Documentation & Developer Onboarding
+### 🎨 Sprint 5: User Interface & Final Polish ✅
+- [x] Structured Logging & Monitoring
+- [x] Basic CLI Implementation
+- [x] Unit, Integration, and E2E Test Suite
+- [x] Documentation & Developer Onboarding
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -217,6 +265,10 @@ strategies:
 
 ## 🧪 Testes
 
+O projeto possui uma suite completa de testes com 400+ testes cobrindo unitários, integração e E2E.
+
+### Executando Testes
+
 ```bash
 # Executar todos os testes
 pytest
@@ -225,17 +277,117 @@ pytest
 pytest --cov=src/crypto_bot --cov-report=term-missing
 
 # Executar testes específicos
-pytest tests/unit/
-pytest tests/integration/
+pytest tests/unit/              # Testes unitários
+pytest tests/integration/       # Testes de integração
+pytest tests/e2e/               # Testes end-to-end
+
+# Executar por marker
+pytest -m unit                  # Apenas unitários
+pytest -m integration           # Apenas integração
+pytest -m e2e                   # Apenas E2E
+
+# Executar com verbose
+pytest -v
+
+# Executar testes específicos por padrão
+pytest tests/unit/test_trading_service.py
 ```
+
+### Configuração de Testes
+
+Para mais detalhes sobre configuração e execução de testes, consulte:
+- [TESTING_SETUP.md](docs/TESTING_SETUP.md)
+
+### Cobertura Atual
+
+- **Cobertura geral**: 79%
+- **405+ testes unitários**
+- **Testes de integração** com testnets reais
+- **14 testes E2E** para fluxos completos
 
 ## 📝 Contribuição
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+Agradecemos contribuições! Por favor, siga estas diretrizes:
+
+### Pré-requisitos
+
+- Python 3.12+
+- PostgreSQL 16+ (ou Docker)
+- Conhecimento básico de Git e GitHub
+
+### Processo de Contribuição
+
+1. **Fork o projeto**
+   ```bash
+   # Clone seu fork
+   git clone https://github.com/seu-usuario/crypto-bot.git
+   cd crypto-bot
+   ```
+
+2. **Configure o ambiente de desenvolvimento**
+   ```bash
+   # Crie e ative ambiente virtual
+   python -m venv .venv
+   source .venv/bin/activate  # Linux/Mac
+   
+   # Instale dependências de desenvolvimento
+   pip install -r requirements.txt
+   pip install -r requirements-dev.txt
+   
+   # Instale pre-commit hooks
+   pre-commit install
+   ```
+
+3. **Crie uma branch para sua feature**
+   ```bash
+   git checkout -b feature/sua-feature-descritiva
+   ```
+
+4. **Desenvolva e teste sua mudança**
+   ```bash
+   # Execute os testes
+   pytest
+   
+   # Verifique qualidade do código
+   ruff check .
+   black --check .
+   mypy src/crypto_bot
+   ```
+
+5. **Commit suas mudanças**
+   ```bash
+   git add .
+   git commit -m "feat(scope): descrição clara da mudança"
+   ```
+   
+   **Formato de commit**: Use [Conventional Commits](https://www.conventionalcommits.org/)
+   - `feat`: Nova feature
+   - `fix`: Correção de bug
+   - `docs`: Documentação
+   - `test`: Testes
+   - `refactor`: Refatoração
+   - `chore`: Manutenção
+
+6. **Push e abra um Pull Request**
+   ```bash
+   git push origin feature/sua-feature-descritiva
+   ```
+   
+   Depois abra um PR no GitHub seguindo o template fornecido.
+
+### Padrões de Código
+
+- Siga os padrões definidos em [docs/CODING_STANDARDS.md](docs/CODING_STANDARDS.md)
+- Todos os testes devem passar
+- Código deve ser formatado com Black
+- Type hints são obrigatórios
+- Docstrings seguindo Google style são esperados
+
+### Workflow de Desenvolvimento
+
+Para mais detalhes sobre o workflow, consulte:
+- [WORKFLOW_QUICK_START.md](docs/WORKFLOW_QUICK_START.md)
+- [WORKFLOW_ENFORCEMENT.md](docs/WORKFLOW_ENFORCEMENT.md)
 
 ## 🔒 Segurança
 
@@ -253,11 +405,22 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 **ATENÇÃO**: Este software é fornecido apenas para fins educacionais e de pesquisa. Trading de criptomoedas envolve riscos significativos e pode resultar em perdas financeiras. Use por sua própria conta e risco.
 
+## 📚 Documentação Adicional
+
+A documentação completa está disponível na pasta `docs/`:
+
+- **[WORKFLOW_QUICK_START.md](docs/WORKFLOW_QUICK_START.md)**: Guia rápido de workflow de desenvolvimento
+- **[CODING_STANDARDS.md](docs/CODING_STANDARDS.md)**: Padrões de código e qualidade
+- **[TESTING_SETUP.md](docs/TESTING_SETUP.md)**: Guia completo de testes
+- **[SECURITY_BASELINE.md](docs/security/SECURITY_BASELINE.md)**: Baseline de segurança
+- **[HARDENING_GUIDE.md](docs/security/HARDENING_GUIDE.md)**: Guia de hardening
+- **[strategy_plugins.md](docs/architecture/strategy_plugins.md)**: Arquitetura de plugins de estratégias
+
 ## 📞 Suporte
 
 - 📧 Email: gomes.lmc@gmail.com
 - 🐛 Issues: [GitHub Issues](https://github.com/guipalm4/crypto-bot/issues)
-- 📚 Documentação: [Wiki](https://github.com/guipalm4/crypto-bot/wiki)
+- 📚 Documentação: Veja a pasta `docs/` no repositório
 
 ## 🙏 Agradecimentos
 
