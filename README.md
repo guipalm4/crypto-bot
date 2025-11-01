@@ -337,6 +337,9 @@ Agradecemos contribuições! Por favor, siga estas diretrizes:
    pip install -r requirements.txt
    pip install -r requirements-dev.txt
    
+   # Instale o pacote em modo de desenvolvimento
+   pip install -e .  # Disponibiliza o comando 'crypto-bot'
+   
    # Instale pre-commit hooks
    pre-commit install
    ```

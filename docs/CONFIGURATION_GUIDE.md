@@ -26,11 +26,13 @@ O sistema suporta variáveis de ambiente que sobrescrevem valores dos arquivos Y
 
 ```bash
 # Exemplo de .env
-ENCRYPTION_KEY=your_32_byte_key_here
+# CRITICAL: Gere ENCRYPTION_KEY com: openssl rand -hex 32
+ENCRYPTION_KEY=your_32_character_minimum_encryption_key_here
 DATABASE_USER=crypto_bot_user
 DATABASE_PASSWORD=secure_password
 BINANCE_API_KEY=your_api_key
 BINANCE_API_SECRET=your_api_secret
+BINANCE_SANDBOX=false  # true para testnet, false para produção
 ENVIRONMENT=development
 ```
 
@@ -415,7 +417,7 @@ security:
 ```
 
 **Variáveis de Ambiente (OBRIGATÓRIAS):**
-- `ENCRYPTION_KEY`: Chave AES-256 de 32 bytes para criptografar dados sensíveis no banco
+- `ENCRYPTION_KEY`: Chave AES-256 de 32 bytes (mínimo 32 caracteres) para criptografar dados sensíveis no banco. **REQUIRED**. Gere com: `openssl rand -hex 32`
 
 **Variáveis de Ambiente (Opcionais):**
 - `JWT_SECRET`: Secret para assinatura de tokens JWT
@@ -575,10 +577,14 @@ except ValidationError as e:
 
 #### "ENCRYPTION_KEY environment variable is required"
 
-**Solução:** Defina `ENCRYPTION_KEY` no arquivo `.env`:
+**Solução:** Defina `ENCRYPTION_KEY` no arquivo `.env`. **CRITICAL**: Deve ter no mínimo 32 caracteres. Gere uma chave segura com:
 
 ```bash
-ENCRYPTION_KEY=your_32_byte_key_here_minimum
+# Gerar chave segura
+openssl rand -hex 32
+
+# Adicionar ao .env
+ENCRYPTION_KEY=<chave_gerada_acima>
 ```
 
 #### "Configuration validation failed"
