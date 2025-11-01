@@ -1,47 +1,48 @@
 # 🚀 Guia de Onboarding para Desenvolvedores
 
-Este guia fornece um caminho completo para novos desenvolvedores começarem a contribuir no Crypto Trading Bot.
+Este guia foi criado para facilitar o onboarding de novos desenvolvedores ao projeto Crypto Trading Bot, permitindo que eles comecem a contribuir rapidamente.
 
-## 📋 Pré-requisitos
+## 📋 Índice
+
+1. [Pré-requisitos](#pré-requisitos)
+2. [Setup Inicial](#setup-inicial)
+3. [Estrutura do Projeto](#estrutura-do-projeto)
+4. [Primeira Contribuição](#primeira-contribuição)
+5. [Workflow de Desenvolvimento](#workflow-de-desenvolvimento)
+6. [Testando Mudanças](#testando-mudanças)
+7. [Criando Pull Request](#criando-pull-request)
+8. [Recursos de Aprendizado](#recursos-de-aprendizado)
+
+## ✅ Pré-requisitos
 
 Antes de começar, certifique-se de ter:
 
-- ✅ Python 3.12+ instalado
-- ✅ Git instalado e configurado
-- ✅ Conta GitHub (para contribuições)
-- ✅ Editor de código (VS Code, PyCharm, etc.)
-- ✅ Conhecimento básico de Python async/await
-- ✅ Conhecimento básico de Git
+- **Python 3.12+** instalado
+- **Git** instalado e configurado
+- **Docker** e **Docker Compose** (para banco de dados)
+- **Editor de código** (VS Code, PyCharm, etc.)
+- **Conta no GitHub** (para forks e PRs)
+- Conhecimento básico de:
+  - Python (async/await, type hints)
+  - Git e GitHub
+  - SQL básico (PostgreSQL)
 
-## 🎯 Objetivo do Onboarding
+## 🛠️ Setup Inicial
 
-Ao final deste guia, você deve ser capaz de:
-
-1. ✅ Configurar ambiente de desenvolvimento
-2. ✅ Executar o projeto localmente
-3. ✅ Executar testes e verificar qualidade
-4. ✅ Entender a arquitetura do projeto
-5. ✅ Contribuir com código seguindo padrões
-6. ✅ Criar Pull Requests corretamente
-
-## 📚 Documentação Essencial
-
-Antes de começar a codificar, leia:
-
-1. **[README.md](../README.md)** - Visão geral e quick start
-2. **[WORKFLOW_QUICK_START.md](WORKFLOW_QUICK_START.md)** - Workflow de desenvolvimento
-3. **[CODING_STANDARDS.md](CODING_STANDARDS.md)** - Padrões de código
-4. **[CONFIGURATION_GUIDE.md](CONFIGURATION_GUIDE.md)** - Configuração completa
-
-## 🔧 Setup Inicial
-
-### 1. Clone e Configure
+### 1. Fork e Clone
 
 ```bash
-# Clone o repositório
-git clone https://github.com/guipalm4/crypto-bot.git
+# Fork o repositório no GitHub, depois clone seu fork
+git clone https://github.com/seu-usuario/crypto-bot.git
 cd crypto-bot
 
+# Adicione o repositório original como upstream
+git remote add upstream https://github.com/guipalm4/crypto-bot.git
+```
+
+### 2. Ambiente Virtual
+
+```bash
 # Crie e ative ambiente virtual
 python -m venv .venv
 source .venv/bin/activate  # Linux/Mac
@@ -50,288 +51,383 @@ source .venv/bin/activate  # Linux/Mac
 
 # Instale dependências
 pip install -r requirements.txt
-pip install -r requirements-dev.txt  # Se existir
-
-# Instale pre-commit hooks
-pre-commit install
+pip install -r requirements-dev.txt  # Dependências de desenvolvimento
 ```
 
-### 2. Configure Banco de Dados
+### 3. Configuração do Banco de Dados
 
 ```bash
 # Inicie PostgreSQL com Docker
 docker-compose up -d postgres
 
+# Aguarde o banco estar pronto
+sleep 5
+
 # Execute migrações
 alembic upgrade head
-
-# (Opcional) Inicie banco de testes
-docker-compose up -d postgres-test
 ```
 
-### 3. Configure Variáveis de Ambiente
+### 4. Variáveis de Ambiente
 
 ```bash
-# Copie arquivo de exemplo
+# Copie o arquivo de exemplo
 cp .env.example .env
 
-# Edite .env com suas configurações
-# Para desenvolvimento, você pode usar valores padrão ou testnet
-nano .env
+# Edite com suas configurações (pelo menos ENCRYPTION_KEY)
+nano .env  # ou use seu editor preferido
 ```
 
 **Mínimo necessário para desenvolvimento:**
-
 ```bash
 ENCRYPTION_KEY=your_32_byte_key_here_minimum_required
-DATABASE_PASSWORD=crypto_bot_password
-BINANCE_TESTNET_API_KEY=your_testnet_key  # Opcional
-BINANCE_TESTNET_API_SECRET=your_testnet_secret  # Opcional
 ENVIRONMENT=development
+DATABASE_USER=crypto_bot_user
+DATABASE_PASSWORD=crypto_bot_password
 ```
 
-### 4. Verifique Instalação
+### 5. Pre-commit Hooks
 
 ```bash
-# Execute testes
+# Instale pre-commit hooks
+pre-commit install
+
+# Teste os hooks
+pre-commit run --all-files
+```
+
+### 6. Verificação
+
+```bash
+# Execute testes para verificar que tudo está funcionando
 pytest tests/unit/ -v
 
 # Verifique qualidade do código
-ruff check src/crypto_bot
-black --check src/crypto_bot
-mypy src/crypto_bot
-
-# Teste CLI
-crypto-bot --help
-crypto-bot version
-```
-
-## 📖 Entendendo a Arquitetura
-
-### Estrutura de Diretórios
-
-```
-src/crypto_bot/
-├── domain/              # Regras de negócio (DDD)
-│   ├── entities/        # Entidades de domínio
-│   ├── value_objects/   # Value objects
-│   └── events/          # Domain events
-├── application/         # Use cases e orquestração
-│   ├── services/        # Serviços de aplicação
-│   └── dtos/            # Data Transfer Objects
-├── infrastructure/      # Implementações técnicas
-│   ├── database/        # SQLAlchemy models
-│   ├── exchanges/      # Exchange adapters
-│   └── security/        # Criptografia
-├── plugins/             # Sistema de plugins
-│   ├── exchanges/       # Exchange plugins
-│   ├── indicators/     # Indicadores técnicos
-│   └── strategies/      # Estratégias de trading
-└── cli/                 # Interface de linha de comando
-```
-
-### Fluxo de Dados
-
-```
-Strategy Plugin → Strategy Orchestrator → Trading Service → Exchange Plugin → API Externa
-                                    ↓
-                            Risk Service
-                                    ↓
-                            Database (Persistence)
-```
-
-### Componentes Principais
-
-1. **StrategyOrchestrator**: Orquestra execução de estratégias
-2. **TradingService**: Gerencia criação e cancelamento de ordens
-3. **RiskService**: Aplica regras de gestão de risco
-4. **Plugin Registry**: Descobre e carrega plugins
-5. **Database Repositories**: Persistência de dados
-
-## 🧪 Primeira Contribuição
-
-### Escolha uma Issue Simples
-
-Recomendações para primeira contribuição:
-
-- 🔰 Issues marcadas com `good first issue`
-- 🐛 Correções de bugs simples
-- 📝 Melhorias de documentação
-- 🧪 Adição de testes
-
-### Processo Completo
-
-```bash
-# 1. Crie uma branch
-git checkout -b feature/minha-primeira-contribuicao
-
-# 2. Desenvolva a feature
-# ... código aqui ...
-
-# 3. Execute testes
-pytest
-
-# 4. Verifique qualidade
 ruff check .
 black --check .
 mypy src/crypto_bot
+```
 
-# 5. Commit
+## 📁 Estrutura do Projeto
+
+Entender a estrutura do projeto ajuda muito:
+
+```
+crypto-bot/
+├── src/crypto_bot/
+│   ├── domain/              # Regras de negócio (DDD)
+│   │   ├── entities/        # Entidades de domínio
+│   │   ├── value_objects/   # Value objects
+│   │   └── events/          # Domain events
+│   ├── application/         # Use cases
+│   │   ├── services/        # Serviços de aplicação
+│   │   ├── dtos/            # Data Transfer Objects
+│   │   └── interfaces/      # Interfaces (contratos)
+│   ├── infrastructure/      # Implementações técnicas
+│   │   ├── database/        # SQLAlchemy models
+│   │   ├── exchanges/       # Exchange adapters
+│   │   └── security/        # Criptografia
+│   ├── plugins/             # Sistema de plugins
+│   │   ├── exchanges/       # Exchange plugins
+│   │   ├── indicators/      # Indicator plugins
+│   │   └── strategies/      # Strategy plugins
+│   ├── config/              # Configurações
+│   └── cli/                 # Interface de linha de comando
+├── tests/                   # Testes
+│   ├── unit/                # Testes unitários
+│   ├── integration/         # Testes de integração
+│   └── e2e/                 # Testes end-to-end
+├── docs/                    # Documentação
+├── config/                  # Arquivos de configuração YAML
+└── alembic/                 # Database migrations
+```
+
+**Princípios da Arquitetura:**
+- **Domain-Driven Design (DDD)**: Separação clara entre domínio, aplicação e infraestrutura
+- **Dependency Injection**: Baixo acoplamento entre componentes
+- **Plugin System**: Extensibilidade via plugins
+- **Type Safety**: Type hints obrigatórios em todo código
+
+## 🎯 Primeira Contribuição
+
+### Escolhendo uma Task
+
+1. **Verifique tasks disponíveis:**
+   ```bash
+   task-master list  # ou use MCP tool: get_tasks
+   ```
+
+2. **Escolha uma task apropriada para iniciantes:**
+   - Tasks marcadas como "good first issue"
+   - Tasks de documentação
+   - Tasks de testes
+   - Correções de bugs pequenas
+
+3. **Pegue a próxima task:**
+   ```bash
+   task-master next  # Mostra próxima task recomendada
+   ```
+
+### Criando uma Branch
+
+```bash
+# Sempre crie uma branch para seu trabalho
+git checkout main
+git pull upstream main
+git checkout -b feature/task-X-short-description
+
+# Ou use o script de workflow
+./scripts/workflow.sh start
+```
+
+### Desenvolvendo
+
+1. **Leia a documentação relevante:**
+   - [CODING_STANDARDS.md](CODING_STANDARDS.md) - Padrões de código
+   - [CONFIGURATION_GUIDE.md](CONFIGURATION_GUIDE.md) - Configuração
+   - [PLUGIN_DEVELOPMENT_GUIDE.md](PLUGIN_DEVELOPMENT_GUIDE.md) - Desenvolvimento de plugins
+
+2. **Desenvolva seguindo os padrões:**
+   - Type hints obrigatórios
+   - Docstrings Google-style
+   - Código formatado com Black
+   - Sem erros de linting
+
+3. **Escreva testes:**
+   - Testes unitários para nova lógica
+   - Testes de integração se necessário
+   - Mantenha cobertura >80%
+
+## 🔄 Workflow de Desenvolvimento
+
+### Workflow Completo
+
+```bash
+# 1. Iniciar nova task
+./scripts/workflow.sh start
+# ou manualmente:
+git checkout -b feature/task-X-description
+
+# 2. Desenvolver
+# ... fazer mudanças ...
+
+# 3. Verificar qualidade
+ruff check .
+black .
+mypy src/crypto_bot
+pytest
+
+# 4. Commit
 git add .
-git commit -m "feat(scope): minha primeira contribuição"
+git commit -m "feat(scope): descrição clara"
 
-# 6. Push e crie PR
-git push origin feature/minha-primeira-contribuicao
+# 5. Push
+git push origin feature/task-X-description
+
+# 6. Criar PR
+./scripts/workflow.sh finish
+# ou manualmente:
 gh pr create --fill
 ```
 
-## 🎓 Recursos de Aprendizado
+### Convenções de Commit
+
+Use [Conventional Commits](https://www.conventionalcommits.org/):
+
+```bash
+feat(cli): adiciona comando de logs
+fix(database): corrige timeout de conexão
+docs(readme): atualiza instruções de instalação
+test(services): adiciona testes para TradingService
+refactor(plugins): simplifica registro de plugins
+chore(deps): atualiza dependências
+```
+
+**Tipos:**
+- `feat`: Nova feature
+- `fix`: Correção de bug
+- `docs`: Documentação
+- `test`: Testes
+- `refactor`: Refatoração
+- `chore`: Manutenção
+
+## 🧪 Testando Mudanças
+
+### Executando Testes
+
+```bash
+# Todos os testes
+pytest
+
+# Apenas unitários
+pytest tests/unit/
+
+# Apenas integração
+pytest tests/integration/
+
+# Teste específico
+pytest tests/unit/test_trading_service.py
+
+# Com cobertura
+pytest --cov=src/crypto_bot --cov-report=term-missing
+
+# Com verbose
+pytest -v
+
+# Apenas testes que falharam
+pytest --lf
+```
+
+### Linting e Formatação
+
+```bash
+# Verificar linting
+ruff check .
+
+# Corrigir automaticamente
+ruff check --fix .
+
+# Verificar formatação
+black --check .
+
+# Formatar
+black .
+
+# Type checking
+mypy src/crypto_bot
+
+# Segurança
+bandit -r src/crypto_bot
+```
+
+### Pre-commit Hooks
+
+Os hooks são executados automaticamente antes de cada commit:
+
+- Ruff (linting)
+- Black (formatação)
+- MyPy (type checking)
+- Pytest (testes unitários no pre-push)
+- Bandit (segurança)
+
+## 📝 Criando Pull Request
+
+### Checklist Antes do PR
+
+- [ ] Código segue padrões do projeto
+- [ ] Todos os testes passam
+- [ ] Cobertura de testes mantida ou melhorada
+- [ ] Sem erros de linting/type checking
+- [ ] Código formatado com Black
+- [ ] Docstrings adicionados/atualizados
+- [ ] README ou documentação atualizada se necessário
+- [ ] Commits seguem convenção (Conventional Commits)
+- [ ] Branch atualizada com `main` antes do PR
+
+### Criando o PR
+
+1. **Atualize sua branch:**
+   ```bash
+   git checkout main
+   git pull upstream main
+   git checkout feature/task-X-description
+   git rebase main  # ou git merge main
+   ```
+
+2. **Push sua branch:**
+   ```bash
+   git push origin feature/task-X-description
+   ```
+
+3. **Crie o PR:**
+   - Use o template do GitHub
+   - Preencha todas as seções
+   - Referencie a task relacionada
+   - Adicione screenshots se aplicável
+   - Complete todos os checklists
+
+### Template de PR
+
+O template está em `.github/pull_request_template.md`. Inclua:
+
+- Descrição clara das mudanças
+- Tipo de mudança (feat, fix, docs, etc.)
+- Como testar
+- Checklist completo
+- Relação com tasks/issues
+
+## 📚 Recursos de Aprendizado
 
 ### Documentação do Projeto
 
-- [CONFIGURATION_GUIDE.md](CONFIGURATION_GUIDE.md) - Tudo sobre configuração
-- [PLUGIN_DEVELOPMENT_GUIDE.md](PLUGIN_DEVELOPMENT_GUIDE.md) - Desenvolver plugins
-- [SECURITY_PRACTICES.md](SECURITY_PRACTICES.md) - Práticas de segurança
-- [TESTING_SETUP.md](TESTING_SETUP.md) - Setup e execução de testes
+- **[README.md](../README.md)** - Visão geral e quick start
+- **[CODING_STANDARDS.md](CODING_STANDARDS.md)** - Padrões de código
+- **[CONFIGURATION_GUIDE.md](CONFIGURATION_GUIDE.md)** - Configuração completa
+- **[PLUGIN_DEVELOPMENT_GUIDE.md](PLUGIN_DEVELOPMENT_GUIDE.md)** - Desenvolvimento de plugins
+- **[SECURITY_PRACTICES.md](SECURITY_PRACTICES.md)** - Práticas de segurança
+- **[TESTING_SETUP.md](TESTING_SETUP.md)** - Setup e execução de testes
+- **[WORKFLOW_QUICK_START.md](WORKFLOW_QUICK_START.md)** - Workflow Git
 
-### Tecnologias Usadas
+### Recursos Externos
 
-- [SQLAlchemy 2.0](https://docs.sqlalchemy.org/en/20/)
-- [Pydantic 2.0](https://docs.pydantic.dev/)
-- [CCXT 4.x](https://docs.ccxt.com/)
-- [pandas](https://pandas.pydata.org/)
-- [asyncio](https://docs.python.org/3/library/asyncio.html)
+- [Python Type Hints](https://docs.python.org/3/library/typing.html)
+- [SQLAlchemy 2.0 Docs](https://docs.sqlalchemy.org/en/20/)
+- [Pydantic 2.0 Docs](https://docs.pydantic.dev/)
+- [Pytest Documentation](https://docs.pytest.org/)
+- [CCXT Documentation](https://docs.ccxt.com/)
+- [Async/Await in Python](https://docs.python.org/3/library/asyncio.html)
 
-### Arquitetura e Padrões
+### Exemplos no Código
 
-- [Domain-Driven Design](https://martinfowler.com/bliki/DomainDrivenDesign.html)
-- [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- [Plugin Pattern](https://refactoring.guru/design-patterns/strategy)
+Estude os plugins existentes como referência:
 
-## ✅ Checklist de Onboarding
+- **Exchange Plugin**: `src/crypto_bot/plugins/exchanges/binance_plugin.py`
+- **Indicator Plugin**: `src/crypto_bot/plugins/indicators/pandas_ta_indicators.py`
+- **Strategy Plugin**: `src/crypto_bot/plugins/strategies/rsi_mean_reversion.py`
 
-### Semana 1: Setup e Exploração
+## 🤝 Obtendo Ajuda
 
-- [ ] Ambiente configurado e funcionando
-- [ ] Todos os testes passando
-- [ ] README.md lido completamente
-- [ ] Estrutura de código explorada
-- [ ] Primeiro comando CLI executado
+### Quando Está Travado
 
-### Semana 2: Entendimento
+1. **Revise a documentação** relevante
+2. **Procure por issues similares** no GitHub
+3. **Verifique exemplos** no código existente
+4. **Consulte os logs** de erro detalhados
+5. **Abra uma issue** no GitHub com:
+   - Descrição clara do problema
+   - Passos para reproduzir
+   - Logs de erro
+   - Ambiente (OS, Python version)
 
-- [ ] Arquitetura entendida
-- [ ] Fluxo de uma estratégia até execução de ordem compreendido
-- [ ] Sistema de plugins entendido
-- [ ] Configuração testada
+### Comunicação
 
-### Semana 3: Primeira Contribuição
+- **Issues**: Use GitHub Issues para bugs e features
+- **Discussions**: Use GitHub Discussions para perguntas
+- **Email**: gomes.lmc@gmail.com (para questões privadas)
 
-- [ ] Issue escolhida
-- [ ] Branch criada
-- [ ] Código desenvolvido
-- [ ] Testes escritos
-- [ ] PR criado e aprovado
+## ✅ Teste de Onboarding
 
-## 🆘 Problemas Comuns
+Este guia foi projetado para permitir que novos desenvolvedores:
 
-### "ModuleNotFoundError"
+1. ✅ Configurem o ambiente completamente
+2. ✅ Executem o projeto localmente
+3. ✅ Entendam a arquitetura
+4. ✅ Façam sua primeira contribuição
+5. ✅ Criem um PR seguindo os padrões
 
-**Causa**: Ambiente virtual não ativado ou instalação incompleta.
+**Teste você mesmo:**
+- Siga este guia do zero
+- Anote qualquer problema encontrado
+- Sugira melhorias via issue ou PR
 
-**Solução:**
-```bash
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+## 🔄 Feedback e Melhorias
 
-### "Database connection failed"
+Este guia é um documento vivo. Contribua melhorias:
 
-**Causa**: PostgreSQL não iniciado ou credenciais incorretas.
-
-**Solução:**
-```bash
-docker-compose up -d postgres
-# Verifique DATABASE_URL no .env
-```
-
-### "ENCRYPTION_KEY required"
-
-**Causa**: Variável de ambiente não configurada.
-
-**Solução:**
-```bash
-echo "ENCRYPTION_KEY=$(python -c 'import secrets; print(secrets.token_urlsafe(32))')" >> .env
-```
-
-### "Tests failing"
-
-**Causa**: Banco de testes não iniciado ou configuração incorreta.
-
-**Solução:**
-```bash
-docker-compose up -d postgres-test
-# Verifique ENCRYPTION_KEY configurado
-```
-
-## 📞 Suporte
-
-Se encontrar problemas durante onboarding:
-
-1. **Verifique a documentação** primeiro
-2. **Procure em Issues** por problemas similares
-3. **Crie uma Issue** descrevendo o problema
-4. **Pergunte no Discord/Slack** (se disponível)
-
-## 🎉 Próximos Passos
-
-Após completar onboarding:
-
-1. ✅ Explore código de plugins existentes
-2. ✅ Leia testes para entender comportamento esperado
-3. ✅ Contribua com melhorias de documentação
-4. ✅ Participe de code reviews
-5. ✅ Sugira melhorias e novas features
-
-## 📚 Referências Rápidas
-
-### Comandos Essenciais
-
-```bash
-# Testes
-pytest                          # Todos os testes
-pytest tests/unit/              # Apenas unitários
-pytest -v -k test_name         # Teste específico
-
-# Qualidade
-ruff check .                    # Linting
-black .                         # Formatação
-mypy src/crypto_bot            # Type checking
-
-# CLI
-crypto-bot --help               # Ajuda geral
-crypto-bot start --dry-run      # Iniciar em simulação
-crypto-bot status               # Status do bot
-
-# Database
-alembic upgrade head            # Aplicar migrações
-alembic revision --autogenerate # Criar migração
-```
-
-### Workflow Git
-
-```bash
-# Criar branch de feature
-git checkout -b feature/minha-feature
-
-# Commit com mensagem padronizada
-git commit -m "feat(scope): descrição"
-
-# Push e criar PR
-git push origin feature/minha-feature
-gh pr create --fill
-```
+1. **Identifique problemas** durante seu onboarding
+2. **Documente soluções** encontradas
+3. **Sugira melhorias** via issue ou PR
+4. **Atualize o guia** conforme necessário
 
 ---
 
-**💡 Dica**: Não tenha medo de perguntar! A comunidade está aqui para ajudar. Boa sorte com sua primeira contribuição! 🚀
+**💡 Dica**: Não tenha medo de perguntar ou pedir ajuda. A comunidade é amigável e está aqui para ajudar!
