@@ -146,6 +146,9 @@ async def test_trading_pair(trading_pair_repo, db_session, test_assets, test_exc
         quote_asset_id=usdt.id,
         exchange_id=test_exchange.id,
         symbol="BTC/USDT",
+        min_order_size=Decimal("0.0001"),
+        max_order_size=Decimal("1000.0"),
+        tick_size=Decimal("0.01"),
     )
     created = await trading_pair_repo.create(trading_pair)
     await db_session.commit()
@@ -236,7 +239,6 @@ class TestDatabasePersistence:
             trading_pair_id=test_trading_pair.id,
             strategy_id=created_strategy.id,
             exchange_order_id=faker.uuid4(),
-            symbol="BTC/USDT",
             side=OrderSide.BUY,
             type=OrderType.MARKET,
             status=OrderStatus.OPEN,
