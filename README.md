@@ -115,7 +115,7 @@ crypto-bot strategies
 crypto-bot positions
 
 # Ver saldos
-crypto-bot balances binance
+crypto-bot balances --exchange binance
 
 # Forçar execução de uma estratégia específica
 crypto-bot force <strategy_id>
