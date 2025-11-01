@@ -20,7 +20,9 @@ console = Console()
 CLI_CMD = [sys.executable, "-m", "crypto_bot.cli.main"]
 
 
-def test_command(cmd: List[str], description: str, timeout: int = 10) -> Dict[str, Any]:
+def run_command_test(
+    cmd: List[str], description: str, timeout: int = 10
+) -> Dict[str, Any]:
     """
     Test a CLI command and return results.
 
@@ -121,7 +123,7 @@ def main() -> None:
 
     for cmd, description, timeout in tests:
         console.print(f"[dim]Testing: {' '.join(cmd)}[/dim]")
-        result = test_command(cmd, description, timeout)
+        result = run_command_test(cmd, description, timeout)
         results.append(result)
 
         if result["success"]:

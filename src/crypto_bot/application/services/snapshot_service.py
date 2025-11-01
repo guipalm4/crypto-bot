@@ -6,7 +6,7 @@ snapshots and OHLCV market data from exchange plugins.
 """
 
 import asyncio
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from crypto_bot.application.dtos.order import BalanceDTO
@@ -184,7 +184,7 @@ class SnapshotService:
                         else:
                             balances_dict = balances_data
 
-                        snapshot_at = datetime.utcnow()
+                        snapshot_at = datetime.now(UTC)
 
                         # Record snapshot for each currency
                         for currency, balance_dto in balances_dict.items():
@@ -407,7 +407,7 @@ class SnapshotService:
                             locked_balance=float(balance_dto.used),
                             total_balance=float(balance_dto.total),
                             value_in_usd=None,
-                            snapshot_at=datetime.utcnow(),
+                            snapshot_at=datetime.now(UTC),
                         )
 
                         created = await snapshot_repo.create_if_not_exists(snapshot)
