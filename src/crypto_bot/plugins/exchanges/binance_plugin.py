@@ -134,20 +134,14 @@ class BinancePlugin(CCXTExchangePlugin):
         if self._config.sandbox and self._ccxt:
             logger.info("Configuring Binance testnet mode")
 
-            # Binance testnet uses different URLs
-            # Spot testnet
-            testnet_urls = {
-                "api": {
-                    "public": "https://testnet.binance.vision/api",
-                    "private": "https://testnet.binance.vision/api",
-                },
-            }
-
-            # Override URLs for testnet
-            self._ccxt.urls["api"] = testnet_urls["api"]
+            # CCXT already sets testnet URLs correctly when sandbox=True
+            # We just need to ensure the exchange instance is properly configured
+            # The URLs are already set by CCXT to testnet.binance.vision/api/v3
+            # No manual override needed - CCXT handles this automatically
 
             logger.info(
-                f"Binance testnet configured: " f"api={testnet_urls['api']['public']}"
+                f"Binance testnet configured: "
+                f"api={self._ccxt.urls.get('api', {}).get('public', 'N/A')}"
             )
 
         # Configure default trading type if specified in options
