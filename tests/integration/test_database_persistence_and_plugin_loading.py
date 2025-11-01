@@ -129,8 +129,8 @@ async def test_exchange(exchange_repo, db_session):
 @pytest_asyncio.fixture
 async def test_assets(asset_repo, db_session):
     """Create test assets in the database."""
-    btc = Asset(symbol="BTC", name="Bitcoin", decimals=8)
-    usdt = Asset(symbol="USDT", name="Tether", decimals=6)
+    btc = Asset(symbol="BTC", name="Bitcoin", metadata_json={"decimals": 8})
+    usdt = Asset(symbol="USDT", name="Tether", metadata_json={"decimals": 6})
     btc_created = await asset_repo.create(btc)
     usdt_created = await asset_repo.create(usdt)
     await db_session.commit()
@@ -138,12 +138,13 @@ async def test_assets(asset_repo, db_session):
 
 
 @pytest_asyncio.fixture
-async def test_trading_pair(trading_pair_repo, db_session, test_assets):
+async def test_trading_pair(trading_pair_repo, db_session, test_assets, test_exchange):
     """Create a test trading pair in the database."""
     btc, usdt = test_assets
     trading_pair = TradingPair(
         base_asset_id=btc.id,
         quote_asset_id=usdt.id,
+        exchange_id=test_exchange.id,
         symbol="BTC/USDT",
     )
     created = await trading_pair_repo.create(trading_pair)
