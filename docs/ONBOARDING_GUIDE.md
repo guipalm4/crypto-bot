@@ -52,6 +52,9 @@ source .venv/bin/activate  # Linux/Mac
 # Instale dependências
 pip install -r requirements.txt
 pip install -r requirements-dev.txt  # Dependências de desenvolvimento
+
+# Instale o pacote em modo de desenvolvimento (permite usar 'crypto-bot')
+pip install -e .
 ```
 
 ### 3. Configuração do Banco de Dados

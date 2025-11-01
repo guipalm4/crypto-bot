@@ -48,9 +48,12 @@ O Crypto Trading Bot é um sistema completo de trading automatizado desenvolvido
    # ou
    .venv\Scripts\activate     # Windows
 
-   # Instale as dependências
+   # Instale as dependências e o pacote em modo de desenvolvimento
    pip install -r requirements.txt
+   pip install -e .  # Instala o pacote e disponibiliza o comando 'crypto-bot'
    ```
+   
+   **Nota:** Se preferir não instalar o pacote, você pode usar `python -m crypto_bot.cli.main` em vez de `crypto-bot`.
 
 3. **Configure o banco de dados**
    ```bash
