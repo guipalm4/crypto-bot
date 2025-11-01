@@ -81,6 +81,8 @@ class TradingService(ITradingService):
             )
 
         # Initialize Coinbase if configured
+        # NOTE: ccxt.coinbase does not support set_sandbox_mode()
+        # For sandbox, we need to manually override URLs after initialization
         if (
             settings.coinbase_api_key
             and settings.coinbase_api_secret
@@ -93,14 +95,23 @@ class TradingService(ITradingService):
                 "password": settings.coinbase_passphrase,
                 "enableRateLimit": True,
             }
-            if settings.coinbase_sandbox:
-                config["sandbox"] = True
 
-            self._exchanges["coinbase"] = exchange_class(config)
-            logger.info(
-                "Initialized Coinbase exchange (sandbox: %s)",
-                settings.coinbase_sandbox,
-            )
+            exchange = exchange_class(config)
+
+            # Handle sandbox mode manually (coinbase doesn't support set_sandbox_mode)
+            if settings.coinbase_sandbox:
+                # Coinbase sandbox uses different base URL
+                sandbox_url = "https://api-public.sandbox.pro.coinbase.com"
+                if hasattr(exchange, "urls") and isinstance(exchange.urls, dict):
+                    exchange.urls["api"] = sandbox_url
+                logger.info(
+                    "Initialized Coinbase exchange in sandbox mode (URL: %s)",
+                    sandbox_url,
+                )
+            else:
+                logger.info("Initialized Coinbase exchange in production mode")
+
+            self._exchanges["coinbase"] = exchange
 
     def _get_exchange(self, exchange_name: str) -> ccxt.Exchange:
         """
