@@ -245,7 +245,7 @@ database:
 exchanges:
   binance:
     enabled: true
-    testnet: false
+    sandbox: true  # Default: true (sandbox) for safety. Set to false for production.
     api_key: ${BINANCE_API_KEY}
     api_secret: ${BINANCE_API_SECRET}
     rate_limit: 1200

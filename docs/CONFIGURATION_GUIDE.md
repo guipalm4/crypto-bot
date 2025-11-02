@@ -32,7 +32,7 @@ DATABASE_USER=crypto_bot_user
 DATABASE_PASSWORD=secure_password
 BINANCE_API_KEY=your_api_key
 BINANCE_API_SECRET=your_api_secret
-BINANCE_SANDBOX=false  # true para testnet, false para produção
+BINANCE_SANDBOX=true  # Padrão: true (testnet) por segurança. Configure false apenas para produção.
 ENVIRONMENT=development
 ```
 
@@ -238,7 +238,7 @@ Configurações para cada exchange.
 exchanges:
   binance:
     enabled: false                  # Habilitar exchange
-    sandbox: false                  # IMPORTANTE: true apenas para testnet, false para produção
+    sandbox: true                   # PADRÃO: true (testnet) por segurança. Configure false apenas para produção.
     api_key: null                   # API key (de env: BINANCE_API_KEY)
     api_secret: null                # API secret (de env: BINANCE_API_SECRET)
     rate_limits:
@@ -250,7 +250,9 @@ exchanges:
 - `BINANCE_API_KEY`: API key do Binance
 - `BINANCE_API_SECRET`: API secret do Binance
 - `BINANCE_SANDBOX`: Usar sandbox/testnet (true) ou produção (false)
-  **CRÍTICO**: Use `false` para API keys de produção, `true` apenas para testnet/testnet.binance.vision
+  **🔒 SEGURANÇA**: O padrão é `true` (sandbox/testnet) para prevenir acidentes com trades reais durante desenvolvimento.
+  **⚠️ ATENÇÃO**: Configure explicitamente `false` APENAS quando tiver certeza que deseja usar produção com API keys reais.
+  **✅ RECOMENDADO**: Use sempre sandbox durante desenvolvimento e testes.
 
 #### Coinbase Pro
 

@@ -44,7 +44,9 @@ class Settings(BaseSettings):
     # Exchange APIs
     binance_api_key: str | None = Field(default=None, alias="BINANCE_API_KEY")
     binance_api_secret: str | None = Field(default=None, alias="BINANCE_API_SECRET")
-    binance_sandbox: bool = Field(default=False, alias="BINANCE_SANDBOX")
+    binance_sandbox: bool = Field(
+        default=True, alias="BINANCE_SANDBOX"
+    )  # Default: True (sandbox) for safety. Must explicitly set to False for production.
 
     coinbase_api_key: str | None = Field(default=None, alias="COINBASE_API_KEY")
     coinbase_api_secret: str | None = Field(default=None, alias="COINBASE_API_SECRET")
