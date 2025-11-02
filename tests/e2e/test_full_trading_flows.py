@@ -162,8 +162,8 @@ async def position_repo(db_session):
 @pytest_asyncio.fixture
 async def test_assets(asset_repo, db_session):
     """Create test assets in the database."""
-    btc = Asset(symbol="BTC", name="Bitcoin", decimals=8)
-    usdt = Asset(symbol="USDT", name="Tether", decimals=6)
+    btc = Asset(symbol="BTC", name="Bitcoin", metadata_json={"decimals": 8})
+    usdt = Asset(symbol="USDT", name="Tether", metadata_json={"decimals": 6})
     btc_created = await asset_repo.create(btc)
     usdt_created = await asset_repo.create(usdt)
     await db_session.commit()
@@ -177,7 +177,11 @@ async def test_trading_pair(trading_pair_repo, db_session, test_exchange, test_a
     trading_pair = TradingPair(
         base_asset_id=btc.id,
         quote_asset_id=usdt.id,
+        exchange_id=test_exchange.id,
         symbol="BTC/USDT",
+        min_order_size=Decimal("0.0001"),
+        max_order_size=Decimal("1000.0"),
+        tick_size=Decimal("0.01"),
     )
     created = await trading_pair_repo.create(trading_pair)
     await db_session.commit()
@@ -664,6 +668,12 @@ class TestFullTradingFlow:
             dry_run=False,
         )
 
+        # Initialize strategy instance BEFORE generating signals
+        context.strategy_instance = context.strategy_class()
+        context.strategy_instance.validate_parameters(
+            context.strategy_db_model.parameters_json
+        )
+
         # Execute flow
         await orchestrator._fetch_market_data(context)
         initial_market_data = context.market_data_df.copy()
@@ -673,11 +683,6 @@ class TestFullTradingFlow:
         assert context.market_data_df is not None
         pd.testing.assert_frame_equal(context.market_data_df, initial_market_data)
 
-        # Initialize strategy instance
-        context.strategy_instance = context.strategy_class()
-        context.strategy_instance.validate_parameters(
-            context.strategy_db_model.parameters_json
-        )
         await orchestrator._generate_signal(context)  # Generate again
         # Signal should be regenerated with same data
         assert context.signal is not None

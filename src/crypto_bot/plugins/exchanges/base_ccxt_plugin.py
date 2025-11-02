@@ -25,6 +25,7 @@ from ccxt.base.errors import (
     OrderNotFound,
     RateLimitExceeded,
 )
+from cryptography.fernet import InvalidToken
 
 from crypto_bot.application.dtos.order import (
     BalanceDTO,
@@ -97,22 +98,34 @@ class CCXTExchangePlugin(ExchangeBase):
             RuntimeError: If encryption service is not available
             ValueError: If required credentials are missing
         """
-        # Decrypt credentials if provided
+        # Decrypt credentials if provided (or use plain text from .env)
         api_key = None
         secret = None
         password = None
 
         if self._config.api_key:
-            encryption_service = get_encryption_service()
-            api_key = encryption_service.decrypt(self._config.api_key)
+            try:
+                encryption_service = get_encryption_service()
+                api_key = encryption_service.decrypt(self._config.api_key)
+            except (InvalidToken, ValueError):
+                # Credential is not encrypted (likely from .env), use as-is
+                api_key = self._config.api_key
 
         if self._config.secret:
-            encryption_service = get_encryption_service()
-            secret = encryption_service.decrypt(self._config.secret)
+            try:
+                encryption_service = get_encryption_service()
+                secret = encryption_service.decrypt(self._config.secret)
+            except (InvalidToken, ValueError):
+                # Credential is not encrypted (likely from .env), use as-is
+                secret = self._config.secret
 
         if self._config.password:
-            encryption_service = get_encryption_service()
-            password = encryption_service.decrypt(self._config.password)
+            try:
+                encryption_service = get_encryption_service()
+                password = encryption_service.decrypt(self._config.password)
+            except (InvalidToken, ValueError):
+                # Credential is not encrypted (likely from .env), use as-is
+                password = self._config.password
 
         # Build CCXT configuration
         ccxt_config: Dict[str, Any] = {

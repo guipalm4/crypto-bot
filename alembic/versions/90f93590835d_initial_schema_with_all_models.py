@@ -257,15 +257,6 @@ def upgrade() -> None:
     )
     op.create_index(op.f("ix_trade_order_id"), "trade", ["order_id"], unique=False)
     op.create_index(op.f("ix_trade_timestamp"), "trade", ["timestamp"], unique=False)
-    op.drop_index(op.f("idx_trading_pairs_base_currency"), table_name="trading_pairs")
-    op.drop_index(op.f("idx_trading_pairs_quote_currency"), table_name="trading_pairs")
-    op.drop_index(op.f("idx_trading_pairs_symbol"), table_name="trading_pairs")
-    op.drop_table("trading_pairs")
-    op.drop_index(op.f("idx_exchanges_name"), table_name="exchanges")
-    op.drop_table("exchanges")
-    op.drop_index(op.f("idx_users_email"), table_name="users")
-    op.drop_index(op.f("idx_users_username"), table_name="users")
-    op.drop_table("users")
     # ### end Alembic commands ###
 
 

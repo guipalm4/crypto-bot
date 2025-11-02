@@ -537,13 +537,29 @@ class TestPluginLoading:
     def test_load_plugins_success(self):
         """Test successful plugin loading."""
         # Create a temporary directory with a plugin file
+        # The registry expects the plugin directory structure:
+        # temp_dir/
+        #   exchanges/
+        #     test_plugin.py
+        # And calculates module_name as: "exchanges.test_plugin"
+        # So we need to add temp_dir to sys.path and create __init__.py files
+        import importlib
+        import sys
+
         with tempfile.TemporaryDirectory() as temp_dir:
-            plugin_dir = Path(temp_dir) / "exchanges"
-            plugin_dir.mkdir()
+            # Use a unique directory name to avoid conflicts with other tests
+            unique_id = id(temp_dir)  # Use temp directory id for uniqueness
+            plugin_dir = Path(temp_dir) / f"plugins_{unique_id}"
+            plugin_dir.mkdir(parents=True)
+
+            # Create __init__.py to make it a proper Python package
+            init_file = plugin_dir / "__init__.py"
+            init_file.write_text("")
 
             plugin_file = plugin_dir / "test_plugin.py"
             plugin_file.write_text(
                 """
+from unittest.mock import Mock
 from crypto_bot.infrastructure.exchanges.base import ExchangeBase
 
 class TestPlugin(ExchangeBase):
@@ -580,12 +596,34 @@ class TestPlugin(ExchangeBase):
 """
             )
 
-            registry = ExchangePluginRegistry(str(plugin_dir))
-            registry.load_plugins()
+            # Add parent directory to sys.path temporarily to allow module import
+            original_path = sys.path.copy()
 
-            assert registry._loaded
-            assert len(registry._plugins) == 1
-            assert "test" in registry._plugins
+            try:
+                # Add temp_dir to sys.path so modules can be imported
+                if str(temp_dir) not in sys.path:
+                    sys.path.insert(0, str(temp_dir))
+
+                registry = ExchangePluginRegistry(str(plugin_dir))
+                registry.load_plugins()
+
+                assert registry._loaded
+                assert len(registry._plugins) == 1
+                assert "test" in registry._plugins
+            finally:
+                # Restore original path and clean up any imported modules
+                sys.path[:] = original_path
+                # Clean up any modules that might have been imported
+                module_prefix = f"plugins_{unique_id}"
+                modules_to_remove = [
+                    name
+                    for name in list(sys.modules.keys())
+                    if module_prefix in name or (f"{module_prefix}.test_plugin" in name)
+                ]
+                for module_name in modules_to_remove:
+                    del sys.modules[module_name]
+                # Invalidate import caches
+                importlib.invalidate_caches()
 
     def test_load_plugins_invalid_plugin(self):
         """Test loading plugins with invalid plugin files."""

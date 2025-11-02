@@ -15,6 +15,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
 from rich.text import Text
 
+from crypto_bot.application.dtos.order import BalanceDTO
 from crypto_bot.cli.context import cli_context, run_async
 from crypto_bot.infrastructure.database.repositories.position_repository import (
     PositionRepository,
@@ -204,13 +205,14 @@ def stop() -> None:
                 )
             )
 
-            orchestrator = await cli_context.get_orchestrator(dry_run=False)
-            if orchestrator._running:
-                await orchestrator.stop()
-                await cli_context.cleanup()
-                console.print("✅ Bot parado com sucesso!")
-            else:
-                console.print("[yellow]⚠️  Bot não estava rodando[/yellow]")
+            async with cli_context.get_session():
+                orchestrator = await cli_context.get_orchestrator(dry_run=False)
+                if orchestrator._running:
+                    await orchestrator.stop()
+                    await cli_context.cleanup()
+                    console.print("✅ Bot parado com sucesso!")
+                else:
+                    console.print("[yellow]⚠️  Bot não estava rodando[/yellow]")
 
         except Exception as e:
             log_error(e, context={"command": "stop"})
@@ -457,58 +459,84 @@ def balances(exchange: str, currency: str | None) -> None:
 
     async def _get_balances() -> None:
         try:
-            trading_service = await cli_context.get_trading_service()
-            balance_data = await trading_service.get_balance(exchange, currency)
+            async with cli_context.get_session():
+                trading_service = await cli_context.get_trading_service()
+                try:
+                    balance_data = await trading_service.get_balance(exchange, currency)
 
-            if currency:
-                # Single balance
-                if isinstance(balance_data, dict):
-                    balance = balance_data.get(currency)
-                    if not balance:
-                        console.print(f"[red]❌ Moeda {currency} não encontrada[/red]")
-                        return
-                else:
-                    balance = balance_data
-                table = Table(
-                    title=f"Balance - {exchange.upper()}",
-                    show_header=True,
-                    header_style="bold cyan",
-                )
-                table.add_column("Currency", style="bold yellow")
-                table.add_column("Free", justify="right", style="green")
-                table.add_column("Used", justify="right", style="yellow")
-                table.add_column("Total", justify="right", style="cyan")
+                    if currency:
+                        # Single balance
+                        if isinstance(balance_data, dict):
+                            balance = balance_data.get(currency)
+                            if not balance:
+                                console.print(
+                                    f"[red]❌ Moeda {currency} não encontrada[/red]"
+                                )
+                                return
+                        elif hasattr(balance_data, "currency"):
+                            # It's a BalanceDTO object
+                            balance = balance_data
+                        else:
+                            console.print("[red]❌ Formato de dados inválido[/red]")
+                            return
 
-                table.add_row(
-                    balance.currency,
-                    str(balance.free),
-                    str(balance.used),
-                    str(balance.total),
-                )
-            else:
-                # All balances
-                if isinstance(balance_data, dict):
-                    balances_dict = balance_data
-                else:
-                    # Single balance returned, convert to dict
-                    balances_dict = {balance_data.currency: balance_data}
-                table = Table(
-                    title=f"Balances - {exchange.upper()}",
-                    show_header=True,
-                    header_style="bold cyan",
-                )
-                table.add_column("Currency", style="bold yellow")
-                table.add_column("Free", justify="right", style="green")
-                table.add_column("Used", justify="right", style="yellow")
-                table.add_column("Total", justify="right", style="cyan")
-
-                for curr, bal in balances_dict.items():
-                    if bal.total > 0:  # Only show non-zero balances
-                        table.add_row(
-                            curr, str(bal.free), str(bal.used), str(bal.total)
+                        table = Table(
+                            title=f"Balance - {exchange.upper()}",
+                            show_header=True,
+                            header_style="bold cyan",
                         )
+                        table.add_column("Currency", style="bold yellow")
+                        table.add_column("Free", justify="right", style="green")
+                        table.add_column("Used", justify="right", style="yellow")
+                        table.add_column("Total", justify="right", style="cyan")
 
-            console.print(table)
+                        table.add_row(
+                            balance.currency,
+                            str(balance.free),
+                            str(balance.used),
+                            str(balance.total),
+                        )
+                        console.print(table)
+                    else:
+                        # All balances
+                        if isinstance(balance_data, dict):
+                            balances_dict: dict[str, BalanceDTO] = balance_data
+                        elif hasattr(balance_data, "currency"):
+                            # Single balance returned, convert to dict
+                            balances_dict = {balance_data.currency: balance_data}
+                        else:
+                            console.print("[red]❌ Formato de dados inválido[/red]")
+                            return
+
+                        table = Table(
+                            title=f"Balances - {exchange.upper()}",
+                            show_header=True,
+                            header_style="bold cyan",
+                        )
+                        table.add_column("Currency", style="bold yellow")
+                        table.add_column("Free", justify="right", style="green")
+                        table.add_column("Used", justify="right", style="yellow")
+                        table.add_column("Total", justify="right", style="cyan")
+
+                        for curr, bal in balances_dict.items():
+                            # balances_dict is typed as dict[str, BalanceDTO], so bal is always BalanceDTO
+                            # But we check anyway for runtime safety
+                            if bal.total > 0:
+                                # Only show non-zero balances
+                                table.add_row(
+                                    curr, str(bal.free), str(bal.used), str(bal.total)
+                                )
+
+                        console.print(table)
+                finally:
+                    # Always close trading service to prevent resource leaks
+                    if trading_service and hasattr(trading_service, "close"):
+                        try:
+                            await trading_service.close()
+                        except Exception as close_error:
+                            logger.warning(
+                                "Error closing trading service: %s", str(close_error)
+                            )
 
         except Exception as e:
             console.print(f"[red]❌ Erro ao obter saldos: {e}[/red]")

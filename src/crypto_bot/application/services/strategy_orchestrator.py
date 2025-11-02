@@ -755,6 +755,16 @@ class StrategyOrchestrator:
         if context.signal is None:
             return
 
+        # Hold signals do not execute trades
+        if context.signal.action == "hold":
+            logger.debug(
+                "strategy_orchestrator:hold_signal",
+                strategy_name=context.strategy_db_model.name,
+                symbol=context.symbol,
+                signal_strength=context.signal.strength,
+            )
+            return
+
         if context.dry_run:
             # Log simulated trade
             logger.info(

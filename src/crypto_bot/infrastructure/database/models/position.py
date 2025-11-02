@@ -5,7 +5,7 @@ Database model for trading positions.
 """
 
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, Enum, ForeignKey, Numeric
@@ -116,7 +116,7 @@ class Position(Base):
     # Timestamps
     opened_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=datetime.utcnow,
+        default=lambda: datetime.now(UTC),
         nullable=False,
         index=True,
     )

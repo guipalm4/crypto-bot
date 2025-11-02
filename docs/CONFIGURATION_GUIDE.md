@@ -26,11 +26,13 @@ O sistema suporta variáveis de ambiente que sobrescrevem valores dos arquivos Y
 
 ```bash
 # Exemplo de .env
-ENCRYPTION_KEY=your_32_byte_key_here
+# CRITICAL: Gere ENCRYPTION_KEY com: openssl rand -hex 32
+ENCRYPTION_KEY=your_32_character_minimum_encryption_key_here
 DATABASE_USER=crypto_bot_user
 DATABASE_PASSWORD=secure_password
 BINANCE_API_KEY=your_api_key
 BINANCE_API_SECRET=your_api_secret
+BINANCE_SANDBOX=false  # true para testnet, false para produção
 ENVIRONMENT=development
 ```
 
@@ -236,7 +238,7 @@ Configurações para cada exchange.
 exchanges:
   binance:
     enabled: false                  # Habilitar exchange
-    sandbox: true                   # Usar testnet/sandbox
+    sandbox: false                  # IMPORTANTE: true apenas para testnet, false para produção
     api_key: null                   # API key (de env: BINANCE_API_KEY)
     api_secret: null                # API secret (de env: BINANCE_API_SECRET)
     rate_limits:
@@ -247,7 +249,8 @@ exchanges:
 **Variáveis de Ambiente:**
 - `BINANCE_API_KEY`: API key do Binance
 - `BINANCE_API_SECRET`: API secret do Binance
-- `BINANCE_SANDBOX`: Usar sandbox (true/false)
+- `BINANCE_SANDBOX`: Usar sandbox/testnet (true) ou produção (false)
+  **CRÍTICO**: Use `false` para API keys de produção, `true` apenas para testnet/testnet.binance.vision
 
 #### Coinbase Pro
 
@@ -255,7 +258,7 @@ exchanges:
 exchanges:
   coinbase:
     enabled: false                  # Habilitar exchange
-    sandbox: true                   # Usar sandbox
+    sandbox: false                  # IMPORTANTE: true apenas para testnet, false para produção
     api_key: null                   # API key (de env: COINBASE_API_KEY)
     api_secret: null                # API secret (de env: COINBASE_API_SECRET)
     passphrase: null                # Passphrase (de env: COINBASE_PASSPHRASE)
@@ -268,7 +271,8 @@ exchanges:
 - `COINBASE_API_KEY`: API key do Coinbase
 - `COINBASE_API_SECRET`: API secret do Coinbase
 - `COINBASE_PASSPHRASE`: Passphrase do Coinbase
-- `COINBASE_SANDBOX`: Usar sandbox (true/false)
+- `COINBASE_SANDBOX`: Usar sandbox/testnet (true) ou produção (false)
+  **CRÍTICO**: Use `false` para API keys de produção, `true` apenas para sandbox
 
 ### 📊 Strategies Configuration (`strategies`)
 
@@ -413,7 +417,7 @@ security:
 ```
 
 **Variáveis de Ambiente (OBRIGATÓRIAS):**
-- `ENCRYPTION_KEY`: Chave AES-256 de 32 bytes para criptografar dados sensíveis no banco
+- `ENCRYPTION_KEY`: Chave AES-256 de 32 bytes (mínimo 32 caracteres) para criptografar dados sensíveis no banco. **REQUIRED**. Gere com: `openssl rand -hex 32`
 
 **Variáveis de Ambiente (Opcionais):**
 - `JWT_SECRET`: Secret para assinatura de tokens JWT
@@ -561,22 +565,29 @@ Todas as configurações são validadas automaticamente usando Pydantic:
 
 ```python
 from crypto_bot.config import load_config
+from pydantic import ValidationError
 
 try:
     config = load_config()
     print("✓ Configuração válida")
 except ValidationError as e:
     print(f"✗ Erro de validação: {e}")
+except ValueError as e:
+    print(f"✗ Erro de configuração: {e}")
 ```
 
 ### Erros Comuns
 
 #### "ENCRYPTION_KEY environment variable is required"
 
-**Solução:** Defina `ENCRYPTION_KEY` no arquivo `.env`:
+**Solução:** Defina `ENCRYPTION_KEY` no arquivo `.env`. **CRITICAL**: Deve ter no mínimo 32 caracteres. Gere uma chave segura com:
 
 ```bash
-ENCRYPTION_KEY=your_32_byte_key_here_minimum
+# Gerar chave segura
+openssl rand -hex 32
+
+# Adicionar ao .env
+ENCRYPTION_KEY=<chave_gerada_acima>
 ```
 
 #### "Configuration validation failed"

@@ -48,14 +48,20 @@ O Crypto Trading Bot é um sistema completo de trading automatizado desenvolvido
    # ou
    .venv\Scripts\activate     # Windows
 
-   # Instale as dependências
+   # Instale as dependências e o pacote em modo de desenvolvimento
    pip install -r requirements.txt
+   pip install -e .  # Instala o pacote e disponibiliza o comando 'crypto-bot'
+   
+   # Para desenvolvimento, instale também as dependências de desenvolvimento (opcional)
+   # pip install -r requirements-dev.txt
    ```
+   
+   **Nota:** Se preferir não instalar o pacote, você pode usar `python -m crypto_bot.cli.main` em vez de `crypto-bot`.
 
 3. **Configure o banco de dados**
    ```bash
    # Inicie o PostgreSQL com Docker
-   docker-compose up -d
+   docker-compose up -d postgres
 
    # Execute as migrações
    alembic upgrade head
@@ -67,8 +73,13 @@ O Crypto Trading Bot é um sistema completo de trading automatizado desenvolvido
    cp .env.example .env
 
    # Edite o arquivo .env com suas credenciais
+   # Mínimo necessário:
+   # - ENCRYPTION_KEY (gere com: openssl rand -hex 32)
+   # - DATABASE_USER e DATABASE_PASSWORD (ou use valores padrão do docker-compose)
    nano .env
    ```
+   
+   **Variáveis mínimas:** `ENCRYPTION_KEY` é obrigatória. Veja `docs/ONBOARDING_GUIDE.md` para lista completa.
 
 5. **Execute o bot**
    ```bash
@@ -112,7 +123,7 @@ crypto-bot strategies
 crypto-bot positions
 
 # Ver saldos
-crypto-bot balances binance
+crypto-bot balances --exchange binance
 
 # Forçar execução de uma estratégia específica
 crypto-bot force <strategy_id>
@@ -333,6 +344,9 @@ Agradecemos contribuições! Por favor, siga estas diretrizes:
    # Instale dependências de desenvolvimento
    pip install -r requirements.txt
    pip install -r requirements-dev.txt
+   
+   # Instale o pacote em modo de desenvolvimento
+   pip install -e .  # Disponibiliza o comando 'crypto-bot'
    
    # Instale pre-commit hooks
    pre-commit install
