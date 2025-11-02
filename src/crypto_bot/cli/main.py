@@ -461,72 +461,82 @@ def balances(exchange: str, currency: str | None) -> None:
         try:
             async with cli_context.get_session():
                 trading_service = await cli_context.get_trading_service()
-                balance_data = await trading_service.get_balance(exchange, currency)
+                try:
+                    balance_data = await trading_service.get_balance(exchange, currency)
 
-                if currency:
-                    # Single balance
-                    if isinstance(balance_data, dict):
-                        balance = balance_data.get(currency)
-                        if not balance:
-                            console.print(
-                                f"[red]❌ Moeda {currency} não encontrada[/red]"
-                            )
+                    if currency:
+                        # Single balance
+                        if isinstance(balance_data, dict):
+                            balance = balance_data.get(currency)
+                            if not balance:
+                                console.print(
+                                    f"[red]❌ Moeda {currency} não encontrada[/red]"
+                                )
+                                return
+                        elif hasattr(balance_data, "currency"):
+                            # It's a BalanceDTO object
+                            balance = balance_data
+                        else:
+                            console.print("[red]❌ Formato de dados inválido[/red]")
                             return
-                    elif hasattr(balance_data, "currency"):
-                        # It's a BalanceDTO object
-                        balance = balance_data
+
+                        table = Table(
+                            title=f"Balance - {exchange.upper()}",
+                            show_header=True,
+                            header_style="bold cyan",
+                        )
+                        table.add_column("Currency", style="bold yellow")
+                        table.add_column("Free", justify="right", style="green")
+                        table.add_column("Used", justify="right", style="yellow")
+                        table.add_column("Total", justify="right", style="cyan")
+
+                        table.add_row(
+                            balance.currency,
+                            str(balance.free),
+                            str(balance.used),
+                            str(balance.total),
+                        )
+                        console.print(table)
                     else:
-                        console.print("[red]❌ Formato de dados inválido[/red]")
-                        return
+                        # All balances
+                        if isinstance(balance_data, dict):
+                            balances_dict: dict[str, BalanceDTO] = balance_data
+                        elif hasattr(balance_data, "currency"):
+                            # Single balance returned, convert to dict
+                            balances_dict = {balance_data.currency: balance_data}
+                        else:
+                            console.print("[red]❌ Formato de dados inválido[/red]")
+                            return
 
-                    table = Table(
-                        title=f"Balance - {exchange.upper()}",
-                        show_header=True,
-                        header_style="bold cyan",
-                    )
-                    table.add_column("Currency", style="bold yellow")
-                    table.add_column("Free", justify="right", style="green")
-                    table.add_column("Used", justify="right", style="yellow")
-                    table.add_column("Total", justify="right", style="cyan")
+                        table = Table(
+                            title=f"Balances - {exchange.upper()}",
+                            show_header=True,
+                            header_style="bold cyan",
+                        )
+                        table.add_column("Currency", style="bold yellow")
+                        table.add_column("Free", justify="right", style="green")
+                        table.add_column("Used", justify="right", style="yellow")
+                        table.add_column("Total", justify="right", style="cyan")
 
-                    table.add_row(
-                        balance.currency,
-                        str(balance.free),
-                        str(balance.used),
-                        str(balance.total),
-                    )
-                    console.print(table)
-                else:
-                    # All balances
-                    if isinstance(balance_data, dict):
-                        balances_dict: dict[str, BalanceDTO] = balance_data
-                    elif hasattr(balance_data, "currency"):
-                        # Single balance returned, convert to dict
-                        balances_dict = {balance_data.currency: balance_data}
-                    else:
-                        console.print("[red]❌ Formato de dados inválido[/red]")
-                        return
+                        for curr, bal in balances_dict.items():
+                            # balances_dict is typed as dict[str, BalanceDTO], so bal is always BalanceDTO
+                            # But we check anyway for runtime safety
+                            if bal.total > 0:
+                                # Only show non-zero balances
+                                table.add_row(
+                                    curr, str(bal.free), str(bal.used), str(bal.total)
+                                )
 
-                    table = Table(
-                        title=f"Balances - {exchange.upper()}",
-                        show_header=True,
-                        header_style="bold cyan",
-                    )
-                    table.add_column("Currency", style="bold yellow")
-                    table.add_column("Free", justify="right", style="green")
-                    table.add_column("Used", justify="right", style="yellow")
-                    table.add_column("Total", justify="right", style="cyan")
-
-                    for curr, bal in balances_dict.items():
-                        # balances_dict is typed as dict[str, BalanceDTO], so bal is always BalanceDTO
-                        # But we check anyway for runtime safety
-                        if bal.total > 0:
-                            # Only show non-zero balances
-                            table.add_row(
-                                curr, str(bal.free), str(bal.used), str(bal.total)
+                        console.print(table)
+                finally:
+                    # Always close trading service to prevent resource leaks
+                    if trading_service and hasattr(trading_service, "close"):
+                        try:
+                            await trading_service.close()
+                        except Exception as close_error:
+                            logger.warning(
+                                "Error closing trading service: %s", str(close_error)
                             )
-
-                    console.print(table)
 
         except Exception as e:
             console.print(f"[red]❌ Erro ao obter saldos: {e}[/red]")

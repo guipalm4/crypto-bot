@@ -527,12 +527,38 @@ class TradingService(ITradingService):
                     if curr in ["free", "used", "total", "info", "timestamp"]:
                         # Skip metadata fields
                         continue
+
+                    # Validate that data is a dict before accessing it
+                    if not isinstance(data, dict):
+                        # CCXT may return non-dict values (e.g., numeric values directly)
+                        # Extract from balance_data structure instead
+                        free_amount = (
+                            balance_data.get("free", {}).get(curr, 0)
+                            if isinstance(balance_data.get("free"), dict)
+                            else 0
+                        )
+                        used_amount = (
+                            balance_data.get("used", {}).get(curr, 0)
+                            if isinstance(balance_data.get("used"), dict)
+                            else 0
+                        )
+                        total_amount = (
+                            balance_data.get("total", {}).get(curr, 0)
+                            if isinstance(balance_data.get("total"), dict)
+                            else 0
+                        )
+                    else:
+                        # Data is a dict, use it directly
+                        free_amount = data.get("free", 0)
+                        used_amount = data.get("used", 0)
+                        total_amount = data.get("total", 0)
+
                     balances[curr] = BalanceDTO(
                         exchange=exchange,
                         currency=curr,
-                        free=Decimal(str(data.get("free", 0))),
-                        used=Decimal(str(data.get("used", 0))),
-                        total=Decimal(str(data.get("total", 0))),
+                        free=Decimal(str(free_amount)),
+                        used=Decimal(str(used_amount)),
+                        total=Decimal(str(total_amount)),
                         timestamp=timestamp,
                     )
                 return balances
